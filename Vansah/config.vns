@@ -1,0 +1,14 @@
+#[Settings]
+#Thu Oct 04 02:14:58 IST 2018
+sMaxLogResponse=120
+sHostAddr=www.host.com
+sVansahInstance=vansahapp.net
+sVansahConnectionType=1
+sRegScreenShotsDirectory=
+sUpdateVansah=1
+sPortNo=0
+sAgentName=testpoint-zone8
+sDevMode=1
+sProjectIdentifier=2bd7170f-5811-11ea-929a-eae3584bb88a
+sUserToken=237091bd-38fd-11eb-952b-eae3584bb88a
+sVansahToken=0e96f753-021f-11e9-9114-eae3584bb88a
