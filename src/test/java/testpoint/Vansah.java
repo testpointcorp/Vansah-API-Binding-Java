@@ -51,17 +51,15 @@ import java.util.TimeZone;
  */
 public class Vansah {
 
-	private String VANSAH_URI;
+	
 	private String VANSAH_CYCLE;
 	private String VANSAH_CASE;
-	private String VANSAH_REQUIREMENT;
 	private String VANSAH_RELEASE;
 	private String VANSAH_BUILD;
 	private String VANSAH_ENVIRONMENT;
 	private String VANSAH_RESULT;
 	private String VANSAH_COMMENT;
 	private String VANSAH_AGENT = "";
-	private String VANSAH_APPEND;
 	private String VANSAH_TOKEN;
 	private String USER_TOKEN;
 	private String PROJECT_IDENTIFIER;
@@ -76,17 +74,9 @@ public class Vansah {
 	private String HTTPS_RESPONSE_TAG;
 	private String HTTPS_RESULT;
 	private String MESSAGE_FROM_VANSAH;
-	private static final long LIMIT = 10000000000L;
-	private static final String TESTCASEURL = "https://vansahapp.net/api/cases/steps/";
-	private static final String TESTCASEDATAURL = "https://vansahapp.net/api/cases/dataset/";
-	private static final String TESTLOGURL = "https://vansahapp.net/atsi/testlog.php";
 	private static final String VANSAH_HOST = "https://vansahapp.net/api/v1/auto/testlog/";
 	private static final String ADD_TEST_LOG = "add_test_log";
 	private static final String QUICK_TEST_UPDATE = "quick_test_update";
-	private static final String TESTCASESESSIONURL = "https://vansahapp.net/api/cases/session_variable/";
-	private static final String SENDREPORTURL = "https://vansahapp.net/api/report/logs/";
-	
-	private static long last = 0L;
 	private HashMap<Integer, String> testSteps = new HashMap<Integer, String>();
 	private HashMap<Integer, String> testTransactions = new HashMap<Integer, String>();
 	private HashMap<Integer, String> testResults = new HashMap<Integer, String>();
@@ -97,13 +87,6 @@ public class Vansah {
 	private List<Integer> listOfSteps;
 	private int testRows;
 	private int testDataRows;
-	private HashMap<Integer, Long> startCounter;
-	private HashMap<Integer, Double> responseT;
-	private HashMap<Integer, Long> serialID;
-	private int lastStoppedStep;
-	private long startTime;
-	private long endTime;
-	private Long tempResponse;
 	private ReadConfig configReader;
 	private Host computer;
 	private VansahLogHandler vlh;
@@ -116,9 +99,6 @@ public class Vansah {
 		vlh = new VansahLogHandler();
 		configReader = new ReadConfig();
 		computer = new Host();
-		startCounter = new HashMap<Integer, Long>();
-		responseT = new HashMap<Integer, Double>();
-		serialID = new HashMap<Integer, Long>();
 	}
 
 	public LinkedHashMap<String, HashMap<String, String>> getTestFields() {
@@ -165,11 +145,7 @@ public class Vansah {
 		return version;
 	}
 
-	public void start_synthetic(int testStepID) {
-		this.startTime = System.nanoTime();
-		this.startCounter.put(testStepID, Long.valueOf(this.startTime));
-		this.serialID.put(testStepID, Long.valueOf(get_SERIAL_ID()));
-	}
+	
 
 	public String getCurrentDate() {
 		// 07/01/2015 06:24:13
@@ -189,32 +165,6 @@ public class Vansah {
 		// System.out.println(dateStr);
 		return dateStr;
 	}
-	/*
-	 * Method to set the Agent Name for VSAM
-	 * 
-	 * @param sAgentName which is equivalent as VANSAH_AGENT
-	 */
-
-	public void setVANSAH_AGENT(String sAgent) {
-
-		VANSAH_AGENT = sAgent;
-	}
-
-	private String getVansahResult(String result) {
-		if (result.equalsIgnoreCase("pass")) {
-			return "2";
-		} else if (result.equalsIgnoreCase("fail")) {
-			return "1";
-		} else if (result.equalsIgnoreCase("N/A")) {
-			return "0";
-		} else {
-			System.out.println("Test Result should be either: 'pass', 'fail', or 'n/a'");
-			return null;
-		}
-	}
-
-
-	
 	
 	
 	public void addTestLog(String cycle, String testcase, String release, String build, String environment) throws Exception {
@@ -227,7 +177,6 @@ public class Vansah {
 		this.VANSAH_CASE = testcase;
 		this.VANSAH_RELEASE = release;
 		this.VANSAH_ENVIRONMENT = environment;
-		this.VANSAH_URI = this.configReader.getsVansahInstance();
 
 		if (this.VANSAH_AGENT.isEmpty()) {
 			if (this.configReader.getsAgentName().equals("")) {
@@ -359,368 +308,6 @@ public class Vansah {
 	}
 
 
-	public void resetTestData(String caseID, int cycle, String environment, int row) {
-		try {
-			this.VANSAH_TOKEN = this.configReader.getVansahToken();
-			clientBuilder = HttpClientBuilder.create();
-			// Detecting if the system using any proxy setting.
-			String hostAddr = configReader.getsHostAddr();
-			String portNo = configReader.getsPortNo();
-			if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
-				System.out.println("No proxy");
-				Unirest.setHttpClient(clientBuilder.build());
-			} else {
-				System.out.println("Proxy Server");
-				credsProvider = new BasicCredentialsProvider();
-				clientBuilder.useSystemProperties();
-				clientBuilder.setProxy(new HttpHost(hostAddr, Integer.parseInt(portNo)));
-				clientBuilder.setDefaultCredentialsProvider(credsProvider);
-				clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-				Unirest.setHttpClient(clientBuilder.build());
-			}
-
-			HttpResponse<JsonNode> del;
-			del = Unirest.delete(TESTCASEDATAURL + caseID).header("TOKEN", VANSAH_TOKEN).queryString("CYCLE", cycle)
-					.queryString("ENVIRONMENT", environment).queryString("ROW", row).asJson();
-			if (del.getBody().toString().equals("[]")) {
-				System.out.println("Unexpected Response From Server: " + del.getBody().toString());
-			} else {
-				String HTTPS_RESPONSE_TAG = del.getBody().getObject().keys().next();
-				if (HTTPS_RESPONSE_TAG.toLowerCase().equals("success")) {
-					HTTPS_RESULT = del.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Response From Server: " + HTTPS_RESULT);
-				} else if (HTTPS_RESPONSE_TAG.toLowerCase().equals("error")) {
-					String HTTPS_RESULT = del.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Unexpected Response From Server: " + HTTPS_RESULT);
-				} else {
-					System.out.println(
-							"Unexpected Response from Vansah: " + del.getBody().getObject().get(HTTPS_RESPONSE_TAG));
-				}
-			}
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public void resetTestData(String caseID, int cycle, String environment) {
-		try {
-			this.VANSAH_TOKEN = this.configReader.getVansahToken();
-			clientBuilder = HttpClientBuilder.create();
-			// Detecting if the system using any proxy setting.
-			String hostAddr = configReader.getsHostAddr();
-			String portNo = configReader.getsPortNo();
-			if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
-				System.out.println("No proxy");
-				Unirest.setHttpClient(clientBuilder.build());
-			} else {
-				System.out.println("Proxy Server");
-				credsProvider = new BasicCredentialsProvider();
-				clientBuilder.useSystemProperties();
-				clientBuilder.setProxy(new HttpHost(hostAddr, Integer.parseInt(portNo)));
-				clientBuilder.setDefaultCredentialsProvider(credsProvider);
-				clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-				Unirest.setHttpClient(clientBuilder.build());
-			}
-
-			HttpResponse<JsonNode> del;
-			del = Unirest.delete(TESTCASEDATAURL + caseID).header("TOKEN", VANSAH_TOKEN).queryString("CYCLE", cycle)
-					.queryString("ENVIRONMENT", environment).asJson();
-			if (del.getBody().toString().equals("[]")) {
-				System.out.println("Unexpected Response From Server: " + del.getBody().toString());
-			} else {
-				String HTTPS_RESPONSE_TAG = del.getBody().getObject().keys().next();
-				if (HTTPS_RESPONSE_TAG.toLowerCase().equals("success")) {
-					HTTPS_RESULT = del.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Response From Server: " + HTTPS_RESULT);
-				} else if (HTTPS_RESPONSE_TAG.toLowerCase().equals("error")) {
-					String HTTPS_RESULT = del.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Unexpected Response From Server: " + HTTPS_RESULT);
-				} else {
-					System.out.println(
-							"Unexpected Response from Vansah: " + del.getBody().getObject().get(HTTPS_RESPONSE_TAG));
-				}
-			}
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public void removeTestData(String caseID, int cycle, String environment, int row) {
-		try {
-			this.VANSAH_TOKEN = this.configReader.getVansahToken();
-			clientBuilder = HttpClientBuilder.create();
-			// Detecting if the system using any proxy setting.
-			String hostAddr = configReader.getsHostAddr();
-			String portNo = configReader.getsPortNo();
-			if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
-				System.out.println("No proxy");
-				Unirest.setHttpClient(clientBuilder.build());
-			} else {
-				System.out.println("Proxy Server");
-				credsProvider = new BasicCredentialsProvider();
-				clientBuilder.useSystemProperties();
-				clientBuilder.setProxy(new HttpHost(hostAddr, Integer.parseInt(portNo)));
-				clientBuilder.setDefaultCredentialsProvider(credsProvider);
-				clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-				Unirest.setHttpClient(clientBuilder.build());
-			}
-
-			HttpResponse<JsonNode> post;
-			post = Unirest.post(TESTCASEDATAURL + caseID).header("TOKEN", VANSAH_TOKEN).field("CYCLE", cycle)
-					.field("ENVIRONMENT", environment).field("ROW", row).asJson();
-			if (post.getBody().toString().equals("[]")) {
-				System.out.println("Unexpected Response From Server: " + post.getBody().toString());
-			} else {
-				String HTTPS_RESPONSE_TAG = post.getBody().getObject().keys().next();
-				if (HTTPS_RESPONSE_TAG.toLowerCase().equals("success")) {
-					HTTPS_RESULT = post.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Response From Server: " + HTTPS_RESULT);
-				} else if (HTTPS_RESPONSE_TAG.toLowerCase().equals("error")) {
-					String HTTPS_RESULT = post.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Unexpected Response From Server: " + HTTPS_RESULT);
-				} else {
-					System.out.println(
-							"Unexpected Response from Vansah: " + post.getBody().getObject().get(HTTPS_RESPONSE_TAG));
-				}
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public void writeTestField(String caseID, int cycle, String environment, String fieldName, String fieldValue) {
-		if ((fieldName.length() > 0) && (fieldValue.length() > 0)) {
-			try {
-				this.VANSAH_TOKEN = this.configReader.getVansahToken();
-				clientBuilder = HttpClientBuilder.create();
-				// Detecting if the system using any proxy setting.
-				String hostAddr = configReader.getsHostAddr();
-				String portNo = configReader.getsPortNo();
-				if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
-					System.out.println("No proxy");
-					Unirest.setHttpClient(clientBuilder.build());
-				} else {
-					System.out.println("Proxy Server");
-					credsProvider = new BasicCredentialsProvider();
-					clientBuilder.useSystemProperties();
-					clientBuilder.setProxy(new HttpHost(hostAddr, Integer.parseInt(portNo)));
-					clientBuilder.setDefaultCredentialsProvider(credsProvider);
-					clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-					Unirest.setHttpClient(clientBuilder.build());
-				}
-
-				HttpResponse<JsonNode> post;
-				post = Unirest.post(TESTCASESESSIONURL + caseID).header("TOKEN", VANSAH_TOKEN).field("CYCLE", cycle)
-						.field("ENVIRONMENT", environment).field("FIELD", fieldName).field("VALUE", fieldValue)
-						.asJson();
-				if (post.getBody().toString().equals("[]")) {
-					System.out.println("Unexpected Response From Server: " + post.getBody().toString());
-				} else {
-					String HTTPS_RESPONSE_TAG = post.getBody().getObject().keys().next();
-					if (HTTPS_RESPONSE_TAG.toLowerCase().equals("success")) {
-						HTTPS_RESULT = post.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-						System.out.println("Response From Server: " + HTTPS_RESULT);
-					} else if (HTTPS_RESPONSE_TAG.toLowerCase().equals("error")) {
-						String HTTPS_RESULT = post.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-						System.out.println("Unexpected Response From Server: " + HTTPS_RESULT);
-					} else {
-						System.out.println("Unexpected Response from Vansah: "
-								+ post.getBody().getObject().get(HTTPS_RESPONSE_TAG));
-					}
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		} else {
-			System.out.println("Either Field or Value contains no value");
-		}
-	}
-
-	public void readTestField(String caseID, int cycle, String environment) {
-		try {
-			this.VANSAH_TOKEN = this.configReader.getVansahToken();
-			clientBuilder = HttpClientBuilder.create();
-			// Detecting if the system using any proxy setting.
-			String hostAddr = configReader.getsHostAddr();
-			String portNo = configReader.getsPortNo();
-			if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
-				System.out.println("No proxy");
-				Unirest.setHttpClient(clientBuilder.build());
-			} else {
-				System.out.println("Proxy Server");
-				credsProvider = new BasicCredentialsProvider();
-				clientBuilder.useSystemProperties();
-				clientBuilder.setProxy(new HttpHost(hostAddr, Integer.parseInt(portNo)));
-				clientBuilder.setDefaultCredentialsProvider(credsProvider);
-				clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-				Unirest.setHttpClient(clientBuilder.build());
-			}
-
-			HttpResponse<JsonNode> get;
-			get = Unirest.get(TESTCASESESSIONURL + caseID).header("TOKEN", VANSAH_TOKEN).queryString("CYCLE", cycle)
-					.queryString("ENVIRONMENT", environment).asJson();
-			if (get.getBody().toString().equals("[]")) {
-				System.out.println("Unexpected Response From Server: " + get.getBody().toString());
-			} else {
-				String HTTPS_RESPONSE_TAG = get.getBody().getObject().keys().next();
-				if (HTTPS_RESPONSE_TAG.toLowerCase().equals("success")) {
-					JSONObject jsonobj = new JSONObject(get.getBody());
-					JSONObject jsonObject = jsonobj.getJSONArray("array").getJSONObject(0);
-					JSONObject body = (JSONObject) jsonObject.get("success");
-					JSONArray records = (JSONArray) body.get("rows");
-					if (records.length() > 0) {
-						for (int i = 0; i < records.length(); i++) {
-							JSONObject record = records.getJSONObject(i);
-							HashMap<String, String> temp = new HashMap<String, String>();
-							temp.put(record.getString("field_name"), record.getString("field_value"));
-							testFields.put(record.getString("id"), temp);
-						}
-					}
-				} else if (HTTPS_RESPONSE_TAG.toLowerCase().equals("error")) {
-					String HTTPS_RESULT = get.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Unexpected Response From Server: " + HTTPS_RESULT);
-				} else {
-					System.out.println(
-							"Unexpected Response from Vansah: " + get.getBody().getObject().get(HTTPS_RESPONSE_TAG));
-				}
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	public void readTestData(String caseID, int cycle, String environment) {
-		try {
-			this.VANSAH_TOKEN = this.configReader.getVansahToken();
-			clientBuilder = HttpClientBuilder.create();
-			// Detecting if the system using any proxy setting.
-			String hostAddr = configReader.getsHostAddr();
-			String portNo = configReader.getsPortNo();
-			if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
-				System.out.println("No proxy");
-				Unirest.setHttpClient(clientBuilder.build());
-			} else {
-				System.out.println("Proxy Server");
-				credsProvider = new BasicCredentialsProvider();
-				clientBuilder.useSystemProperties();
-				clientBuilder.setProxy(new HttpHost(hostAddr, Integer.parseInt(portNo)));
-				clientBuilder.setDefaultCredentialsProvider(credsProvider);
-				clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-				Unirest.setHttpClient(clientBuilder.build());
-			}
-			HttpResponse<JsonNode> get;
-			get = Unirest.get(TESTCASEDATAURL + caseID).header("TOKEN", VANSAH_TOKEN).queryString("CYCLE", cycle)
-					.queryString("ENVIRONMENT", environment).asJson();
-			if (get.getBody().toString().equals("[]")) {
-				System.out.println("Unexpected Response From Server: " + get.getBody().toString());
-			} else {
-				String HTTPS_RESPONSE_TAG = get.getBody().getObject().keys().next();
-				if (HTTPS_RESPONSE_TAG.toLowerCase().equals("success")) {
-					JSONObject jsonobj = new JSONObject(get.getBody());
-					JSONObject jsonObject = jsonobj.getJSONArray("array").getJSONObject(0);
-					JSONObject body = (JSONObject) jsonObject.get("success");
-					testDataRows = (Integer) body.get("total_records");
-					Set<String> rowID = new HashSet<String>();
-					if (testDataRows > 0) {
-						rowID = body.getJSONArray("rows").getJSONObject(0).keySet();
-					}
-					for (String row : rowID) {
-						List<String> tempList = new ArrayList<String>();
-						for (int i = 0; i < testDataRows; i++) {
-							JSONObject records = body.getJSONArray("rows").getJSONObject(i);
-							tempList.add((String) records.get(row));
-						}
-						testData.put(row, tempList);
-					}
-				} else if (HTTPS_RESPONSE_TAG.toLowerCase().equals("error")) {
-					String HTTPS_RESULT = get.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Unexpected Response From Server: " + HTTPS_RESULT);
-				} else {
-					System.out.println(
-							"Unexpected Response from Vansah: " + get.getBody().getObject().get(HTTPS_RESPONSE_TAG));
-				}
-			}
-
-		} catch (Exception ex) {
-			ex.printStackTrace();
-
-		}
-	}
-
-	public void readTestCase(String caseID) {
-		try {
-			this.VANSAH_TOKEN = this.configReader.getVansahToken();
-			clientBuilder = HttpClientBuilder.create();
-			// Detecting if the system using any proxy setting.
-			String hostAddr = configReader.getsHostAddr();
-			String portNo = configReader.getsPortNo();
-			if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
-				System.out.println("No proxy");
-				Unirest.setHttpClient(clientBuilder.build());
-			} else {
-				System.out.println("Proxy Server");
-				credsProvider = new BasicCredentialsProvider();
-				clientBuilder.useSystemProperties();
-				clientBuilder.setProxy(new HttpHost(hostAddr, Integer.parseInt(portNo)));
-				clientBuilder.setDefaultCredentialsProvider(credsProvider);
-				clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-				Unirest.setHttpClient(clientBuilder.build());
-			}
-			HttpResponse<JsonNode> get;
-			get = Unirest.get(TESTCASEURL + caseID).header("TOKEN", VANSAH_TOKEN).asJson();
-			if (get.getBody().toString().equals("[]")) {
-				System.out.println("Unexpected Response From Server: " + get.getBody().toString());
-			} else {
-				String HTTPS_RESPONSE_TAG = get.getBody().getObject().keys().next();
-				if (HTTPS_RESPONSE_TAG.toLowerCase().equals("success")) {
-					testSteps = new LinkedHashMap<Integer, String>();
-					testTransactions = new HashMap<Integer, String>();
-					testResults = new HashMap<Integer, String>();
-					listOfSteps = new ArrayList<Integer>();
-					JSONObject jsonobj = new JSONObject(get.getBody());
-					JSONObject jsonObject = jsonobj.getJSONArray("array").getJSONObject(0);
-					JSONObject body = (JSONObject) jsonObject.get("success");
-					testRows = (Integer) body.get("total_records");
-					JSONArray records = (JSONArray) body.get("rows");
-					for (int i = 0; i < testRows; i++) {
-						JSONObject record = records.getJSONObject(i);
-						listOfSteps.add(record.getInt("step_id"));
-						testSteps.put(record.getInt("step_id"), formatString(record, "step_detail"));
-						testResults.put(record.getInt("step_id"), formatString(record, "step_expected"));
-						testTransactions.put(record.getInt("step_id"), formatString(record, "step_transaction"));
-					}
-					records = (JSONArray) body.get("cycles");
-					if (records.length() > 0) {
-						for (int i = 0; i < records.length(); i++) {
-							JSONObject record = records.getJSONObject(i);
-							testCycles.put(record.getInt("id"), record.getString("name"));
-						}
-					}
-
-					records = (JSONArray) body.get("requirements");
-					if (records.length() > 0) {
-						for (int i = 0; i < records.length(); i++) {
-							JSONObject record = records.getJSONObject(i);
-							testRequirements.put(record.getString("id"), record.getString("headline"));
-						}
-					}
-				} else if (HTTPS_RESPONSE_TAG.toLowerCase().equals("error")) {
-					String HTTPS_RESULT = get.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Unexpected Response From Server: " + HTTPS_RESULT);
-				} else {
-					System.out.println(
-							"Unexpected Response from Vansah: " + get.getBody().getObject().get(HTTPS_RESPONSE_TAG));
-				}
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	
-
 	public String getHttpsStatus() {
 		return HTTPS_RESPONSE_TAG;
 
@@ -730,13 +317,7 @@ public class Vansah {
 		return HTTPS_RESULT;
 	}
 
-	private long get_SERIAL_ID() {
-		long serial_id = System.currentTimeMillis() % LIMIT;
-		if (serial_id <= last) {
-			serial_id = (last + 1) % LIMIT;
-		}
-		return last = serial_id;
-	}
+	
 
 	public void setProperty(String propertyName, String value) {
 		configReader.initialiseAgent(propertyName, value);
@@ -760,53 +341,6 @@ public class Vansah {
 		return encodedfile;
 	}
 
-	private String formatString(JSONObject record, String key) {
-		if (record.isNull(key))
-			return "";
-		return record.getString(key);
-	}
-	public void sendReport(int cycle, String release, String environment,String build,String email) {
-		try {
-			System.out.println("Sending Report for CYCLYE ="+cycle+" ,RELEASE ="+release+ " ,ENVIRONMENT="+environment+" ,BUILD = "+build+ " ,EMAIL="+email);
-			this.VANSAH_TOKEN = this.configReader.getVansahToken();
-			clientBuilder = HttpClientBuilder.create();
-			// Detecting if the system using any proxy setting.
-			String hostAddr = configReader.getsHostAddr();
-			String portNo = configReader.getsPortNo();
-			if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
-				System.out.println("No proxy");
-				Unirest.setHttpClient(clientBuilder.build());
-			} else {
-				System.out.println("Proxy Server");
-				credsProvider = new BasicCredentialsProvider();
-				clientBuilder.useSystemProperties();
-				clientBuilder.setProxy(new HttpHost(hostAddr, Integer.parseInt(portNo)));
-				clientBuilder.setDefaultCredentialsProvider(credsProvider);
-				clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-				Unirest.setHttpClient(clientBuilder.build());
-			}
-			HttpResponse<JsonNode> get;
-			get = Unirest.get(SENDREPORTURL).header("TOKEN", VANSAH_TOKEN).queryString("CYCLES", cycle)
-					.queryString("ENVIRONMENT", environment).queryString("REPORT_BY", "cases_overall_result").queryString("EXPORT_TYPE", "html").queryString("BUILD", build)
-					.queryString("RELEASE", release).queryString("EMAIL", email).asJson();
-			if (get.getBody().toString().equals("[]")) {
-				System.out.println("Unexpected Response From Server: " + get.getBody().toString());
-			} else {
-				HTTPS_RESPONSE_TAG = get.getBody().getObject().keys().next();
-				if (HTTPS_RESPONSE_TAG.toLowerCase().equals("success")) {
-					HTTPS_RESULT = get.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Response From Server: " + HTTPS_RESULT);
-				} else if (HTTPS_RESPONSE_TAG.toLowerCase().equals("error")) {
-					HTTPS_RESULT = get.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-					System.out.println("Response From Server: " + HTTPS_RESULT);
-				} else {
-					System.out.println("Unexpected response from Vansah: "
-							+ get.getBody().getObject().get(HTTPS_RESPONSE_TAG));
-				}
-			}
-		
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
+	
+	
 }
