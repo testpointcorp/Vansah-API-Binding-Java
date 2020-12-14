@@ -1,7 +1,7 @@
 package testpoint.vansah;
 
 import testpoint.Host;
-import testpoint.ReadConfig;
+import testpoint.ReadConfigVansah;
 import testpoint.VansahLogHandler;
 
 import java.io.BufferedReader;
@@ -67,7 +67,7 @@ public class StreamTest {
 	private long endTime;
 	private Long tempResponse;
 	public static Double responseTime;
-	private ReadConfig configReader;
+	private ReadConfigVansah configReader;
 	private Host computer;
 	VansahLogHandler vlh;
 	
@@ -75,7 +75,7 @@ public class StreamTest {
 		{
 				
 			vlh = new VansahLogHandler();
-			configReader = new ReadConfig();
+			configReader = new ReadConfigVansah();
 			computer = new Host();			
 			startCounter  = new HashMap<String, Long>();
 			responseT = new HashMap<String, Double>();

@@ -9,8 +9,8 @@ public class TestMaster1
 	public static void main (String[] args) throws Exception
 	{
 	
-		String VANSAH_CYCLE = "19";
-	    String VANSAH_CASE = "23";
+		String VANSAH_CYCLE = "93";
+	    String VANSAH_CASE = "68";
 		String VANSAH_RELEASE = "R1";
 		String VANSAH_BUILD = "B1";
 		String VANSAH_ENVIRONMENT = "TEST";	
@@ -21,10 +21,10 @@ public class TestMaster1
 		driver.get("https://testpoint.com.au");
 		
 		vansah.addTestLog(VANSAH_CYCLE, VANSAH_CASE, VANSAH_RELEASE, VANSAH_BUILD, VANSAH_ENVIRONMENT);
-		vansah.quickTestUpdate(0, "Passed.", true, driver);
-		vansah.quickTestUpdate(1, "Passed.", true, driver);
-		vansah.quickTestUpdate(2, "Passed.", true, driver);
-		vansah.quickTestUpdate(3, "Passed.", true, driver);
+		vansah.quickTestUpdate(2, "Passed", 2, null, true, driver);
+		//vansah.quickTestUpdate(1, "Failed.", true, driver);
+		//vansah.quickTestUpdate(2, "Passed.", true, driver);
+		//vansah.quickTestUpdate(3, "Passed.", true, driver);
 
 		TearDown();
 	}

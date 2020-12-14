@@ -58,9 +58,12 @@ public class Vansah {
 	private String VANSAH_BUILD;
 	private String VANSAH_ENVIRONMENT;
 	private String VANSAH_RESULT;
+	private boolean SEND_SCREENSHOT;
 	private String VANSAH_COMMENT;
 	private String VANSAH_AGENT = "";
 	private String VANSAH_TOKEN;
+	private Integer VANSAH_TESTSTEP_ROW;
+	private Integer VANSAH_TESTSTEP_IDENTIFIER;
 	private String USER_TOKEN;
 	private String PROJECT_IDENTIFIER;
 	private String LOG_IDENTIFIER;
@@ -87,7 +90,7 @@ public class Vansah {
 	private List<Integer> listOfSteps;
 	private int testRows;
 	private int testDataRows;
-	private ReadConfig configReader;
+	private ReadConfigVansah configReader;
 	private Host computer;
 	private VansahLogHandler vlh;
 	private HttpClientBuilder clientBuilder;
@@ -97,7 +100,7 @@ public class Vansah {
 	public Vansah() {
 
 		vlh = new VansahLogHandler();
-		configReader = new ReadConfig();
+		configReader = new ReadConfigVansah();
 		computer = new Host();
 	}
 
@@ -177,6 +180,7 @@ public class Vansah {
 		this.VANSAH_CASE = testcase;
 		this.VANSAH_RELEASE = release;
 		this.VANSAH_ENVIRONMENT = environment;
+		this.SEND_SCREENSHOT = false;
 
 		if (this.VANSAH_AGENT.isEmpty()) {
 			if (this.configReader.getsAgentName().equals("")) {
@@ -188,15 +192,18 @@ public class Vansah {
 			}
 		}
 
-		connectToVansahRest("addTestLog", false, null);
+		connectToVansahRest("addTestLog", null);
 	}
 	
-	public void quickTestUpdate(int result, String comment, boolean sendScreenShot, WebDriver driver) throws Exception {
+	public void quickTestUpdate(int result, String comment, Integer testStepRow, Integer testStepIdentifier, boolean sendScreenShot, WebDriver driver) throws Exception {
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.VANSAH_TOKEN = this.configReader.getVansahToken();
 		this.USER_TOKEN = this.configReader.getUserToken();
 		this.RESULT = result;
 		this.COMMENT = comment;
+		this.SEND_SCREENSHOT = sendScreenShot;
+		this.VANSAH_TESTSTEP_ROW = testStepRow;
+		this.VANSAH_TESTSTEP_IDENTIFIER = testStepIdentifier;
 
 		if (this.VANSAH_AGENT.isEmpty()) {
 			if (this.configReader.getsAgentName().equals("")) {
@@ -208,13 +215,13 @@ public class Vansah {
 			}
 		}
 
-		connectToVansahRest("quickTestUpdate", sendScreenShot, driver);
+		connectToVansahRest("quickTestUpdate", driver);
 	}
 	
 	
 	
 	
-	private void connectToVansahRest(String type, boolean sendScreenShot, WebDriver driver) {
+	private void connectToVansahRest(String type, WebDriver driver) {
 		
 		HttpResponse<JsonNode> jsonResponse = null;
 		
@@ -230,7 +237,7 @@ public class Vansah {
 				String hostAddr = configReader.getsHostAddr();
 				String portNo = configReader.getsPortNo();
 				if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
-					System.out.println("No proxy");
+					//System.out.println("No proxy");
 					Unirest.setHttpClient(clientBuilder.build());
 				} else {
 					System.out.println("Proxy Server");
@@ -243,14 +250,16 @@ public class Vansah {
 				}
 
 				if(type == "addTestLog") {
-					jsonResponse = Unirest.post(VANSAH_HOST+ADD_TEST_LOG).header("workspace-token",VANSAH_TOKEN).header("user-token",USER_TOKEN).field("case_key", VANSAH_CASE).field("cycle_key", VANSAH_CYCLE)
-							.field("release_key", VANSAH_RELEASE).field("environment_key", VANSAH_ENVIRONMENT).field("build_key", VANSAH_BUILD).field("project_identifier", PROJECT_IDENTIFIER).asJson();
+					jsonResponse = Unirest.post(VANSAH_HOST+ADD_TEST_LOG).header("workspace-token",VANSAH_TOKEN).header("user-token",USER_TOKEN)
+					.field("case_key", VANSAH_CASE).field("cycle_key", VANSAH_CYCLE).field("release_key", VANSAH_RELEASE)
+					.field("environment_key", VANSAH_ENVIRONMENT).field("build_key", VANSAH_BUILD).field("project_identifier", PROJECT_IDENTIFIER).asJson();
 				}
 				
 				if(type == "quickTestUpdate") {
 					
-					if (sendScreenShot) {
+					if (SEND_SCREENSHOT) {
 						try {
+							System.out.println("Taking screenshot");
 							WebDriver augmentedDriver = new Augmenter().augment(driver);
 							File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
 							String encodstring = encodeFileToBase64Binary(image);
@@ -260,8 +269,9 @@ public class Vansah {
 						}
 					}
 					
-					jsonResponse = Unirest.post(VANSAH_HOST+QUICK_TEST_UPDATE).header("workspace-token",VANSAH_TOKEN).header("user-token",USER_TOKEN).field("log_identifier", LOG_IDENTIFIER).field("result_key", RESULT)
-							.field("comment", COMMENT).field("file", this.VANSAH_ATTACHMENT).asJson();
+					jsonResponse = Unirest.post(VANSAH_HOST+QUICK_TEST_UPDATE).header("workspace-token",VANSAH_TOKEN).header("user-token",USER_TOKEN)
+					.field("log_identifier", LOG_IDENTIFIER).field("result_key", RESULT).field("comment", COMMENT).field("file", VANSAH_ATTACHMENT)
+					.field("step_identifier", VANSAH_TESTSTEP_IDENTIFIER).field("step_order", VANSAH_TESTSTEP_ROW).asJson();
 				}
 				
 				
