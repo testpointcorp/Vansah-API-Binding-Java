@@ -172,7 +172,7 @@ public class Vansah {
 	
 	/* 
 	 * Method accept paramters and add new test log to vansah REST api 
-	 * "https://vansahapp.net/api/v1/auto/testlog/add_test_log" 
+	 * "api/v1/auto/testlog/add_test_log" 
 	 */
 	public void addTestLog(String cycle, String testcase, String release, String build, String environment) throws Exception {
 
@@ -201,7 +201,7 @@ public class Vansah {
 	
 	/* 
 	 * Method accept paramters and update existing test log to vansah REST api 
-	 * "https://vansahapp.net/api/v1/auto/testlog/quick_test_update" 
+	 * "api/v1/auto/testlog/quick_test_update" 
 	 */
 	public void quickTestUpdate(int result, String comment, Integer testStepRow, Integer testStepIdentifier, boolean sendScreenShot, WebDriver driver) throws Exception {
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
