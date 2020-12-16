@@ -148,8 +148,8 @@ public class Vansah {
 		return version;
 	}
 
-	
 
+	/* Method to get current time and return string in format: dd/MM/yyyy HH:mm:ss */
 	public String getCurrentDate() {
 		// 07/01/2015 06:24:13
 		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
@@ -161,6 +161,7 @@ public class Vansah {
 		return cDate;
 	}
 
+	/* Method to get current time in "GMT" time zone and return string in format: dd/MM/yyyy HH:mm:ss */
 	private String getDateAndTime() {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -169,7 +170,10 @@ public class Vansah {
 		return dateStr;
 	}
 	
-	
+	/* 
+	 * Method accept paramters and add new test log to vansah REST api 
+	 * "https://vansahapp.net/api/v1/auto/testlog/add_test_log" 
+	 */
 	public void addTestLog(String cycle, String testcase, String release, String build, String environment) throws Exception {
 
 		// this.VANSAH_PACKAGE = packageName;
@@ -195,6 +199,10 @@ public class Vansah {
 		connectToVansahRest("addTestLog", null);
 	}
 	
+	/* 
+	 * Method accept paramters and update existing test log to vansah REST api 
+	 * "https://vansahapp.net/api/v1/auto/testlog/quick_test_update" 
+	 */
 	public void quickTestUpdate(int result, String comment, Integer testStepRow, Integer testStepIdentifier, boolean sendScreenShot, WebDriver driver) throws Exception {
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.VANSAH_TOKEN = this.configReader.getVansahToken();
@@ -219,7 +227,9 @@ public class Vansah {
 	}
 	
 	
-	
+	/* 
+	 * Method send post request to vansah REST api based on type (i.e. add_test_log or quick_test_update)
+	 */
 	
 	private void connectToVansahRest(String type, WebDriver driver) {
 		

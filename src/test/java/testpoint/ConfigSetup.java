@@ -31,6 +31,7 @@ public class ConfigSetup {
 		theDir = new File(file);
 		// Check if the directory and file exists
 		if (!theDir.exists()) {
+			// file not exists, create file(also its directory).
 			theDir.getParentFile().mkdirs();
 			try {
 				FileWriter writer = new FileWriter(theDir);
@@ -38,10 +39,11 @@ public class ConfigSetup {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			// Then, write property to file.
 			writeToConfig();
 
 		} else {
-
+			// file exits but is empty, write property to file
 			try {
 				// Initialize the buffer reader to read the file.
 				br = new BufferedReader(new FileReader(file));

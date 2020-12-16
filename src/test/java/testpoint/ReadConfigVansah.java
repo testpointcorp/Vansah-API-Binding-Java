@@ -32,13 +32,22 @@ public class ReadConfigVansah {
 	private String sUserToken;
 	private String sVansahToken;
 
+	/*
+	 * Method to read to configuration from file. If file not exists, 
+	 * create one with default property values 
+	 */
+	 
 	public ReadConfigVansah() {
 		this.VNSProperties = new Properties();
 		try {
+			// create "Vansah\\config.vns" if it not exists or its empty
 			this.configuration = new ConfigSetup();
+
+			// read from "Vansah\\config.vns" file
 			this.reader = new FileInputStream(this.CONFIG);
 			this.VNSProperties.load(this.reader);
 
+			// set property value from "Vansah\\config.vns" to instance variables
 			this.sMaxLogResponse = this.VNSProperties.getProperty("sMaxLogResponse");
 			this.sVansahConnectionType = this.VNSProperties.getProperty("sVansahConnectionType");
 			this.sRegScreenShotsDirectory = this.VNSProperties.getProperty("sRegScreenShotsDirectory");
