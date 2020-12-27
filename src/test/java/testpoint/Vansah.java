@@ -180,6 +180,7 @@ public class Vansah {
 		this.VANSAH_CASE = testcase;
 		this.VANSAH_RELEASE = release;
 		this.VANSAH_ENVIRONMENT = environment;
+		this.VANSAH_BUILD = build;
 		this.SEND_SCREENSHOT = false;
 
 		if (this.VANSAH_AGENT.isEmpty()) {
