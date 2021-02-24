@@ -422,7 +422,7 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 				if (success) {
 					JSONObject jsonobj = new JSONObject(get.getBody().toString());
 					//JSONObject jsonObject = jsonobj.getJSONArray("data").getJSONObject(0);
-					int testDataRows = jsonobj.getInt("total");
+					testDataRows = jsonobj.getInt("total");
 					System.out.println("(READING DATA SET) Number of Data Rows: " + testDataRows);
 					Set<String> rowID = new HashSet<String>();
 					if (testDataRows > 0) {
@@ -432,7 +432,6 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 						List<String> tempList = new ArrayList<String>();
 						for (int i = 0; i < testDataRows; i++) {
 							JSONObject records = jsonobj.getJSONArray("data").getJSONObject(i);
-
 							tempList.add((String) records.get(row));
 						}
 						testData.put(row, tempList);

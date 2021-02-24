@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
 import testpoint.Vansah;
 
@@ -24,7 +25,7 @@ public class Script1 {
 		Keywords key= new Keywords();
 
 		//Get an instance of WebDriver
-		private WebDriver driver;
+		private static WebDriver driver;
 		
 		//Vansah properties (VANSAH CYCLE, BUILD, ENVIRONMENT, VANSAH REQUIREMENT ID, RELEASE, TESTCASE ID
 		String build = Constants.BUILD;
@@ -94,9 +95,9 @@ public class Script1 {
 				vansah.addTestLog(cycle, testCase, release, build, environment);
 				this.driver.get(testData.get("URL").get(i));
 				key.findElementClick(driver, By.xpath("//a[@class='find_more']"));
-				System.out.println("FIELD 1" + testData.get("Field1").get(i));
-				System.out.println("FIELD 2" + testData.get("Field1").get(i));
-				System.out.println("FIELD 3" + testData.get("Field1").get(i));
+				System.out.println("FIELD 1: " + testData.get("Field1").get(i));
+				System.out.println("FIELD 2: " + testData.get("Field2").get(i));
+				System.out.println("FIELD 3: " + testData.get("Field3").get(i));
 				vansah.quickTestUpdate(2, "Passed", testStepID, null, true, driver);
 			break;
 			
@@ -108,12 +109,10 @@ public class Script1 {
 				System.out.println("FIELD 1: " + field1);
 				System.out.println("TEST STEP 2");
 				vansah.quickTestUpdate(1, "Failed", testStepID, null, true, driver);
+
 				
-				driver.close();
-				driver.quit();
-				driver = null;
-				
-				vansah.sendReport(Constants.CYCLE, release, environment,build,"fernando.miranda@testpoint.com.au");
+				//Not working from Vansah side
+				//vansah.sendReport(Constants.CYCLE, release, environment,build,"fernando.miranda@testpoint.com.au");
 				
 			break;
 			
@@ -123,5 +122,13 @@ public class Script1 {
 				vansah.quickTestUpdate(1, "Failed", 2, null, true, driver);
 			}
 		}
+	
+	@AfterTest
+	public static void TearDown()
+	{
+		driver.close();
+		driver.quit();
+		driver = null;
+	}
 
 	}

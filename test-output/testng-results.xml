@@ -2,15 +2,19 @@
 <testng-results total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2021-02-24T01:34:55Z" name="Default suite" finished-at="2021-02-24T01:36:03Z" duration-ms="68330">
+  <suite started-at="2021-02-24T01:51:40Z" name="Default suite" finished-at="2021-02-24T01:52:21Z" duration-ms="40483">
     <groups>
     </groups>
-    <test started-at="2021-02-24T01:34:55Z" name="Default test" finished-at="2021-02-24T01:36:03Z" duration-ms="68330">
+    <test started-at="2021-02-24T01:51:40Z" name="Default test" finished-at="2021-02-24T01:52:21Z" duration-ms="40483">
       <class name="Script1">
-        <test-method signature="Script1()[pri:0, instance:Script1@576d5deb]" started-at="2021-02-24T01:34:55Z" name="Script1" finished-at="2021-02-24T01:36:03Z" duration-ms="68316" status="PASS">
+        <test-method signature="Script1()[pri:0, instance:Script1@5824a83d]" started-at="2021-02-24T01:51:40Z" name="Script1" finished-at="2021-02-24T01:52:18Z" duration-ms="37577" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- Script1 -->
+        <test-method is-config="true" signature="TearDown()[pri:0, instance:Script1@5824a83d]" started-at="2021-02-24T01:52:18Z" name="TearDown" finished-at="2021-02-24T01:52:21Z" duration-ms="2887" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- TearDown -->
       </class> <!-- Script1 -->
     </test> <!-- Default test -->
   </suite> <!-- Default suite -->
