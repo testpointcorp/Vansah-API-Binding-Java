@@ -45,7 +45,7 @@ public class Vansah {
 	private static final String REMOVE_DATA_SET = VANSAH_URL + "/api/" + API_VERSION + "/test_case/remove_dataset/";
 	private static final String SESSION_VARIABLE = VANSAH_URL + "/api/" + API_VERSION + "/test_case/session_variable/";
 	private static final String ADD_SESSION_VARIABLE = VANSAH_URL + "/api/" + API_VERSION + "/test_case/add_session_variable/";
-	private static final String EMAIL_REPORTING_LOGS = VANSAH_URL + "/api/" + API_VERSION + "auto/reporting/logs/";
+	private static final String EMAIL_REPORTING_LOGS = VANSAH_URL + "/api/" + API_VERSION + "/auto/reporting/logs/";
 	private static final String TEST_SCRIPT = VANSAH_URL + "/api/" + API_VERSION + "/test_case/test_script";
 	
 	//pending
@@ -115,9 +115,9 @@ public class Vansah {
 	}
 	
 	
-	public void sendReport(int cycle_key, String release_key, String environment_key,String build_key,String email) {
+	public void sendReport(String cycle_key, String release_key, String environment_key,String build_key,String email) {
 		try {
-			System.out.println("Sending Report for CYCLYE = " + cycle_key+" ,RELEASE = " + release_key + " ,ENVIRONMENT = " + environment_key + " ,BUILD = "+build_key+ " ,EMAIL = "+email);
+			System.out.println("Sending Report for CYCLE = " + cycle_key+", RELEASE = " + release_key + ", ENVIRONMENT = " + environment_key + ", BUILD = "+build_key+ ", EMAIL = "+email);
 			this.USER_TOKEN = this.configReader.getUserToken();
 			this.WORKSPACE_TOKEN = this.configReader.getVansahToken();
 			this.PROJECT_IDENTIFIER = this.configReader.getProjectIdentifier();
@@ -138,6 +138,7 @@ public class Vansah {
 				Unirest.setHttpClient(clientBuilder.build());
 			}
 			HttpResponse<JsonNode> get;
+			System.out.println(EMAIL_REPORTING_LOGS);
 			get = Unirest.get(EMAIL_REPORTING_LOGS).header("workspace-token",WORKSPACE_TOKEN).header("user-token",USER_TOKEN).queryString("cycle_key", cycle_key)
 					.queryString("environment_key", environment_key).queryString("report_by", "cases").queryString("export_type", "xlsx").queryString("build_key", build_key)
 					.queryString("release_key", release_key).queryString("email", email).queryString("project_identifier", PROJECT_IDENTIFIER).asJson();
@@ -287,7 +288,7 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 	}
 
 	
-	public void addSessionVariable(String case_key, int cycle_key, String environment_key, String fieldName, String fieldValue) {
+	public void addSessionVariable(String case_key, String cycle_key, String environment_key, String fieldName, String fieldValue) {
 		if ((fieldName.length() > 0) && (fieldValue.length() > 0)) {
 			try {
 				this.USER_TOKEN = this.configReader.getUserToken();
@@ -313,21 +314,12 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 				HttpResponse<JsonNode> post;
 				post = Unirest.post(ADD_SESSION_VARIABLE).header("workspace-token",WORKSPACE_TOKEN).header("user-token",USER_TOKEN).field("case_key", case_key)
 						.field("environment_key", environment_key).field("cycle_key", cycle_key).field("field_name", fieldName).field("field_value", fieldValue).field("project_identifier", PROJECT_IDENTIFIER).asJson();
-				if (post.getBody().toString().equals("[]")) {
-					System.out.println("Unexpected Response From Server: " + post.getBody().toString());
-				} else {
-					String HTTPS_RESPONSE_TAG = post.getBody().getObject().keys().next();
-					if (HTTPS_RESPONSE_TAG.toLowerCase().equals("success")) {
-						HTTPS_RESULT = post.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-						System.out.println("Response From Server: " + HTTPS_RESULT);
-					} else if (HTTPS_RESPONSE_TAG.toLowerCase().equals("error")) {
-						String HTTPS_RESULT = post.getBody().getObject().get(HTTPS_RESPONSE_TAG).toString();
-						System.out.println("Unexpected Response From Server: " + HTTPS_RESULT);
-					} else {
-						System.out.println("Unexpected Response from Vansah: "
-								+ post.getBody().getObject().get(HTTPS_RESPONSE_TAG));
-					}
-				}
+					JSONObject jsonobjInit = new JSONObject(post.getBody().toString());
+					boolean success = jsonobjInit.getBoolean("success");
+					String vansah_message = jsonobjInit.getString("message");
+					System.out.println("(ADDING SESSION VARIABLES) Return: " + success);
+					System.out.println("(ADDING SESSION VARIABLES) Message: " + vansah_message);
+					
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}

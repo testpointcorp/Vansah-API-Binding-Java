@@ -7,7 +7,7 @@ public class Constants {
   public static final String Catalogue_Contractor_File = "sample.txt";
 
   public static final String BROWSER = "chrome";
-  public static final String BUILD = System.getProperty("Build");
+  public static final String BUILD = "1";
   //public static final String BUILD = "99";
   public static final String RELEASE = "BINDER";
   public static final String ENVIRONMENT = "TEST";

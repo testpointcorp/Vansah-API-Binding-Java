@@ -82,21 +82,17 @@ public class Script1 {
 			
 			Map<String, List<String>> testData = new HashMap<String, List<String>>();
 			
-			
 			testData = vansah.getTestData();
-			testFields = vansah.getTestFields();
-			String jobNumber = testFields.get("jobNumber" + i);
-
 			this.testStep=testStep;
 			this.testStepID=testStepID;
 			switch (testStepID) {
 			
 			//Step 1 - ****** USE STEP ORDER INSTEAD OF TESTSTEPID
 			case 1:
+
 				System.out.println("TEST STEP 1");
 				vansah.addTestLog(cycle, testCase, release, build, environment);
 				this.driver.get(testData.get("URL").get(i));
-				
 				key.findElementClick(driver, By.xpath("//a[@class='find_more']"));
 				System.out.println("FIELD 1" + testData.get("Field1").get(i));
 				System.out.println("FIELD 2" + testData.get("Field1").get(i));
@@ -106,12 +102,18 @@ public class Script1 {
 			
 			
 			case 2:
+				vansah.addSessionVariable(testCase, Constants.CYCLE, Constants.ENVIRONMENT, "field1", "testpoint");
+				testFields = vansah.getTestFields();
+				String field1 = testFields.get("field1");
+				System.out.println("FIELD 1: " + field1);
 				System.out.println("TEST STEP 2");
 				vansah.quickTestUpdate(1, "Failed", testStepID, null, true, driver);
 				
 				driver.close();
 				driver.quit();
 				driver = null;
+				
+				vansah.sendReport(Constants.CYCLE, release, environment,build,"fernando.miranda@testpoint.com.au");
 				
 			break;
 			
