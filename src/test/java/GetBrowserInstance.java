@@ -56,7 +56,7 @@ public class GetBrowserInstance {
     System.setProperty("webdriver.chrome.driver", "Lib\\chromedriver.exe");
     HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
     ChromeOptions options = new ChromeOptions();
-    options.setBinary("C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe");
+    options.setBinary("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe");
     options.setExperimentalOption("prefs", chromePrefs);
     options.addArguments("disable-infobars");
     options.addArguments("disable-extensions");

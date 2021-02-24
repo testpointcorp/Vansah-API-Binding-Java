@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import com.gargoylesoftware.htmlunit.WebClient;
+
 import com.mashape.unirest.http.Unirest;
 import testpoint.Vansah;
 

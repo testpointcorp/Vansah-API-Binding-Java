@@ -17,8 +17,8 @@ import org.slf4j.MDC;
 
 public class VansahLogHandler {
 
-	public void writeErrorToV_errorFile(String CASE_KEY, int STEP_ORDER, int RESULT_KEY,String COMMENT, String RELEASE_KEY, 
-		String BUILD_KEY, String ENVIRONMENT_KEY, String AGENT, int DATA_ROW_NUM, String DATA_COLUMN_NAME) {
+	public void writeErrorToV_errorFile(String CASE_KEY, int STEP_ORDER, int RESULT_KEY,String COMMENT, String RELEASE_KEY,String BUILD_KEY, String ENVIRONMENT_KEY, 
+		String AGENT_KEY, int DATA_ROW_NUM, String DATA_COLUMN_NAME) {
 		final Logger logger = LoggerFactory.getLogger("error");
 		MDC.put("TestCase", CASE_KEY);
 		MDC.put("StepID", String.valueOf(STEP_ORDER));
@@ -26,7 +26,7 @@ public class VansahLogHandler {
 		MDC.put("Release", RELEASE_KEY);
 		MDC.put("Build", BUILD_KEY);
 		MDC.put("Environment", ENVIRONMENT_KEY);
-		MDC.put("Agent", AGENT);
+		MDC.put("Agent", AGENT_KEY);
 		MDC.put("RowID", String.valueOf(DATA_ROW_NUM));
 		MDC.put("ColumnName", DATA_COLUMN_NAME);
 		logger.error(COMMENT);
@@ -36,8 +36,8 @@ public class VansahLogHandler {
 	 * Function to writer error to V_error.txt
 	 */
 
-	public void writeToV_LogFile(String VANSAH_CASE, int VANSAH_STEPID, int RESULT_KEY, String vANSAH_COMMENT,
-			String vANSAH_RELEASE, String vANSAH_BUILD, String vANSAH_ENVIRONMENT, String vANSAH_AGENT, int DATA_ROW_NUM, String DATA_COLUMN_NAME) {
+	public void writeToV_LogFile(String VANSAH_CASE, int VANSAH_STEPID, int RESULT_KEY, String vANSAH_COMMENT,String vANSAH_RELEASE, String vANSAH_BUILD, 
+		String vANSAH_ENVIRONMENT, String AGENT_KEY, int DATA_ROW_NUM, String DATA_COLUMN_NAME) {
 		final Logger logger = LoggerFactory.getLogger("log");
 		MDC.put("TestCase", VANSAH_CASE);
 		MDC.put("StepID", String.valueOf(VANSAH_STEPID));
@@ -45,7 +45,7 @@ public class VansahLogHandler {
 		MDC.put("Release", vANSAH_RELEASE);
 		MDC.put("Build", vANSAH_BUILD);
 		MDC.put("Environment", vANSAH_ENVIRONMENT);
-		MDC.put("Agent", vANSAH_AGENT);
+		MDC.put("Agent", AGENT_KEY);
 		MDC.put("RowID", String.valueOf(DATA_ROW_NUM));
 		MDC.put("ColumnName", DATA_COLUMN_NAME);
 		logger.debug(vANSAH_COMMENT);
