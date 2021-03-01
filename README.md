@@ -8,7 +8,20 @@ You can learn more about Vansah's API here:
 
 https://help.vansahapp.net/kb/vansah-api-reference-guide/
 
+You may refer to the APIs here: http://apidoc.vansah.com/
+------
 
+Call endpoints as here:
+			
+add_test_Log
+quick_test_update
+dataset
+session_variable
+add_session_variable
+test_script
+email_reporting_logs
+
+--------
 For questions, suggestions, or other requests, please reach out to us through our support channels:
 
 http://www.vansah.com/
