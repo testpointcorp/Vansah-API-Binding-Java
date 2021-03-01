@@ -11,9 +11,12 @@ public class TestMaster
 	{
 
 		TestMaster1 test1 = new TestMaster1();
+		Script1 script1 = new Script1();
 		
-		
-		TestMaster1.main(args);
+	
+
+
+		//TestMaster1.main(args);
 		
 		
 	}
