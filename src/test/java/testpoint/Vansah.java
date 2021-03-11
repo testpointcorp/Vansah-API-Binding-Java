@@ -47,14 +47,10 @@ public class Vansah {
 	private static final String ADD_SESSION_VARIABLE = VANSAH_URL + "/api/" + API_VERSION + "/test_case/add_session_variable/";
 	private static final String EMAIL_REPORTING_LOGS = VANSAH_URL + "/api/" + API_VERSION + "/auto/reporting/logs/";
 	private static final String TEST_SCRIPT = VANSAH_URL + "/api/" + API_VERSION + "/test_case/test_script";
-	
-	//pending
-	//private static final String EMAIL_REPORTING_LOGS = VANSAH_URL + "/api/" + API_VERSION + "/test_case/steps/";
-	
-	
-	
 	//******************************************************************************************************
 
+	
+	//*********************************** VARIABLES ****************************************************************************
 	private String CYCLE_KEY;
 	private String CASE_KEY;
 	private String RELEASE_KEY;
@@ -63,15 +59,12 @@ public class Vansah {
 	private int RESULT_KEY;
 	private boolean SEND_SCREENSHOT;
 	private String COMMENT;
-	private String AGENT_KEY = "";
 	private String WORKSPACE_TOKEN;
 	private Integer STEP_ORDER;
 	private Integer STEP_IDENTIFIER;
 	private String USER_TOKEN;
 	private String PROJECT_IDENTIFIER;
 	private String LOG_IDENTIFIER;
-	private String TESTLOG_IDENTIFIER;
-	private int RESULT;
 	private int VANSAH_DATA_ROW_NUM;
 	private String VANSAH_DATA_COLUMN_NAME;
 	private String FILE;
@@ -82,8 +75,6 @@ public class Vansah {
 	private HashMap<Integer, String> testTransactions = new HashMap<Integer, String>();
 	private HashMap<Integer, String> testResults = new HashMap<Integer, String>();
 	private HashMap<String, List<String>> testData = new HashMap<String, List<String>>();
-	private HashMap<Integer, String> testCycles = new HashMap<Integer, String>();
-	private HashMap<String, String> testRequirements = new HashMap<String, String>();
 	private HashMap<String, String> testFields = new HashMap<String, String>();
 	private HashMap<Integer, String> stepOrder = new HashMap<Integer, String>();
 	private List<Integer> listOfSteps;
@@ -91,30 +82,19 @@ public class Vansah {
 	private int testRows;
 	private int testDataRows;
 	private ReadConfigVansah configReader;
-	private Host computer;
 	private VansahLogHandler vlh;
 	private HttpClientBuilder clientBuilder;
 	private CredentialsProvider credsProvider;
-	private String version = "V2.3.5";
-
+	//************************************************************************************************************************************************
+	
+	
 	public Vansah() {
 
 		vlh = new VansahLogHandler();
 		configReader = new ReadConfigVansah();
-		computer = new Host();
-		
-		if (this.AGENT_KEY.isEmpty()) {
-			if (this.configReader.getsAgentName().equals("")) {
-				String c_name = this.computer.getComputerName();
-				this.AGENT_KEY = c_name;
-			} else {
-				String c_name = this.configReader.getsAgentName();
-				this.AGENT_KEY = c_name;
-			}
-		}
 	}
 	
-	
+	//********************* SEND VANSAH REPORT *********************************************************************************************************
 	public void sendReport(String cycle_key, String release_key, String environment_key,String build_key,String email) {
 		try {
 			System.out.println("Sending Report for CYCLE = " + cycle_key+", RELEASE = " + release_key + ", ENVIRONMENT = " + environment_key + ", BUILD = "+build_key+ ", EMAIL = "+email);
@@ -162,9 +142,12 @@ public class Vansah {
 			ex.printStackTrace();
 		}
 	}
+	//********************************************************************************************************************
 	
 	
-public void addTestLog(String cycle, String testcase, String release, String build, String environment) throws Exception {
+	
+	//************************** VANSAH ADD TEST LOG (LOG IDENTIFIER CREATION *************************************************
+	public void addTestLog(String cycle, String testcase, String release, String build, String environment) throws Exception {
 		
 		this.USER_TOKEN = this.configReader.getUserToken();
 		this.WORKSPACE_TOKEN = this.configReader.getVansahToken();
@@ -178,7 +161,12 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 
 		connectToVansahRest("addTestLog", null);
 	}
+	//*****************************************************************************************************************
 	
+	
+	
+	
+	//****************************************** VANSAH QUICK TEST UPDATE *********************************************
 	public void quickTestUpdate(int result, String comment, Integer testStepRow, Integer testStepIdentifier, boolean sendScreenShot, WebDriver driver) throws Exception {
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.USER_TOKEN = this.configReader.getUserToken();
@@ -191,16 +179,17 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 
 		connectToVansahRest("quickTestUpdate", driver);
 	}
+	//*******************************************************************************************************************
 	
 	
 	
-	
+	//******************** MAIN METHOD THAT CONNECTS TO VANSAH (CENTRAL PLACE FOR QUICK TEST AND QUICK TEST UPDATE) ******************************************
 	private void connectToVansahRest(String type, WebDriver driver) {
 		
 		HttpResponse<JsonNode> jsonResponse = null;
 		
 		if (configReader.getsUpdateVansah().equals("0")) {
-			vlh.writeToV_LogFile(CASE_KEY, STEP_ORDER, RESULT_KEY, COMMENT, RELEASE_KEY, BUILD_KEY, ENVIRONMENT_KEY, AGENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);
+			vlh.writeToV_LogFile(CASE_KEY, STEP_ORDER, RESULT_KEY, COMMENT, RELEASE_KEY, BUILD_KEY, ENVIRONMENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);
 			HTTPS_RESULT = "#STATUS_OFF";
 			System.out.println(HTTPS_RESULT);
 		} else {
@@ -248,12 +237,10 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 					.field("step_identifier", STEP_IDENTIFIER).field("step_order", STEP_ORDER).asJson();
 				}
 				
-				
-				
 				JSONObject fullBody = jsonResponse.getBody().getObject();
 				if (jsonResponse.getBody().toString().equals("[]")) {
 					System.out.println("Unexpected Response From Vansah with empty response: " + jsonResponse.getBody().toString());
-					vlh.writeErrorToV_errorFile(CASE_KEY, STEP_ORDER, RESULT_KEY, COMMENT + ", Response from Vansah: " + fullBody, RELEASE_KEY, BUILD_KEY, ENVIRONMENT_KEY, AGENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);
+					vlh.writeErrorToV_errorFile(CASE_KEY, STEP_ORDER, RESULT_KEY, COMMENT + ", Response from Vansah: " + fullBody, RELEASE_KEY, BUILD_KEY, ENVIRONMENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);
 				} else {
 					JSONObject jsonobjInit = new JSONObject(jsonResponse.getBody().toString());
 					boolean success = jsonobjInit.getBoolean("success");
@@ -269,25 +256,24 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 					    	LOG_IDENTIFIER = fullBody.getJSONObject("data").get("log_identifier").toString();
 					    	System.out.println("Log Identifier: " + LOG_IDENTIFIER);
 				    	}
-				    	
-				    	
 						
 					}else{
 						MESSAGE_FROM_VANSAH = jsonResponse.getBody().getObject().get("message").toString();
 						System.out.println("Response From Vansah: " + vansah_message);
-						vlh.writeErrorToV_errorFile(CASE_KEY, STEP_ORDER, RESULT_KEY,COMMENT + ", Response from Vansah: " + vansah_message, RELEASE_KEY,BUILD_KEY, ENVIRONMENT_KEY, AGENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);					
+						vlh.writeErrorToV_errorFile(CASE_KEY, STEP_ORDER, RESULT_KEY,COMMENT + ", Response from Vansah: " + vansah_message, RELEASE_KEY,BUILD_KEY, ENVIRONMENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);					
 					}
 				}
-
-				
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				vlh.writeErrorToV_errorFile(CASE_KEY, STEP_ORDER, RESULT_KEY, ex.getMessage(), RELEASE_KEY,BUILD_KEY, ENVIRONMENT_KEY, AGENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);
+				vlh.writeErrorToV_errorFile(CASE_KEY, STEP_ORDER, RESULT_KEY, ex.getMessage(), RELEASE_KEY,BUILD_KEY, ENVIRONMENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);
 			}
 		}
 	}
-
+	//*******************************************************************************************************************
 	
+	
+	
+	//*********************************** ADD SESSION VARIABLE ***********************************************************
 	public void addSessionVariable(String case_key, String cycle_key, String environment_key, String fieldName, String fieldValue) {
 		if ((fieldName.length() > 0) && (fieldValue.length() > 0)) {
 			try {
@@ -327,8 +313,12 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 			System.out.println("Either Field or Value contains no value");
 		}
 	}
+	//****************************************************************************************************************
 	
 	
+	
+	
+	//************************ READ SESSION VARIABLE *****************************************************************
 	public void sessionVariable(String case_key, String cycle_key, String environment_key) {
 		try {
 			this.USER_TOKEN = this.configReader.getUserToken();
@@ -386,7 +376,11 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 			ex.printStackTrace();
 		}
 	}
+	//**************************************************************************************************************************
 
+	
+	
+	//******************************** READ DATA SET ****************************************************************************
 	public void dataSet(String case_key, String cycle_key, String environment_key) {
 		try {
 			this.USER_TOKEN = this.configReader.getUserToken();
@@ -450,8 +444,11 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 			
 		}
 	}
+	//********************************************************************************************************************************
 	
 	
+	
+	// ************************************* READ TEST SCRIPT **************************************************************************
 	public void testScript(String case_key) {
 		try {
 			this.USER_TOKEN = this.configReader.getUserToken();
@@ -513,6 +510,8 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 			ex.printStackTrace();
 		}
 	}
+	//***********************************************************************************************************************
+	
 	
 	public HashMap<String,String> getTestFields() {
 		return testFields;
@@ -522,17 +521,6 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 		return testData;
 	}
 
-	public HashMap<Integer, String> getTestCycles() {
-		return testCycles;
-	}
-	
-	public HashMap<Integer, String> getStepOrder() {
-		return stepOrder;
-	}
-
-	public HashMap<String, String> getTestRequirements() {
-		return testRequirements;
-	}
 
 	public int getNumberOfTestRows() {
 		return testRows;
@@ -551,55 +539,13 @@ public void addTestLog(String cycle, String testcase, String release, String bui
 		return testSteps;
 	}
 
-	
-	
-	public HashMap<Integer, String> getTestTransactions() {
-		return testTransactions;
-	}
 
-	public HashMap<Integer, String> getTestResults() {
-		return testResults;
-	}
-
-	public String getVersion() {
-		return version;
-	}
-
-	public String getCurrentDate() {
-		
-		DateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-		Date date = new Date();
-		String cDate = sdf.format(date);
-		return cDate;
-	}
-
-	private String getDateAndTime() {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-		sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
-		String dateStr = sdf.format(new Date());
-		return dateStr;
-	}
-	
 	private String formatString(JSONObject record, String key) {
 		if (record.isNull(key))
 			return "";
 		return record.getString(key);
 	}
 	
-	
-
-	public String getHttpsStatus() {
-		return HTTPS_RESPONSE_TAG;
-
-	}
-
-	public String getUpdateStatus() {
-		return HTTPS_RESULT;
-	}
-
-	public void setProperty(String propertyName, String value) {
-		configReader.initialiseAgent(propertyName, value);
-	}
 
 	private static String encodeFileToBase64Binary(File file) {
 		String encodedfile = null;
