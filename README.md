@@ -12,7 +12,6 @@ Vansah's API is HTTP-based and can used from any framework, programming language
 Vansah's API is HTTP-based and you can use simple HTTP requests to interact with it. All written requests must use the HTTP POST method, and all read requests must use the HTTP GET method. Data is transferred in the JSON format and UTF-8 encoding.
 
 
-
 ## Authentication
 Vansah expects the authentication credentials to be provided via standard HTTP basic authentication for the API. There are two ways to authenticate API requests with Vansah.
 
@@ -21,20 +20,19 @@ Vansah expects the authentication credentials to be provided via standard HTTP b
 **Workspace and User Token API Key:** Vansah also supports API keys. API keys can be generated in Vansah under Settings. With a username API token key, you would also be required to send your Vansah workspace token provided by your Vansah administrator. Multiple API keys can be generated and revoked at any time under your settings.
 
 
-https://help.vansahapp.net/kb/vansah-api-reference-guide/
 
-You may refer to the APIs here: http://apidoc.vansah.com/
-------
-
-Call endpoints as here:
+## List of the main Endpoints for Automation Testing:
 			
-add_test_Log
-quick_test_update
+add_test_Log: API that adds a new test log linked to the project_identifier and the testcase_key. It checks if the case_key doesn't exists, it will return invalid case_key error with 400 status code and if not it will return a success message showing a test log have been submitted successfully with 200 status code
+quick_test_update:
 dataset
 session_variable
 add_session_variable
 test_script
 email_reporting_logs
+You may refer to the APIs here: http://apidoc.vansah.com/
+https://help.vansahapp.net/kb/vansah-api-reference-guide/
+------
 
 --------
 For questions, suggestions, or other requests, please reach out to us through our support channels:
