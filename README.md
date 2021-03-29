@@ -25,7 +25,9 @@ Vansah expects the authentication credentials to be provided via standard HTTP b
 ## List of the main Endpoints for Automation Testing:
 
 
-- add_test_Log: API that adds a new test log linked to the project_identifier and the testcase_key. It checks if the case_key doesn't exists, it will return invalid case_key error with 400 status code and if not it will return a success message showing a test log have been submitted successfully with 200 status code
+- **add_test_Log**: this API adds a new test log linked to the project_identifier and the testcase_key. It will return invalid case_key error with status code 400 if the case_key doesn't exist. If the case_key exists, it will return a success message showing the test log have been submitted successfully with 200 status code. This is a mandatory call that needs to happen always before calling quick_test or quic_test_update. 
+
+- **quick_test**: this API adds a new test log sequence linked to the test log created by add_test_log endpoint. By calling this endpoint, you will create a new log entry in Vansah with the respective overal result. (0 = N/A, 1= FAIL, 2= PASS, 3 = Not Tested). It will also return invalid case_key error with status code 400 if the case_key doesn't exist. If the case_key exists, it will return a success message showing the test log have been submitted successfully with 200 status code.
 
 - quick_test_update:
 - dataset
