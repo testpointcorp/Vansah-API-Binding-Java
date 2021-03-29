@@ -1,8 +1,8 @@
 # API-Binding-Java
 
-Vansah API 
+
 ------------
-# INTRODUCTION
+## Introduction
 
 Vansah's API can be used to integrate Vansah with various tools, automation and development frameworks including third-party applications. The main usage for the API is to allow our customers to integrate their automated tests and submit test results to Vansah. For a full detail of what other tasks you can perform using the API the list can be obtained from this documentation.
 
