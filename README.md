@@ -6,6 +6,7 @@
 
 Vansah's API can be used to integrate Vansah with various tools, automation and development frameworks including third-party applications. The main usage for the API is to allow our customers to integrate their automated tests and submit test results to Vansah. For a full detail of what other tasks you can perform using the API the list can be obtained from this documentation.
 
+
 ## Overview
 Vansah's API is HTTP-based and can used from any framework, programming language and tool. Submitting data to Vansah via the API is done via simple POST requests. Requesting data is done through GET requests. All requests and responses use the JSON format and UTF-8 encoding.
 
@@ -22,7 +23,8 @@ Vansah expects the authentication credentials to be provided via standard HTTP b
 
 
 ## List of the main Endpoints for Automation Testing:
-			
+
+
 add_test_Log: API that adds a new test log linked to the project_identifier and the testcase_key. It checks if the case_key doesn't exists, it will return invalid case_key error with 400 status code and if not it will return a success message showing a test log have been submitted successfully with 200 status code
 quick_test_update:
 dataset
@@ -30,6 +32,9 @@ session_variable
 add_session_variable
 test_script
 email_reporting_logs
+
+
+
 You may refer to the APIs here: http://apidoc.vansah.com/
 https://help.vansahapp.net/kb/vansah-api-reference-guide/
 ------
