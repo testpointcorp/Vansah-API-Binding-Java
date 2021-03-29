@@ -11,8 +11,17 @@ Vansah's API is HTTP-based and can used from any framework, programming language
 
 Vansah's API is HTTP-based and you can use simple HTTP requests to interact with it. All written requests must use the HTTP POST method, and all read requests must use the HTTP GET method. Data is transferred in the JSON format and UTF-8 encoding.
 
-This repository contains several example bindings on how to access Vansah's API (v1).
-You can learn more about Vansah's API here:
+
+
+**Authentication**
+Vansah expects the authentication credentials to be provided via standard HTTP basic authentication for the API. There are two ways to authenticate API requests with Vansah.
+
+Username and Password You can either use your standard Vansah email (which is your username) and your Vansah password for the API authentication. This will generate a user-token to be used as a header token. This needs to be sent via HTTP basic authentication.
+
+Workspace and User Token API Key
+
+Vansah also supports API keys. API keys can be generated in Vansah under Settings. With a username API token key, you would also be required to send your Vansah workspace token provided by your Vansah administrator. Multiple API keys can be generated and revoked at any time under your settings.
+
 
 https://help.vansahapp.net/kb/vansah-api-reference-guide/
 
