@@ -52,6 +52,7 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 ## Adding Vansah Java API-Binding to a Selenium project
 --------
 
+1) - Download Vansah API-Binding here:
 
 For questions, suggestions, or other requests, please reach out to us through our support channels:
 
