@@ -1,6 +1,4 @@
 # Vansah Java API-Binding
-
-
 ------------
 ## Introduction
 
