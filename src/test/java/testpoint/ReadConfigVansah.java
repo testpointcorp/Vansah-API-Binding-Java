@@ -12,14 +12,11 @@ public class ReadConfigVansah {
 
 	private String sMaxLogResponse;
 	private String sVansahConnectionType;
-	private String sVSAMToken;
-	private String sVSAMProjectCode;
 	private String sRegScreenShotsDirectory;
 	private String sVansahInstance;
 	private String sUpdateVansah;
 	private String sDevMode;
 	private String sAgentName;
-	private String sVQToken;
 	private String sHostAddr;
 	private String sPortNo;
 	private String sCurrentSysDate;
@@ -130,7 +127,6 @@ public class ReadConfigVansah {
 	public String getsUpdateVansah() {
 		return this.sUpdateVansah;
 	}
-	
 
 	public String getsRegScreenShotsDirectory() {
 		return this.sRegScreenShotsDirectory;
@@ -158,7 +154,5 @@ public class ReadConfigVansah {
 
 	public String getCurrentSysDate() {
 		return this.sCurrentSysDate;
-	}
-
-	
+	}	
 }
