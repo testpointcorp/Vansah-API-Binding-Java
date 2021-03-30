@@ -50,10 +50,10 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 ![image](https://user-images.githubusercontent.com/30623282/112942783-61571000-917c-11eb-9f01-31048e211e0d.png)
 
 
-
-
-
+## Adding Vansah Java API to a Selenium project
 --------
+
+
 For questions, suggestions, or other requests, please reach out to us through our support channels:
 
 http://www.vansah.com/
