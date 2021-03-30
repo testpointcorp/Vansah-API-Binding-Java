@@ -45,10 +45,9 @@ Vansah expects the authentication credentials to be provided via standard HTTP b
 - **email_reporting_logs**: GET API that returns grouped cases summary and detailed report linked to the project identifier, cycle_key and release_key. It also sends email if user email is added as parameter. 
 
 
+You may refer to the APIs documentation here: http://apidoc.vansah.com/
 
-You may refer to the APIs here: http://apidoc.vansah.com/
-https://help.vansahapp.net/kb/vansah-api-reference-guide/
-------
+
 
 --------
 For questions, suggestions, or other requests, please reach out to us through our support channels:
