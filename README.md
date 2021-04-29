@@ -90,7 +90,7 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 
     2.7) - Include these following dependencies in your POM.xml:
 
-        <dependency>
+        	<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>
 			<artifactId>selenium-remote-driver</artifactId>
 			<version>3.8.1</version>
@@ -114,7 +114,11 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 			<version>1.7.25</version>
 		</dependency>
     ---------
+    
+     2.8) - Make sure you save your project and Build it.
 
+        
+    ---------
 
 
 For questions, suggestions, or other requests, please reach out to us through our support channels:
