@@ -125,9 +125,15 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
     
     
     
-3 - Create a new folder and name it as "vansah" like below:
+3 - Create a new folder and name it as "Vansah" like below:
 
 ![image](https://user-images.githubusercontent.com/30623282/116536766-ae1f3980-a928-11eb-847c-d9cff0b4e04f.png)
+---------
+
+
+ 3.1 - Create a file under Vansah folder and name it as "config.vns". See below:
+
+![image](https://user-images.githubusercontent.com/30623282/116537927-37833b80-a92a-11eb-9ce8-0a5bdf69be39.png)
 ---------
     
     
