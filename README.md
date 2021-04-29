@@ -88,7 +88,7 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
     ![image](https://user-images.githubusercontent.com/30623282/116534711-37813c80-a926-11eb-9fd9-629806b5f15a.png)
     ---------
     
-
+    
     2.7) - Include these following dependencies in your POM.xml:
 
 		<dependency>
@@ -117,10 +117,10 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 		
     ---------
     
+    2.8) - Make sure you save your project and Build it.
+    ---------
     
-     2.8) - Make sure you save your project and Build it.
-
-	
+    2.9) - Make sure you save your project and Build it.
     ---------
 
 
