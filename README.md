@@ -49,14 +49,14 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 
 
 ------------
-## Adding Vansah Java API-Binding to a Selenium project
+## Adding Vansah Java API-Binding to a Selenium project (Eclipse Example)
 --------
 
 1) - Download Vansah API-Binding here: https://github.com/testpointcorp/Vansah-API-Binding-Java.git
 
 2) - Import Vansah API-Binding into your Selenium project:
 
-![image](https://user-images.githubusercontent.com/30623282/116531922-05221000-a923-11eb-9240-094f12b0f005.png)
+![image](https://user-images.githubusercontent.com/30623282/116532223-5cc07b80-a923-11eb-81d7-b6a846ab3b0e.png)
 
 ![image](https://user-images.githubusercontent.com/30623282/116532054-300c6400-a923-11eb-8b78-31a05b6c3fe2.png)
 
