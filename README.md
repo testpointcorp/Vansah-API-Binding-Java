@@ -88,7 +88,32 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
     ![image](https://user-images.githubusercontent.com/30623282/116534711-37813c80-a926-11eb-9fd9-629806b5f15a.png)
     ---------
 
+    2.7) - Include these following dependencies in your POM.xml:
 
+        <dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-remote-driver</artifactId>
+			<version>3.8.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.mashape.unirest</groupId>
+			<artifactId>unirest-java</artifactId>
+			<version>1.4.9</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.25</version>
+		</dependency>
+    ---------
 
 
 
