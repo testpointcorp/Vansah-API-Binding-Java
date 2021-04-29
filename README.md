@@ -139,18 +139,18 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 
 3.2 - Copy the content below and paste it in the config.vns file you just created:
 
-sMaxLogResponse=120
-sHostAddr=www.host.com
-sVansahInstance=vansahapp.net
-sVansahConnectionType=1
-sRegScreenShotsDirectory=
-sUpdateVansah=1
-sPortNo=0
-sAgentName=agent1
-sDevMode=1
-sProjectIdentifier=cdd57c3a-6fb6-11e9-9114-eae3584bb88a
-sUserToken=237091bd-38fd-11eb-952b-eae3584bb88a
-sVansahToken=0e96f753-021f-11e9-9114-eae3584bb88a
+	sMaxLogResponse=120
+	sHostAddr=www.host.com
+	sVansahInstance=vansahapp.net
+	sVansahConnectionType=1
+	sRegScreenShotsDirectory=
+	sUpdateVansah=1
+	sPortNo=0
+	sAgentName=agent1
+	sDevMode=1
+	sProjectIdentifier=cdd57c3a-6fb6-11e9-9114-eae3584bb88a
+	sUserToken=237091bd-38fd-11eb-952b-eae3584bb88a
+	sVansahToken=0e96f753-021f-11e9-9114-eae3584bb88a
 
 ---------
     
