@@ -55,6 +55,7 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 1) - Download Vansah API-Binding here: https://github.com/testpointcorp/Vansah-API-Binding-Java.git
 
 2) - Import Vansah API-Binding into your Selenium project:
+
   2.1) - Choose "File System" option in the Import dialog:
 
 ![image](https://user-images.githubusercontent.com/30623282/116532223-5cc07b80-a923-11eb-81d7-b6a846ab3b0e.png)
