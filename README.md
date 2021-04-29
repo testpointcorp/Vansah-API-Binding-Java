@@ -67,9 +67,9 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
     ---------
 
 
-    2.2) - Make sure you select **tespoint** folder:
+    2.2) - Select testpoint folder and click "Finish". Make sure you check "create top-level folder" optn:
 
-    ![image](https://user-images.githubusercontent.com/30623282/116532428-942f2800-a923-11eb-85f9-18102cc17dea.png)
+    ![image](https://user-images.githubusercontent.com/30623282/116533942-4ca99b80-a925-11eb-9872-41c72d3dda56.png)
     ---------
 
 
