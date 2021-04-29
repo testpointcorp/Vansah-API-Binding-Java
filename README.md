@@ -117,8 +117,11 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 		
     ---------
     
+    
     2.8) - Make sure you save your project and Build it.
+    
     ---------
+    
     
     2.9) - Make sure you save your project and Build it.
     ---------
