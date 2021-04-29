@@ -73,23 +73,23 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
     ---------
 
 
-    2.4) - Right-Click on the testpoint folder and select option Move:
+    2.4 - Right-Click on the testpoint folder and select option Move:
 
    ![image](https://user-images.githubusercontent.com/30623282/116534278-ac07ab80-a925-11eb-88fa-4dcea5c0f9ed.png)
     ---------
     
-    2.5) - Select the project and navigate up to java folder as shown below and click OK:
+    2.5 - Select the project and navigate up to java folder as shown below and click OK:
 
    ![image](https://user-images.githubusercontent.com/30623282/116534482-ee30ed00-a925-11eb-8068-00053e15fcef.png)
     ---------
     
-    2.6) - API-Binder classes should appear under java packages as below:
+    2.6 - API-Binder classes should appear under java packages as below:
 
    ![image](https://user-images.githubusercontent.com/30623282/116534711-37813c80-a926-11eb-9fd9-629806b5f15a.png)
     ---------
     
     
-    2.7) - Include these following dependencies in your POM.xml:
+    2.7 - Include these following dependencies in your POM.xml:
 
 	<dependency>
 		<groupId>org.seleniumhq.selenium</groupId>
@@ -114,16 +114,15 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 		<artifactId>slf4j-api</artifactId>
 		<version>1.7.25</version>
 	</dependency>
-		
     ---------
     
     
-    2.8) - Make sure you save your project and Build it.
-    ---------
+2.8 - Make sure you save your project and Build it.
+	---------
     
     
     
-3) - Create a new folder and name it as "vansah" like so:
+3 - Create a new folder and name it as "vansah" like so:
 ![image](https://user-images.githubusercontent.com/30623282/116536766-ae1f3980-a928-11eb-847c-d9cff0b4e04f.png)
 	---------
     
