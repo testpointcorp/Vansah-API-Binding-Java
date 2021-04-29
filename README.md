@@ -61,14 +61,15 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
    ![image](https://user-images.githubusercontent.com/30623282/116532223-5cc07b80-a923-11eb-81d7-b6a846ab3b0e.png)
     ---------
 
-    2.2) - Make sure you select **tespoint** folder
+    2.2) - Make sure you select **tespoint** folder:
 
     ![image](https://user-images.githubusercontent.com/30623282/116532428-942f2800-a923-11eb-85f9-18102cc17dea.png)
     ---------
 
 
-
-
+    2.3) - You should see and import as shown below. Make sure you check "Create top-level folder" option:
+    ![image](https://user-images.githubusercontent.com/30623282/116533524-d016bd00-a924-11eb-8ad7-d9039f19feda.png)
+    ---------
 
 
 
