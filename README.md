@@ -83,7 +83,7 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
     ![image](https://user-images.githubusercontent.com/30623282/116534482-ee30ed00-a925-11eb-8068-00053e15fcef.png)
     ---------
     
-    2.6) - API-Binder classes should appear under java packages
+    2.6) - API-Binder classes should appear under java packages as below:
 
     ![image](https://user-images.githubusercontent.com/30623282/116534711-37813c80-a926-11eb-9fd9-629806b5f15a.png)
     ---------
