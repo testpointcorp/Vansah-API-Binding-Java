@@ -154,12 +154,34 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 
 ---------
     
-3.3 - Go to your Vansah Instance and get your Project Identifier here, and update your config.vns file 
+3.3 - How to get sProjectIdentifier parameter: Go to your Vansah Instance and get your Project Identifier here, and update your config.vns file 
 
 ![image](https://user-images.githubusercontent.com/30623282/116538567-09522b80-a92b-11eb-9c42-10aa7a4fd140.png)
 
 ---------
     
+3.4 - How to get sUserToken parameter: Go to your Vansah Instance and get your User Token here, and update your config.vns file 
+
+![image](https://user-images.githubusercontent.com/30623282/116538567-09522b80-a92b-11eb-9c42-10aa7a4fd140.png)
+
+![image](https://user-images.githubusercontent.com/30623282/116539371-128fc800-a92c-11eb-910f-b3e661409fdc.png)
+
+![image](https://user-images.githubusercontent.com/30623282/116539645-731f0500-a92c-11eb-9f5b-9876a000d9c2.png)
+
+**Select your Workspace, give it a label and click Create. You should see a new api token in the list**
+
+
+---------
+
+
+3.5 - How to get sVansahToken parameter: Go to your Vansah Instance and get your Vansah Token here, and update your config.vns file 
+
+![image](https://user-images.githubusercontent.com/30623282/116539227-e411ed00-a92b-11eb-9359-3469e0cf6a2f.png)
+
+---------
+
+
+
 
 
 For questions, suggestions, or other requests, please reach out to us through our support channels:
