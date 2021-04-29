@@ -57,7 +57,7 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 2) - Import Vansah API-Binding into your Selenium project:
 
 ![image](https://user-images.githubusercontent.com/30623282/116532223-5cc07b80-a923-11eb-81d7-b6a846ab3b0e.png)
-
+------------
 ![image](https://user-images.githubusercontent.com/30623282/116532428-942f2800-a923-11eb-85f9-18102cc17dea.png)
 
 Make sure you select **tespoint** folder
