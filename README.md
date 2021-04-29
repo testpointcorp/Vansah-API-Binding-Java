@@ -63,57 +63,57 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 
     2.2 - Make sure you select **tespoint** folder:
 
-    ![image](https://user-images.githubusercontent.com/30623282/116532428-942f2800-a923-11eb-85f9-18102cc17dea.png)
+   ![image](https://user-images.githubusercontent.com/30623282/116532428-942f2800-a923-11eb-85f9-18102cc17dea.png)
     ---------
 
 
     2.3 - Select testpoint folder and click "Finish". Make sure you check "create top-level folder" option:
 
-    ![image](https://user-images.githubusercontent.com/30623282/116533942-4ca99b80-a925-11eb-9872-41c72d3dda56.png)
+   ![image](https://user-images.githubusercontent.com/30623282/116533942-4ca99b80-a925-11eb-9872-41c72d3dda56.png)
     ---------
 
 
     2.4) - Right-Click on the testpoint folder and select option Move:
 
-    ![image](https://user-images.githubusercontent.com/30623282/116534278-ac07ab80-a925-11eb-88fa-4dcea5c0f9ed.png)
+   ![image](https://user-images.githubusercontent.com/30623282/116534278-ac07ab80-a925-11eb-88fa-4dcea5c0f9ed.png)
     ---------
     
     2.5) - Select the project and navigate up to java folder as shown below and click OK:
 
-    ![image](https://user-images.githubusercontent.com/30623282/116534482-ee30ed00-a925-11eb-8068-00053e15fcef.png)
+   ![image](https://user-images.githubusercontent.com/30623282/116534482-ee30ed00-a925-11eb-8068-00053e15fcef.png)
     ---------
     
     2.6) - API-Binder classes should appear under java packages as below:
 
-    ![image](https://user-images.githubusercontent.com/30623282/116534711-37813c80-a926-11eb-9fd9-629806b5f15a.png)
+   ![image](https://user-images.githubusercontent.com/30623282/116534711-37813c80-a926-11eb-9fd9-629806b5f15a.png)
     ---------
     
     
     2.7) - Include these following dependencies in your POM.xml:
 
-		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-remote-driver</artifactId>
-			<version>3.8.1</version>
-		</dependency>
+	<dependency>
+		<groupId>org.seleniumhq.selenium</groupId>
+		<artifactId>selenium-remote-driver</artifactId>
+		<version>3.8.1</version>
+	</dependency>
 
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.0</version>
-		</dependency>
+	<dependency>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-lang3</artifactId>
+		<version>3.0</version>
+	</dependency>
 
-		<dependency>
-			<groupId>com.mashape.unirest</groupId>
-			<artifactId>unirest-java</artifactId>
-			<version>1.4.9</version>
-		</dependency>
+	<dependency>
+		<groupId>com.mashape.unirest</groupId>
+		<artifactId>unirest-java</artifactId>
+		<version>1.4.9</version>
+	</dependency>
 
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
-		</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-api</artifactId>
+		<version>1.7.25</version>
+	</dependency>
 		
     ---------
     
@@ -123,8 +123,8 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
     
     
     
-    3) - Create a new folder and name it as "vansah" like so:
-	![image](https://user-images.githubusercontent.com/30623282/116536766-ae1f3980-a928-11eb-847c-d9cff0b4e04f.png)
+3) - Create a new folder and name it as "vansah" like so:
+![image](https://user-images.githubusercontent.com/30623282/116536766-ae1f3980-a928-11eb-847c-d9cff0b4e04f.png)
 	---------
     
     
