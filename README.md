@@ -77,6 +77,12 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 
     ![image](https://user-images.githubusercontent.com/30623282/116534278-ac07ab80-a925-11eb-88fa-4dcea5c0f9ed.png)
     ---------
+    
+    2.5) - Select the project and navigate up to java folder as shown below:
+
+    ![image](https://user-images.githubusercontent.com/30623282/116534482-ee30ed00-a925-11eb-8068-00053e15fcef.png)
+    ---------
+
 
 
 
