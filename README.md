@@ -118,13 +118,14 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
     
     
 2.8 - Make sure you save your project and Build it.
-	---------
+---------
     
     
     
-3 - Create a new folder and name it as "vansah" like so:
+3 - Create a new folder and name it as "vansah" like below:
+
 ![image](https://user-images.githubusercontent.com/30623282/116536766-ae1f3980-a928-11eb-847c-d9cff0b4e04f.png)
-	---------
+---------
     
     
 
