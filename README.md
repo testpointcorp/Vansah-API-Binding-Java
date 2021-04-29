@@ -114,12 +114,12 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 			<artifactId>slf4j-api</artifactId>
 			<version>1.7.25</version>
 		</dependency>
+		
     ---------
     
     
      2.8) - Make sure you save your project and Build it.
 
-        
 	
     ---------
 
