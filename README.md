@@ -148,13 +148,13 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 	sPortNo=0
 	sAgentName=agent1
 	sDevMode=1
-	sProjectIdentifier=
-	sUserToken=
-	sVansahToken=
+	sProjectIdentifier = **<you need to update this field> **
+	sUserToken = **<you need to update this field> **
+	sVansahToken = **<you need to update this field> **
 
 ---------
     
-3.3 - Get your Project Identifier here:
+3.3 - Go to your Vansah Instance and get your Project Identifier here, and update your config.vns file 
 
 ![image](https://user-images.githubusercontent.com/30623282/116538567-09522b80-a92b-11eb-9c42-10aa7a4fd140.png)
 
