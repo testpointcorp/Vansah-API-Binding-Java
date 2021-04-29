@@ -148,12 +148,17 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 	sPortNo=0
 	sAgentName=agent1
 	sDevMode=1
-	sProjectIdentifier=cdd57c3a-6fb6-11e9-9114-eae3584bb88a
-	sUserToken=237091bd-38fd-11eb-952b-eae3584bb88a
-	sVansahToken=0e96f753-021f-11e9-9114-eae3584bb88a
+	sProjectIdentifier=
+	sUserToken=
+	sVansahToken=
 
 ---------
     
+3.3 - Get your Project Identifier here:
+
+![image](https://user-images.githubusercontent.com/30623282/116538567-09522b80-a92b-11eb-9c42-10aa7a4fd140.png)
+
+---------
     
 
 
