@@ -176,6 +176,12 @@ Select your Workspace, give it a label and click Create. You should see a new ap
 
 ![image](https://user-images.githubusercontent.com/30623282/116539227-e411ed00-a92b-11eb-9359-3469e0cf6a2f.png)
 
+![image](https://user-images.githubusercontent.com/30623282/116650058-c5f7cb80-a9c3-11eb-87a9-5b2decba0470.png)
+
+![image](https://user-images.githubusercontent.com/30623282/116650153-fc354b00-a9c3-11eb-9276-5aee4dbd3d32.png)
+
+Copy your Vansak Token from the list and update your config.vns file accordingly.
+
 ---------
 
 
