@@ -212,9 +212,38 @@ h) - Define a new String variable named as testStep - This variable will be fed 
 
 i) - Create a vansah object instance so you can access all Vansah API Binder methods, like this: Vansah vansah = new Vansah();
 
-**See below example of was explained above:**
+**See below one example of was explained above so you can use as reference:**
 
-![image](https://user-images.githubusercontent.com/30623282/116655446-723eaf80-a9ce-11eb-8813-85d4d447aaf5.png)
+	package com.testpoint.testcases;
+
+	import java.util.HashMap;
+	import java.util.List;
+	import java.util.Map;
+	import org.openqa.selenium.WebDriver;
+	import org.testng.annotations.AfterClass;
+	import org.testng.annotations.Test;
+	import com.testpoint.pageobjects.*;
+	import com.testpoint.utils.GetBrowserInstance;
+	import com.testpoint.utils.Keywords;
+
+	import testpoint.Vansah;
+
+
+	public class HomePageTest {
+	
+		// ----------------------  VANSAH REQUIRED  ----------------------------
+		String build = "1.1";
+		String environment = "TEST";
+		String release = "1";
+		String cycle = "93";
+		String testCase = "200";
+		HashMap<String, String> testFields = new HashMap<String, String>();
+		  
+		//Vansah Test Step ID
+		int testStepOrder;
+		String testStep;
+		Vansah vansah = new Vansah();
+		//----------------------------------------------------------------------
 
 
 2 - Import Vansah API-Binding into your Selenium project:
