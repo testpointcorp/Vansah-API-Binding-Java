@@ -34,7 +34,7 @@ Vansah expects the authentication credentials to be provided via standard HTTP b
 
 - **dataset**: GET API returns a copy of the current un-tested/processed test data set which has been mapped against a test case within a Test Cycle and Environment.
 
-#Session Variable**: GET API returns session variable name and session variable value linked with the case_key, environment_key, cycle_key and project_identifier. This API is very useful when you need to transmit values from one automation script to another (e.g. Script A, **"Creates User"**. Script B, **"Deletes User"**. In order to send the userID from Script A to Script B for deletion, Vansah session variable does that for you.
+#Session Variable GET API returns session variable name and session variable value linked with the case_key, environment_key, cycle_key and project_identifier. This API is very useful when you need to transmit values from one automation script to another (e.g. Script A, **"Creates User"**. Script B, **"Deletes User"**. In order to send the userID from Script A to Script B for deletion, Vansah session variable does that for you.
 
 - **add_session_variable**: POST API Adds a session variable along with its value against your test case being executed. (to be used along with above **session_variable** API). 
 
