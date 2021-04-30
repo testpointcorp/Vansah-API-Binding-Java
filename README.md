@@ -417,7 +417,7 @@ You can find here the full script as a practical example:
 				//Step 1
 				case 1:
 					vansah.addTestLog(cycle, testCase, release, build, environment);
-					this.driver.get(testData.get("URL").get(i));				
+					**this.driver.get(testData.get("URL").get(i));**				
 					if(key.isElementsPresent(driver, object.performanceIcon)){
 						vansah.quickTestUpdate(2, "Passed", testStepOrder, null, true, driver);
 					}else{
@@ -451,7 +451,7 @@ You can find here the full script as a practical example:
 	}
 
 
-As you can see belo in line 420, the script is fetching the URL value from Vansah, so there is no test data hard coded at all! :)
+As you can see above, the script is fetching the URL value from Vansah, so there is no test data hard coded at all! :)
 
 For questions, suggestions, or other requests, please reach out to us through our support channels:
 
