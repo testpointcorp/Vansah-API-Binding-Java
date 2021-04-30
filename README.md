@@ -193,24 +193,27 @@ Now that all configurations are done, you are able to start using the API Binder
 1 - Add **import testpoint.Vansah;** so that you can import Vansah API Binder to your script
 2 - Now, under class scope, define the following atributes:
 
-a) - Define a new string object named as build (any string value) - build of the application under test which all test logs will be written against it.
+i) - Define a new String object named as build (any string value) - build of the application under test which all test logs will be written against it.
 
-b) - Define a new string object named as environment (any string value) - environment of the application under test which all test logs will be written against it.
+ii) - Define a new String object named as environment (any string value) - environment of the application under test which all test logs will be written against it.
 
-c) - Define a new string object named as release (any string value) - release of the application under test which all test logs will be written against it.
+iii) - Define a new String object named as release (any string value) - release of the application under test which all test logs will be written against it.
 
-d) - Define a new string object named as cycle (any string value) - cycle of the application under test which all test logs will be written against it.
+iv) - Define a new String object named as cycle (any string value) - cycle of the application under test which all test logs will be written against it.
 
-e) - Define a new string object named as testCase (any string value) - An existing Vansah testCase id.
+v) - Define a new String object named as testCase (any string value) - An existing Vansah testCase id.
 
-g) - Define a new hashmap object of type <String, String> and named as testFields (any string value) - TestField map where you can read/write session variables. (for further details, refer to [**to this section**](#list-of-the-main-Endpoints-for-Automation-Testing))
+vi) - Define a new hashmap object of type <String, String> and named as testFields (any string value) - TestField map where you can read/write session variables. (for further details, refer to [**to this section**](#list-of-the-main-Endpoints-for-Automation-Testing))
 
+vii) - Define a new int variable named as testStepOrder - This variable will be fed with the Test Step Order as presented in Vansah Test Script
 
-		  
-		//Vansah Test Step ID
-		int testStepID;
-		String testStep;
-		Vansah vansah = new Vansah();
+viii) - Define a new String variable named as testStep - This variable will be fed with the Test Step Description as presented in Vansah Test Script
+
+ix) - Create a vansah object instance so you can access all Vansah API Binder methods, like this: Vansah vansah = new Vansah();
+
+See below example of was explained above:
+
+![image](https://user-images.githubusercontent.com/30623282/116655446-723eaf80-a9ce-11eb-8813-85d4d447aaf5.png)
 
 
 2 - Import Vansah API-Binding into your Selenium project:
