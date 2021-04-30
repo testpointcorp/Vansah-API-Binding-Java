@@ -281,8 +281,175 @@ c) - Add the following loop structure so the script can cycle over all test data
 
 
 
-
+As you can see above, **StartTest** method will be called for each test step and test data row
     
+4) - Now under StartTest method, add the following:
+
+a) - Add a new hashmap of type String: **Map<String, List<String>> testData = new HashMap<String, List<String>>();** - this hashmap will store all datapool values for a specific test case.
+
+b) - Add **testData = vansah.getTestData();** - This is important so you can reference to Test Data column. It will be explained later.
+
+c) - Add **vansah.addTestLog(cycle, testCase, release, build, environment);** - With this instruction, you are creating a new log entry in Vansah. You just need to pass cycle, release, build and environment as defined previously in this document.
+
+d) - Add **vansah.quickTestUpdate(2, "Passed", testStepOrder, null, true, driver);** - With this instruction, you are creating a new testlog entry in Vansah. As explained earlier. The parameters are:
+	- 1st - step was succesfully performed (2)
+	- 2nd - a single message that says "Passed"
+	- 3rd - the testStepOrder which is the step in Vansah Test Script
+	- 4th - null means  you are not passing the test step ID (can be ignored for now)
+	- 5th - true means you want to send screenshot to Vansah
+	- 6th - this is selenium driver object (mandatory for taking screenshot)
+
+See below example
+
+	public void StartTest(int i, int testStepOrder,String testStep) throws Exception{
+			
+			Map<String, List<String>> testData = new HashMap<String, List<String>>();
+			testData = vansah.getTestData();
+		
+			switch (testStepOrder) {
+			
+			//Step 1
+			case 1:
+				vansah.addTestLog(cycle, testCase, release, build, environment);
+				this.driver.get(testData.get("URL").get(i));				
+				if(key.isElementsPresent(driver, object.performanceIcon)){
+					vansah.quickTestUpdate(2, "Passed", testStepOrder, null, true, driver);
+				}else{
+					vansah.quickTestUpdate(1, "Failed", testStepOrder, null, true, driver);
+				}
+			break;
+			
+							
+			//Step 2
+			case 2:			
+				if(key.isElementsPresent(driver, object.performanceIcon)){
+					vansah.quickTestUpdate(2, "Passed", testStepOrder, null, true, driver);
+				}else{
+					vansah.quickTestUpdate(1, "Failed", testStepOrder, null, true, driver);
+				}
+			break;
+			
+		
+			default:
+				vansah.quickTestUpdate(1, "Failed", 2, null, true, driver);
+			}
+		}
+		
+You can find here the full script as a practical example:
+
+	package com.testpoint.testcases;
+
+	import java.util.HashMap;
+	import java.util.List;
+	import java.util.Map;
+	import org.openqa.selenium.WebDriver;
+	import org.testng.annotations.AfterClass;
+	import org.testng.annotations.Test;
+	import com.testpoint.pageobjects.*;
+	import com.testpoint.utils.GetBrowserInstance;
+	import com.testpoint.utils.Keywords;
+
+	import testpoint.Vansah;
+
+
+	public class HomePageTest {
+	
+		// ----------------------  VANSAH REQUIRED  ----------------------------
+		String build = "1.1";
+		String environment = "TEST";
+		String release = "1";
+		String cycle = "93";
+		String testCase = "200";
+		HashMap<String, String> testFields = new HashMap<String, String>();
+		  
+		//Vansah Test Step ID
+		int testStepOrder;
+		String testStep;
+		Vansah vansah = new Vansah();
+		//----------------------------------------------------------------------
+		
+	
+		//Get an instance of a browser
+		GetBrowserInstance browser = new GetBrowserInstance();
+		
+		//Create key object. Key will contain all methods of actions
+		Keywords key= new Keywords();
+
+		HomePage object = new HomePage();
+		//Get an instance of WebDriver
+		private static WebDriver driver;
+
+		
+	@Test	
+	public void Script1() throws Exception {
+		try {
+			
+			this.driver = browser.getDriver("chrome", "no");
+			vansah.testScript((testCase));
+			vansah.dataSet(testCase, cycle, environment);	
+			
+			for (int i = 0; i < vansah.getNumberOfTestDataRows(); i++) {
+				Map<Integer, String> testStepIDArray = vansah.getTestSteps();
+
+				for (Map.Entry<Integer,String> entry : testStepIDArray.entrySet())  {
+					
+					System.out.println("Test Step   : "+entry.getValue()); 
+					System.out.println("Test Step ID: "+ entry.getKey());
+					
+					//Call the Main Script
+					StartTest(i, entry.getKey(),entry.getValue());
+				}
+			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	
+	public void StartTest(int i, int testStepOrder,String testStep) throws Exception{
+			
+			Map<String, List<String>> testData = new HashMap<String, List<String>>();
+			testData = vansah.getTestData();
+		
+			switch (testStepOrder) {
+			
+			//Step 1
+			case 1:
+				vansah.addTestLog(cycle, testCase, release, build, environment);
+				this.driver.get(testData.get("URL").get(i));				
+				if(key.isElementsPresent(driver, object.performanceIcon)){
+					vansah.quickTestUpdate(2, "Passed", testStepOrder, null, true, driver);
+				}else{
+					vansah.quickTestUpdate(1, "Failed", testStepOrder, null, true, driver);
+				}
+			break;
+			
+							
+			//Step 2
+			case 2:			
+				if(key.isElementsPresent(driver, object.performanceIcon)){
+					vansah.quickTestUpdate(2, "Passed", testStepOrder, null, true, driver);
+				}else{
+					vansah.quickTestUpdate(1, "Failed", testStepOrder, null, true, driver);
+				}
+			break;
+			
+		
+			default:
+				vansah.quickTestUpdate(1, "Failed", 2, null, true, driver);
+			}
+		}
+	
+	@AfterClass
+	public static void TearDown()
+	{
+		driver.close();
+		driver.quit();
+		driver = null;
+	}
+}
+
+
 
 
 For questions, suggestions, or other requests, please reach out to us through our support channels:
