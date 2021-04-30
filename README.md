@@ -448,7 +448,7 @@ You can find here the full script as a practical example:
 		driver.quit();
 		driver = null;
 	}
-     }
+    }
 
 ---------
 
