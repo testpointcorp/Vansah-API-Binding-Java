@@ -184,8 +184,46 @@ Copy your Vansak Token from the list and update your config.vns file accordingly
 
 ---------
 
+------------
+## How to use Vansah Java API-Binding in a Selenium project
+--------
+
+Now that all configurations are done, you are able to start using the API Binder. Find below what needs to be included in the Selenium script so you can start sending logs to Vansah.
+
+1 - Add **import testpoint.Vansah;** so that you can import Vansah API Binder to your script
+2 - Now, under class scope, define the following atributes:
+	a) - Define a new string object named as build (any string value) - build of the application under test which all test logs will be written against it.
+	b) - Define a new string object named as environment (any string value) - environment of the application under test which all test logs will be written against it.
+	c) - Define a new string object named as release (any string value) - release of the application under test which all test logs will be written against it.
+	d) - Define a new string object named as cycle (any string value) - cycle of the application under test which all test logs will be written against it.
+	e) - Define a new string object named as testCase (any string value) - An existing Vansah testCase id.
+	g) - Define a new hashmap object of type <String, String> and named as testFields (any string value) - TestField map where you can read/write session variables. (for further details, refer to [**session_variable**](#session_variable)**session_variable** section on this document).
 
 
+		  
+		//Vansah Test Step ID
+		int testStepID;
+		String testStep;
+		Vansah vansah = new Vansah();
+
+
+2 - Import Vansah API-Binding into your Selenium project:
+
+    2.1 Choose "File System" option in the Import dialog:
+
+   ![image](https://user-images.githubusercontent.com/30623282/116532223-5cc07b80-a923-11eb-81d7-b6a846ab3b0e.png)
+    ---------
+
+    2.2 - Make sure you select **tespoint** folder:
+
+   ![image](https://user-images.githubusercontent.com/30623282/116532428-942f2800-a923-11eb-85f9-18102cc17dea.png)
+    ---------
+
+
+    2.3 - Select testpoint folder and click "Finish". Make sure you check "create top-level folder" option:
+
+   ![image](https://user-images.githubusercontent.com/30623282/116533942-4ca99b80-a925-11eb-9872-41c72d3dda56.png)
+    ---------
 
 
 For questions, suggestions, or other requests, please reach out to us through our support channels:
