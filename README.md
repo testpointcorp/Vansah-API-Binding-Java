@@ -190,7 +190,8 @@ Copy your Vansak Token from the list and update your config.vns file accordingly
 
 Now that all configurations are done, you are able to start using the API Binder. Find below what needs to be included in the Selenium script so you can start sending logs to Vansah.
 
-1 - Add **import testpoint.Vansah;** so that you can import Vansah API Binder to your script
+1 - Add **import testpoint.Vansah;** so that you can import Vansah API Binder to your script.
+
 2 - Now, under class scope, define the following atributes:
 
 i) - Define a new String object named as build (any string value) - build of the application under test which all test logs will be written against it.
@@ -211,7 +212,7 @@ viii) - Define a new String variable named as testStep - This variable will be f
 
 ix) - Create a vansah object instance so you can access all Vansah API Binder methods, like this: Vansah vansah = new Vansah();
 
-See below example of was explained above:
+**See below example of was explained above:**
 
 ![image](https://user-images.githubusercontent.com/30623282/116655446-723eaf80-a9ce-11eb-8813-85d4d447aaf5.png)
 
