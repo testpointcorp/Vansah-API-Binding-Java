@@ -167,8 +167,7 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 
 ![image](https://user-images.githubusercontent.com/30623282/116539645-731f0500-a92c-11eb-9f5b-9876a000d9c2.png)
 
-**Select your Workspace, give it a label and click Create. You should see a new api token in the list. That's your User Token!**
-
+Select your Workspace, give it a label and click Create. You should see a new api token in the list. That's your User Token. Copy it and update your config.vns file accordingly.
 
 ---------
 
