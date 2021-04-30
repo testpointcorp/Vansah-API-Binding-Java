@@ -203,7 +203,7 @@ d) - Define a new string object named as cycle (any string value) - cycle of the
 
 e) - Define a new string object named as testCase (any string value) - An existing Vansah testCase id.
 
-g) - Define a new hashmap object of type <String, String> and named as testFields (any string value) - TestField map where you can read/write session variables. (for further details, refer to [**to this section**](#list-of-the-main-Endpoints-for-Automation-Testing)
+g) - Define a new hashmap object of type <String, String> and named as testFields (any string value) - TestField map where you can read/write session variables. (for further details, refer to [**to this section**](#list-of-the-main-Endpoints-for-Automation-Testing))
 
 
 		  
