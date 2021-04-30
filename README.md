@@ -454,7 +454,7 @@ You can find here the full script as a practical example:
 
 As you can see above at this line (this.driver.get(testData.get("URL").get(i));, the script is fetching the URL value from Vansah, so there is no test data hard coded at all! :)
 
-Also note above there is switch case structure being applied which makes the script very easy to read and organized. Only one swith case block will run at time based on the test step order!
+Also note above there is a switch case structure being applied which makes the script very easy to read and organized. Only one swith case block will run at time based on the test step order!
 
 ---------
 
