@@ -162,7 +162,6 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
     
 3.4 - How to get sUserToken parameter: Go to your Vansah Instance and get your User Token here, and update your config.vns file 
 
-![image](https://user-images.githubusercontent.com/30623282/116538567-09522b80-a92b-11eb-9c42-10aa7a4fd140.png)
 
 ![image](https://user-images.githubusercontent.com/30623282/116539371-128fc800-a92c-11eb-910f-b3e661409fdc.png)
 
