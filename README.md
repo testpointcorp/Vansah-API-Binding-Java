@@ -194,23 +194,23 @@ Now that all configurations are done, you are able to start using the API Binder
 
 2 - Now, under class scope, define the following atributes:
 
-i) - Define a new String object named as build (any string value) - build of the application under test which all test logs will be written against it.
+a) - Define a new String object named as build (any string value) - build of the application under test which all test logs will be written against it.
 
-ii) - Define a new String object named as environment (any string value) - environment of the application under test which all test logs will be written against it.
+b) - Define a new String object named as environment (any string value) - environment of the application under test which all test logs will be written against it.
 
-iii) - Define a new String object named as release (any string value) - release of the application under test which all test logs will be written against it.
+c) - Define a new String object named as release (any string value) - release of the application under test which all test logs will be written against it.
 
-iv) - Define a new String object named as cycle (any string value) - cycle of the application under test which all test logs will be written against it.
+d) - Define a new String object named as cycle (any string value) - cycle of the application under test which all test logs will be written against it.
 
-v) - Define a new String object named as testCase (any string value) - An existing Vansah testCase id.
+e) - Define a new String object named as testCase (any string value) - An existing Vansah testCase id.
 
-vi) - Define a new hashmap object of type <String, String> and named as testFields (any string value) - TestField map where you can read/write session variables. (for further details, refer to [**to this section**](#list-of-the-main-Endpoints-for-Automation-Testing))
+f) - Define a new hashmap object of type <String, String> and named as testFields (any string value) - TestField map where you can read/write session variables. (for further details, refer to [**to this section**](#list-of-the-main-Endpoints-for-Automation-Testing))
 
-vii) - Define a new int variable named as testStepOrder - This variable will be fed with the Test Step Order as presented in Vansah Test Script
+g) - Define a new int variable named as testStepOrder - This variable will be fed with the Test Step Order as presented in Vansah Test Script
 
-viii) - Define a new String variable named as testStep - This variable will be fed with the Test Step Description as presented in Vansah Test Script
+h) - Define a new String variable named as testStep - This variable will be fed with the Test Step Description as presented in Vansah Test Script
 
-ix) - Create a vansah object instance so you can access all Vansah API Binder methods, like this: Vansah vansah = new Vansah();
+i) - Create a vansah object instance so you can access all Vansah API Binder methods, like this: Vansah vansah = new Vansah();
 
 **See below example of was explained above:**
 
