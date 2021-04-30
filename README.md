@@ -246,23 +246,43 @@ i) - Create a vansah object instance so you can access all Vansah API Binder met
 		//----------------------------------------------------------------------
 
 
-2 - Import Vansah API-Binding into your Selenium project:
+3 - Now, under your @Test (testNG annotation) method, add the following:
 
-    2.1 Choose "File System" option in the Import dialog:
+a) - Add **vansah.testScript((testCase));** - This instruction will read all steps of a particular test case
 
-   ![image](https://user-images.githubusercontent.com/30623282/116532223-5cc07b80-a923-11eb-81d7-b6a846ab3b0e.png)
-    ---------
+b) - Add **vansah.dataSet(testCase, cycle, environment);** - This instruction will read the datapool (dataSet) for a particular test case
 
-    2.2 - Make sure you select **tespoint** folder:
+c) - Add the following loop structure so the script can cycle over all test data rows and test steps. See example below:
 
-   ![image](https://user-images.githubusercontent.com/30623282/116532428-942f2800-a923-11eb-85f9-18102cc17dea.png)
-    ---------
+	@Test	
+	public void Script1() throws Exception {
+		try {
+			
+			this.driver = browser.getDriver("chrome", "no");
+			vansah.testScript((testCase));
+			vansah.dataSet(testCase, cycle, environment);	
+			
+			for (int i = 0; i < vansah.getNumberOfTestDataRows(); i++) {
+				Map<Integer, String> testStepIDArray = vansah.getTestSteps();
+
+				for (Map.Entry<Integer,String> entry : testStepIDArray.entrySet())  {
+					
+					System.out.println("Test Step   : "+entry.getValue()); 
+					System.out.println("Test Step ID: "+ entry.getKey());
+					
+					//Call the Main Script
+					StartTest(i, entry.getKey(),entry.getValue());
+				}
+			}
+		} catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+	}
 
 
-    2.3 - Select testpoint folder and click "Finish". Make sure you check "create top-level folder" option:
 
-   ![image](https://user-images.githubusercontent.com/30623282/116533942-4ca99b80-a925-11eb-9872-41c72d3dda56.png)
-    ---------
+
+    
 
 
 For questions, suggestions, or other requests, please reach out to us through our support channels:
