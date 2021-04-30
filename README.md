@@ -407,48 +407,48 @@ You can find here the full script as a practical example:
 	}
 
 	
-		public void StartTest(int i, int testStepOrder,String testStep) throws Exception{
+	public void StartTest(int i, int testStepOrder,String testStep) throws Exception{
 
-				Map<String, List<String>> testData = new HashMap<String, List<String>>();
-				testData = vansah.getTestData();
+		Map<String, List<String>> testData = new HashMap<String, List<String>>();
+		testData = vansah.getTestData();
 
-				switch (testStepOrder) {
+		switch (testStepOrder) {
 
-				//Step 1
-				case 1:
-					vansah.addTestLog(cycle, testCase, release, build, environment);
-					this.driver.get(testData.get("URL").get(i));			
-					if(key.isElementsPresent(driver, object.performanceIcon)){
-						vansah.quickTestUpdate(2, "Passed", testStepOrder, null, true, driver);
-					}else{
-						vansah.quickTestUpdate(1, "Failed", testStepOrder, null, true, driver);
-					}
-				break;
-
-
-				//Step 2
-				case 2:			
-					if(key.isElementsPresent(driver, object.performanceIcon)){
-						vansah.quickTestUpdate(2, "Passed", testStepOrder, null, true, driver);
-					}else{
-						vansah.quickTestUpdate(1, "Failed", testStepOrder, null, true, driver);
-					}
-				break;
-
-
-				default:
-					vansah.quickTestUpdate(1, "Failed", 2, null, true, driver);
-				}
+		//Step 1
+		case 1:
+			vansah.addTestLog(cycle, testCase, release, build, environment);
+			this.driver.get(testData.get("URL").get(i));			
+			if(key.isElementsPresent(driver, object.performanceIcon)){
+				vansah.quickTestUpdate(2, "Passed", testStepOrder, null, true, driver);
+			}else{
+				vansah.quickTestUpdate(1, "Failed", testStepOrder, null, true, driver);
 			}
-	
-		@AfterClass
-		public static void TearDown()
-		{
-			driver.close();
-			driver.quit();
-			driver = null;
+		break;
+
+
+		//Step 2
+		case 2:			
+			if(key.isElementsPresent(driver, object.performanceIcon)){
+				vansah.quickTestUpdate(2, "Passed", testStepOrder, null, true, driver);
+			}else{
+				vansah.quickTestUpdate(1, "Failed", testStepOrder, null, true, driver);
+			}
+		break;
+
+
+		default:
+			vansah.quickTestUpdate(1, "Failed", 2, null, true, driver);
 		}
 	}
+	
+	@AfterClass
+	public static void TearDown()
+	{
+		driver.close();
+		driver.quit();
+		driver = null;
+	}
+     }
 
 ---------
 
