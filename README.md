@@ -193,17 +193,17 @@ Now that all configurations are done, you are able to start using the API Binder
 1 - Add **import testpoint.Vansah;** so that you can import Vansah API Binder to your script
 2 - Now, under class scope, define the following atributes:
 
-	a) - Define a new string object named as build (any string value) - build of the application under test which all test logs will be written against it.
-	
-	b) - Define a new string object named as environment (any string value) - environment of the application under test which all test logs will be written against it.
-	
-	c) - Define a new string object named as release (any string value) - release of the application under test which all test logs will be written against it.
-	
-	d) - Define a new string object named as cycle (any string value) - cycle of the application under test which all test logs will be written against it.
-	
-	e) - Define a new string object named as testCase (any string value) - An existing Vansah testCase id.
-	
-	g) - Define a new hashmap object of type <String, String> and named as testFields (any string value) - TestField map where you can read/write session variables. (for further details, refer to [**to this section**](#List-of-the-main-Endpoints-for-Automation-Testing:) on this document).
+a) - Define a new string object named as build (any string value) - build of the application under test which all test logs will be written against it.
+
+b) - Define a new string object named as environment (any string value) - environment of the application under test which all test logs will be written against it.
+
+c) - Define a new string object named as release (any string value) - release of the application under test which all test logs will be written against it.
+
+d) - Define a new string object named as cycle (any string value) - cycle of the application under test which all test logs will be written against it.
+
+e) - Define a new string object named as testCase (any string value) - An existing Vansah testCase id.
+
+g) - Define a new hashmap object of type <String, String> and named as testFields (any string value) - TestField map where you can read/write session variables. (for further details, refer to [**to this section**](#list-of-the-main-Endpoints-for-Automation-Testing:)
 
 
 		  
