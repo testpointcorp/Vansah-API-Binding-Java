@@ -28,13 +28,8 @@ public class Vansah {
 	
 	private static final String ADD_TEST_RUN = VANSAH_URL + "/api/" + API_VERSION + "/test_case/add_test_run";
 	private static final String ADD_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION + "/test_case/add_test_log";
-	
-	
 	private static final String UPDATE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION + "/test_case/update_test_log";
-	
-	
 	private static final String ADD_QUICK_TEST = VANSAH_URL + "/api/" + API_VERSION + "/auto/test_case/add_quick_test";
-	
 	private static final String REMOVE_TEST_RUN = VANSAH_URL + "/api/" + API_VERSION + "/test_case/remove_test_run";
 	//******************************************************************************************************
 
@@ -179,7 +174,6 @@ public class Vansah {
 				String hostAddr = configReader.getsHostAddr();
 				String portNo = configReader.getsPortNo();
 				if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
-					//System.out.println("No proxy");
 					Unirest.setHttpClient(clientBuilder.build());
 				} else {
 					System.out.println("Proxy Server");credsProvider = new BasicCredentialsProvider();
@@ -190,11 +184,12 @@ public class Vansah {
 				
 				if (SEND_SCREENSHOT) {
 					try {
-						System.out.println("Taking screenshot");
+						System.out.print("Taking screenshot... ");
 						WebDriver augmentedDriver = new Augmenter().augment(driver);
 						File image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
 						String encodstring = encodeFileToBase64Binary(image);
 						this.FILE = "data:image/png;base64," + encodstring;
+						System.out.println("Screenshot succesfully taken.");
 						
 					} catch (Exception e) {
 						System.out.println("Screenshot failed: " + e.toString());
@@ -211,9 +206,9 @@ public class Vansah {
 				
 				
 				if(type == "addTestLog") {
-					jsonResponse = Unirest.post(ADD_TEST_LOG).header("user-token",USER_TOKEN).field("test_run_identifier", TEST_RUN_IDENTIFIER)
-					.field("result_key", RESULT_KEY).field("comment", COMMENT).field("step_order", STEP_ORDER)
-					.field("step_identifier", STEP_IDENTIFIER).field("file", FILE).field("jira_issues", JIRA_ISSUES)
+					System.out.println("Test Run Identifier: Add Test Log " + TEST_RUN_IDENTIFIER);
+					jsonResponse = Unirest.post(ADD_TEST_LOG).header("user-token",USER_TOKEN).field("test_run_identifier", TEST_RUN_IDENTIFIER).field("result_key", RESULT_KEY).field("comment", COMMENT)
+					.field("step_order", STEP_ORDER).field("step_identifier", STEP_IDENTIFIER).field("file", FILE).field("jira_issues", JIRA_ISSUES)
 					.field("jira_host", JIRA_HOST).asJson();
 				}
 				
@@ -279,12 +274,6 @@ public class Vansah {
 	}
 	//*******************************************************************************************************************
 	
-
-	private String formatString(JSONObject record, String key) {
-		if (record.isNull(key))
-			return "";
-		return record.getString(key);
-	}
 	
 
 	private static String encodeFileToBase64Binary(File file) {
