@@ -35,7 +35,6 @@ public class ReadConfigVansah {
 			this.configuration = new ConfigSetup();
 			this.reader = new FileInputStream(this.CONFIG);
 			this.VNSProperties.load(this.reader);
-
 			this.sMaxLogResponse = this.VNSProperties.getProperty("sMaxLogResponse");
 			this.sVansahConnectionType = this.VNSProperties.getProperty("sVansahConnectionType");
 			this.sRegScreenShotsDirectory = this.VNSProperties.getProperty("sRegScreenShotsDirectory");
@@ -43,7 +42,6 @@ public class ReadConfigVansah {
 			this.sDevMode = this.VNSProperties.getProperty("sDevMode");
 			this.sAgentName = this.VNSProperties.getProperty("sAgentName");
 			this.sUserToken = this.VNSProperties.getProperty("sUserToken");
-			this.sVansahToken = this.VNSProperties.getProperty("sVansahToken");
 			this.sVansahInstance = this.VNSProperties.getProperty("sVansahInstance");
 			this.sProjectIdentifier = this.VNSProperties.getProperty("sProjectIdentifier");
 			this.sHostAddr = this.VNSProperties.getProperty("sHostAddr");
@@ -70,7 +68,6 @@ public class ReadConfigVansah {
 			File f = new File(this.CONFIG);
 			this.writer = new FileOutputStream(f);
 			this.VNSProperties.store(this.writer, "[Settings]");
-
 			this.writer.close();
 			this.reader = new FileInputStream(this.CONFIG);
 			this.VNSProperties.load(this.reader);
@@ -79,7 +76,6 @@ public class ReadConfigVansah {
 			this.sMaxLogResponse = this.VNSProperties.getProperty("sMaxLogResponse");
 			this.sVansahConnectionType = this.VNSProperties.getProperty("sVansahConnectionType");
 			this.sUserToken = this.VNSProperties.getProperty("sUserToken");
-			this.sVansahToken = this.VNSProperties.getProperty("sVansahToken");
 			this.sProjectIdentifier = this.VNSProperties.getProperty("sProjectIdentifier");
 			this.sRegScreenShotsDirectory = this.VNSProperties.getProperty("sRegScreenShotsDirectory");
 			this.sUpdateVansah = this.VNSProperties.getProperty("sUpdateVansah");
@@ -120,9 +116,6 @@ public class ReadConfigVansah {
 		return this.sVansahInstance;
 	}
 	
-	public String getVansahToken() {
-		return this.sVansahToken;
-	}
 
 	public String getsUpdateVansah() {
 		return this.sUpdateVansah;
