@@ -58,7 +58,7 @@ https://community.vansah.com/
 
 -- 
 
-Copyright Testpoint Pty Ltd. See license.md for details.
+© 2021 Vansah®. All rights reserved, See license.md for details.
 
 https://www.vansah.com/
 
