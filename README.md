@@ -25,7 +25,7 @@ Vansah expects the authentication credentials to be provided via standard HTTP b
 
 - **add_test_run**: POST API creates a test run Identifier which is then used with the other testing methods: 1) add_test_log 2) remove_test_run
 
-- **add_test_log**: POST API adds a new test log linked to the project_identifier and the testcase_key. 
+- **add_test_log**: POST API adds a new test log linked to the project_identifier and the testcase_key. Result. (0 = N/A, 1= FAIL, 2= PASS, 3 = Not Tested)
 
 - **remove_test_run**: POST API will delete the test log created from add_test_run
 
@@ -33,7 +33,7 @@ Vansah expects the authentication credentials to be provided via standard HTTP b
 
 - **remove_test_log**: POST API will will delete a test log identifier created from add_test_log & add_quick_test
 
-- **add_quick_test**: POST API adds a new test log sequence linked to the test log created by add_test_log endpoint. By calling this endpoint, you will create a new log entry in Vansah with the respective **overal** result. (0 = N/A, 1= FAIL, 2= PASS, 3 = Not Tested). Quick_test is useful for test cases which there are no steps in the test script, where only the overal result is important. 
+- **add_quick_test**: POST API adds a new test log sequence linked to the test log created by add_test_log endpoint. By calling this endpoint, you will create a new log entry in Vansah with the respective **overal** Result. (0 = N/A, 1= FAIL, 2= PASS, 3 = Not Tested). Quick_test is useful for test cases which there are no steps in the test script, where only the overal result is important. 
 
 - **test_script**: Returns the test script for a given case_key. 
 
