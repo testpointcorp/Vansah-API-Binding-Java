@@ -86,6 +86,9 @@ public class Vansah {
 	
 	
 	//------------------------ VANSAH ADD TEST RUN (TEST RUN IDENTIFIER CREATION) -------------------------------------------
+	//POST add_test_run https://apidoc.vansah.com/#05aefccb-59bc-4dfb-a1b0-a85751180228
+	//creates a new test run Identifier which is then used with the other testing methods: 1) add_test_log 2) remove_test_run
+	
 	public void add_test_run(String testcase, String release, String environment, String jiraIssue, String cycle, String build, String jiraReleaseIdentifier ) throws Exception {
 		
 		this.CASE_KEY = testcase;
@@ -104,6 +107,9 @@ public class Vansah {
 	
 	
 	//-------------------------- VANSAH ADD TEST LOG (LOG IDENTIFIER CREATION ----------------------------------------------------
+	//POST add_test_log https://apidoc.vansah.com/#a0788f90-e751-40b7-a5e3-5879df4cff2c
+	//adds a new test log for the test case_key. Requires "test_run_identifier" from add_test_run
+	
 	public void add_test_log(int result, String comment, Integer testStepRow, Integer testStepIdentifier, String jiraIssues, String jiraHost, boolean sendScreenShot, WebDriver driver) throws Exception {
 		
 		//0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested
@@ -121,6 +127,12 @@ public class Vansah {
 
 	
 	//------------------------- VANSAH ADD QUICK TEST ------------------------------------------------------------------------------
+	//POST add_quick_test https://apidoc.vansah.com/#f9282559-7dc4-407a-a85e-c7e836b7281d
+	//creates a new test run and a new test log for the test case_key. By calling this endpoint, 
+	//you will create a new log entry in Vansah with the respective overal Result. 
+	//(0 = N/A, 1= FAIL, 2= PASS, 3 = Not Tested). Add_Quick_Test is useful for test cases in which there are no steps in the test script, 
+	//where only the overall result is important.
+	
 	public void add_quick_test(String testcase, int result, String release, String environment, String comment, String jiraIssue, String cycle, String jiraReleaseIdentifier, String build,  boolean sendScreenShot, WebDriver driver) throws Exception {
 		
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
@@ -140,12 +152,18 @@ public class Vansah {
 	
 	
 	//------------------------------------------ VANSAH REMOVE TEST RUN *********************************************
+	//POST remove_test_run https://apidoc.vansah.com/#db054159-ee7b-4076-a6d5-4ee4797d86a1
+	//will delete the test log created from add_test_run or add_quick_test
+	
 	public void remove_test_run() throws Exception {
 		connectToVansahRest("removeTestRun", null);
 	}
 	//------------------------------------------------------------------------------------------------------------------------------
 
 	//------------------------------------------ VANSAH REMOVE TEST LOG *********************************************
+	//POST remove_test_log https://apidoc.vansah.com/#789414f9-43e7-4744-b2ca-1aaf9ee878e5
+	//will delete a test_log_identifier created from add_test_log or add_quick_test
+	
 	public void remove_test_log() throws Exception {	
 		connectToVansahRest("removeTestLog", null);
 	}
@@ -153,6 +171,9 @@ public class Vansah {
 	
 	
 	//------------------------------------------ VANSAH UPDATE TEST LOG ------------------------------------------------------------
+	//POST update_test_log https://apidoc.vansah.com/#ae26f43a-b918-4ec9-8422-20553f880b48
+	//will perform any updates required using the test log identifier which is returned from add_test_log or add_quick_test
+	
 	public void update_test_log(int result, String comment, String jiraIssues, String jiraHost, boolean sendScreenShot, WebDriver driver) throws Exception {
 		
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
@@ -163,8 +184,9 @@ public class Vansah {
 		this.JIRA_HOST = jiraHost;
 		connectToVansahRest("updateTestLog", driver);
 	}
-	//------------------------------------------------------------------------------------------------------------------------------
-	
+	//----------------------------------------------VANSAH GET TEST SCRIPT-----------------------------------------------------------
+	//GET test_script https://apidoc.vansah.com/#91fe16a8-b2c4-440a-b5e6-96cb15f8e1a3
+	//Returns the test script for a given case_key
 	
 	public void test_script(String case_key) {
 		try {
