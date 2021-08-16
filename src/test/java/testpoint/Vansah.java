@@ -27,20 +27,38 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Vansah {
 
-	//***************************************** ENDPOINTS *************************************************
+	//--------------------------- ENDPOINTS -------------------------------------------------------------------------------
 	private static final String API_VERSION = "v2";
 	private static final String VANSAH_URL = "https://api.vansah.app";
-	private static final String ADD_TEST_RUN = VANSAH_URL + "/api/" + API_VERSION + "/test_case/add_test_run";
-	private static final String ADD_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION + "/test_case/add_test_log";
-	private static final String UPDATE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION + "/test_case/update_test_log";
-	private static final String REMOVE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION + "/test_case/remove_test_log";
-	private static final String ADD_QUICK_TEST = VANSAH_URL + "/api/" + API_VERSION + "/auto/test_case/add_quick_test";
-	private static final String REMOVE_TEST_RUN = VANSAH_URL + "/api/" + API_VERSION + "/test_case/remove_test_run";
-	private static final String TEST_SCRIPT = VANSAH_URL + "/api/" + API_VERSION + "/test_case/test_script";
-	//******************************************************************************************************
-
+	private static final String ADD_TEST_RUN = VANSAH_URL + "/api/" + API_VERSION     + "/auto/test_case/add_test_run";
+	private static final String ADD_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION     + "/auto/test_case/add_test_log";
+	private static final String UPDATE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION  + "/auto/test_case/update_test_log";
+	private static final String REMOVE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION  + "/auto/test_case/remove_test_log";
+	private static final String ADD_QUICK_TEST = VANSAH_URL + "/api/" + API_VERSION   + "/auto/test_case/add_quick_test";
+	private static final String REMOVE_TEST_RUN = VANSAH_URL + "/api/" + API_VERSION  + "/auto/test_case/remove_test_run";
+	private static final String TEST_SCRIPT = VANSAH_URL + "/api/" + API_VERSION      + "/auto/test_case/test_script";
+	//--------------------------------------------------------------------------------------------------------------------
 	
-	//*********************************** VARIABLES ****************************************************************************
+	
+	//--------------------------- INFORM YOUR UNIQUE VANSAH TOKEN HERE ----------------------------------------------------
+	private static final String VANSAH_TOKEN = "";
+	//--------------------------------------------------------------------------------------------------------------------
+	
+	
+	//--------------------------- IF YOU ARE USING VANSAH BINDING BEHIND A PROXY, INFORM THE DETAILS HERE ------------------
+	private static final String hostAddr = "www.host.com";
+	private static final String portNo = "0";
+	//--------------------------------------------------------------------------------------------------------------------	
+		
+	
+	//--------------------------- INFORM IF YOU WANT TO UPDATE VANSAH HERE ------------------------------------------------
+	// 0 = NO RESULTS WILL BE SENT TO VANSAH
+	// 1 = RESULTS WILL BE SENT TO VANSAH
+	private static final String updateVansah = "1";
+	//--------------------------------------------------------------------------------------------------------------------	
+	
+	
+	//--------------------------------------------------------------------------------------------------------------------
 	private String CYCLE_KEY;
 	private String CASE_KEY;
 	private String RELEASE_KEY;
@@ -55,38 +73,20 @@ public class Vansah {
 	private String COMMENT;
 	private Integer STEP_ORDER;
 	private Integer STEP_IDENTIFIER;
-	private String USER_TOKEN;
-	private String PROJECT_IDENTIFIER;
 	private String TEST_RUN_IDENTIFIER;
 	private String TEST_LOG_IDENTIFIER;
-	private int VANSAH_DATA_ROW_NUM;
-	private String VANSAH_DATA_COLUMN_NAME;
 	private String FILE;
 	private File image;
-	private String HTTPS_RESULT;
-	private ReadConfigVansah configReader;
-	private VansahLogHandler vlh;
 	private HttpClientBuilder clientBuilder;
 	private CredentialsProvider credsProvider;
 	private HashMap<Integer, String> testSteps = new HashMap<Integer, String>();
 	private HashMap<Integer, String> testResults = new HashMap<Integer, String>();
 	private List<Integer> listOfSteps;
 	private int testRows;
-	//************************************************************************************************************************************************
 	
 	
-	public Vansah() {
-
-		vlh = new VansahLogHandler();
-		configReader = new ReadConfigVansah();
-		USER_TOKEN = this.configReader.getUserToken();
-		PROJECT_IDENTIFIER = this.configReader.getProjectIdentifier();
-	}
-	
-	
-	//************************** VANSAH ADD TEST RUN (TEST RUN IDENTIFIER CREATION) *************************************************
-	public void addTestRun(String testcase, String release, String environment, String jiraIssue, String cycle, String build, String jiraReleaseIdentifier ) throws Exception {
-		
+	//------------------------ VANSAH ADD TEST RUN (TEST RUN IDENTIFIER CREATION) -------------------------------------------
+	public void add_test_run(String testcase, String release, String environment, String jiraIssue, String cycle, String build, String jiraReleaseIdentifier ) throws Exception {
 		
 		this.CASE_KEY = testcase;
 		this.RELEASE_KEY = release;
@@ -99,14 +99,14 @@ public class Vansah {
 
 		connectToVansahRest("addTestRun", null);
 	}
-	//*****************************************************************************************************************
+	//----------------------------------------------------------------------------------------------------------------------------
 	
 	
 	
-	//************************** VANSAH ADD TEST LOG (LOG IDENTIFIER CREATION *************************************************
-	public void addTestLog(int result, String comment, Integer testStepRow, Integer testStepIdentifier, String jiraIssues, String jiraHost, boolean sendScreenShot, WebDriver driver) throws Exception {
+	//-------------------------- VANSAH ADD TEST LOG (LOG IDENTIFIER CREATION ----------------------------------------------------
+	public void add_test_log(int result, String comment, Integer testStepRow, Integer testStepIdentifier, String jiraIssues, String jiraHost, boolean sendScreenShot, WebDriver driver) throws Exception {
 		
-		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
+		//0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested
 		this.RESULT_KEY = result;
 		this.COMMENT = comment;
 		this.STEP_ORDER = testStepRow;
@@ -116,13 +116,12 @@ public class Vansah {
 		this.JIRA_HOST = jiraHost;
 		connectToVansahRest("addTestLog", driver);
 	}
-	//*****************************************************************************************************************
+	//------------------------------------------------------------------------------------------------------------------------------
 	
+
 	
-	
-	
-	//****************************************** VANSAH ADD QUICK TEST *********************************************
-	public void addQuickTest(String testcase, int result, String release, String environment, String comment, String jiraIssue, String cycle, String jiraReleaseIdentifier, String build,  boolean sendScreenShot, WebDriver driver) throws Exception {
+	//------------------------- VANSAH ADD QUICK TEST ------------------------------------------------------------------------------
+	public void add_quick_test(String testcase, int result, String release, String environment, String comment, String jiraIssue, String cycle, String jiraReleaseIdentifier, String build,  boolean sendScreenShot, WebDriver driver) throws Exception {
 		
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.CASE_KEY = testcase;
@@ -137,23 +136,24 @@ public class Vansah {
 		this.SEND_SCREENSHOT = sendScreenShot;
 		connectToVansahRest("addQuickTest", driver);
 	}
-	//*******************************************************************************************************************
+	//------------------------------------------------------------------------------------------------------------------------------
 	
 	
-	//****************************************** VANSAH REMOVE TEST RUN *********************************************
-	public void removeTestRun() throws Exception {
+	//------------------------------------------ VANSAH REMOVE TEST RUN *********************************************
+	public void remove_test_run() throws Exception {
 		connectToVansahRest("removeTestRun", null);
 	}
-	//*******************************************************************************************************************
+	//------------------------------------------------------------------------------------------------------------------------------
 
-	//****************************************** VANSAH REMOVE TEST LOG *********************************************
-	public void removeTestLog() throws Exception {	
+	//------------------------------------------ VANSAH REMOVE TEST LOG *********************************************
+	public void remove_test_log() throws Exception {	
 		connectToVansahRest("removeTestLog", null);
 	}
-	//*******************************************************************************************************************
+	//------------------------------------------------------------------------------------------------------------------------------
 	
-	//****************************************** VANSAH UPDATE TEST LOG *********************************************
-	public void updateTestLog(int result, String comment, String jiraIssues, String jiraHost, boolean sendScreenShot, WebDriver driver) throws Exception {
+	
+	//------------------------------------------ VANSAH UPDATE TEST LOG ------------------------------------------------------------
+	public void update_test_log(int result, String comment, String jiraIssues, String jiraHost, boolean sendScreenShot, WebDriver driver) throws Exception {
 		
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.RESULT_KEY = result;
@@ -163,16 +163,15 @@ public class Vansah {
 		this.JIRA_HOST = jiraHost;
 		connectToVansahRest("updateTestLog", driver);
 	}
-	//*******************************************************************************************************************
+	//------------------------------------------------------------------------------------------------------------------------------
 	
 	
-	public void testScript(String case_key) {
+	public void test_script(String case_key) {
 		try {
 			
 			clientBuilder = HttpClientBuilder.create();
 			// Detecting if the system using any proxy setting.
-			String hostAddr = configReader.getsHostAddr();
-			String portNo = configReader.getsPortNo();
+		
 			if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
 				System.out.println("No proxy");
 				Unirest.setHttpClient(clientBuilder.build());
@@ -186,7 +185,7 @@ public class Vansah {
 				Unirest.setHttpClient(clientBuilder.build());
 			}
 			HttpResponse<JsonNode> get;
-			get = Unirest.get(TEST_SCRIPT).header("user-token",USER_TOKEN).queryString("case_key", case_key).queryString("project_identifier", PROJECT_IDENTIFIER).asJson();
+			get = Unirest.get(TEST_SCRIPT).header("vansah-token",VANSAH_TOKEN).queryString("case_key", case_key).asJson();
 			if (get.getBody().toString().equals("[]")) {
 				System.out.println("Unexpected Response From Server: " + get.getBody().toString());
 			} else {
@@ -199,7 +198,6 @@ public class Vansah {
 					testResults = new HashMap<Integer, String>();
 					listOfSteps = new ArrayList<Integer>();
 					JSONObject jsonobj = new JSONObject(get.getBody().toString());
-					//JSONObject jsonObject = jsonobj.getJSONArray("array").getJSONObject(0);
 					int testRows = jsonobjInit.getJSONObject("pagination").getInt("page_total");
 					System.out.println("NUMBER OF STEPS: " + testRows);
 					
@@ -226,17 +224,11 @@ public class Vansah {
 		HttpResponse<JsonNode> jsonResponse = null;
 		
 		
-		if (configReader.getsUpdateVansah().equals("0")) {
-			vlh.writeToV_LogFile(CASE_KEY, STEP_ORDER, RESULT_KEY, COMMENT, RELEASE_KEY, BUILD_KEY, ENVIRONMENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);
-			HTTPS_RESULT = "#STATUS_OFF";
-			System.out.println(HTTPS_RESULT);
-		} else {
+		if (updateVansah.equals("1")) {
 
 			try {
 				clientBuilder = HttpClientBuilder.create();
 				// Detecting if binder is being used behind any proxy setting.
-				String hostAddr = configReader.getsHostAddr();
-				String portNo = configReader.getsPortNo();
 				if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
 					Unirest.setHttpClient(clientBuilder.build());
 				} else {
@@ -261,40 +253,38 @@ public class Vansah {
 
 				
 				if(type == "addTestRun") {
-					jsonResponse = Unirest.post(ADD_TEST_RUN).header("user-token",USER_TOKEN).field("project_identifier", PROJECT_IDENTIFIER)
-					.field("case_key", CASE_KEY).field("release_key", RELEASE_KEY).field("environment_key", ENVIRONMENT_KEY)
+					jsonResponse = Unirest.post(ADD_TEST_RUN).header("vansah-token",VANSAH_TOKEN).field("case_key", CASE_KEY).field("release_key", RELEASE_KEY).field("environment_key", ENVIRONMENT_KEY)
 					.field("issue_key", JIRA_ISSUE_KEY).field("cycle_key", CYCLE_KEY).field("build_key", BUILD_KEY)
 					.field("jira_release_identifier", JIRA_RELEASE_IDENTIFIER).asJson();
 				}
 				
 				
 				if(type == "addTestLog") {
-					jsonResponse = Unirest.post(ADD_TEST_LOG).header("user-token",USER_TOKEN).field("test_run_identifier", TEST_RUN_IDENTIFIER)
+					jsonResponse = Unirest.post(ADD_TEST_LOG).header("vansah-token",VANSAH_TOKEN).field("test_run_identifier", TEST_RUN_IDENTIFIER)
 					.field("result_key", RESULT_KEY).field("comment", COMMENT).field("step_order", STEP_ORDER).field("step_identifier", STEP_IDENTIFIER)
 					.field("file", FILE).field("jira_issues", JIRA_ISSUES).field("jira_host", JIRA_HOST).asJson();
 				}
 				
 
 				if(type == "addQuickTest") {
-					jsonResponse = Unirest.post(ADD_QUICK_TEST).header("user-token",USER_TOKEN).field("project_identifier", PROJECT_IDENTIFIER)
-					.field("case_key", CASE_KEY).field("result_key", RESULT_KEY).field("release_key", RELEASE_KEY).field("environment_key", ENVIRONMENT_KEY)
+					jsonResponse = Unirest.post(ADD_QUICK_TEST).header("vansah-token",VANSAH_TOKEN).field("case_key", CASE_KEY).field("result_key", RESULT_KEY).field("release_key", RELEASE_KEY).field("environment_key", ENVIRONMENT_KEY)
 					.field("comment", COMMENT).field("issue_key", JIRA_ISSUE_KEY).field("cycle_key", CYCLE_KEY).field("file", FILE)
 					.field("jira_release_identifier", JIRA_RELEASE_IDENTIFIER).field("build_key", BUILD_KEY).asJson();
 				}
 				
 				
 				if(type == "removeTestRun") {
-					jsonResponse = Unirest.post(REMOVE_TEST_RUN).header("user-token",USER_TOKEN).field("test_run_identifier", TEST_RUN_IDENTIFIER).asJson();
+					jsonResponse = Unirest.post(REMOVE_TEST_RUN).header("vansah-token",VANSAH_TOKEN).field("test_run_identifier", TEST_RUN_IDENTIFIER).asJson();
 				}
 				
 				
 				if(type == "removeTestLog") {
-					jsonResponse = Unirest.post(REMOVE_TEST_LOG).header("user-token",USER_TOKEN).field("log_identifier", TEST_LOG_IDENTIFIER).asJson();
+					jsonResponse = Unirest.post(REMOVE_TEST_LOG).header("vansah-token",VANSAH_TOKEN).field("log_identifier", TEST_LOG_IDENTIFIER).asJson();
 				}
 				
 				
 				if(type == "updateTestLog") {
-					jsonResponse = Unirest.post(UPDATE_TEST_LOG).header("user-token",USER_TOKEN).field("log_identifier", TEST_LOG_IDENTIFIER)
+					jsonResponse = Unirest.post(UPDATE_TEST_LOG).header("vansah-token",VANSAH_TOKEN).field("log_identifier", TEST_LOG_IDENTIFIER)
 					.field("result_key", RESULT_KEY).field("comment", COMMENT).field("file", FILE).field("jira_issues", JIRA_ISSUES)
 					.field("jira_host", JIRA_HOST).asJson();
 				}
@@ -303,7 +293,7 @@ public class Vansah {
 				JSONObject fullBody = jsonResponse.getBody().getObject();
 				if (jsonResponse.getBody().toString().equals("[]")) {
 					System.out.println("Unexpected Response From Vansah with empty response: " + jsonResponse.getBody().toString());
-					vlh.writeErrorToV_errorFile(CASE_KEY, STEP_ORDER, RESULT_KEY, COMMENT + ", Response from Vansah: " + fullBody, RELEASE_KEY, BUILD_KEY, ENVIRONMENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);
+					
 				
 				} else {
 					JSONObject jsonobjInit = new JSONObject(jsonResponse.getBody().toString());
@@ -324,13 +314,11 @@ public class Vansah {
 				    	}
 						
 					}else{
-						System.out.println("Response From Vansah: " + vansah_message);
-						vlh.writeErrorToV_errorFile(CASE_KEY, STEP_ORDER, RESULT_KEY,COMMENT + ", Response from Vansah: " + vansah_message, RELEASE_KEY,BUILD_KEY, ENVIRONMENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);					
+						System.out.println("Response From Vansah: " + vansah_message);					
 					}
 				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
-				vlh.writeErrorToV_errorFile(CASE_KEY, STEP_ORDER, RESULT_KEY, ex.getMessage(), RELEASE_KEY,BUILD_KEY, ENVIRONMENT_KEY, VANSAH_DATA_ROW_NUM, VANSAH_DATA_COLUMN_NAME);
 			}
 		}
 	}
@@ -348,15 +336,14 @@ public class Vansah {
 	private static String encodeFileToBase64Binary(File file) {
 		String encodedfile = null;
 		try {
+			@SuppressWarnings("resource")
 			FileInputStream fileInputStreamReader = new FileInputStream(file);
 			byte[] bytes = new byte[(int) file.length()];
 			fileInputStreamReader.read(bytes);
 			encodedfile = Base64.getEncoder().encodeToString(bytes);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -368,5 +355,4 @@ public class Vansah {
 			return "";
 		return record.getString(key);
 	}
-	
 }
