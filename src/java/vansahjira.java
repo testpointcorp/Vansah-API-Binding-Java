@@ -25,7 +25,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
-public class Vansah {
+public class vansahjira {
 
 	//--------------------------- ENDPOINTS -------------------------------------------------------------------------------
 	private static final String API_VERSION = "v2";
@@ -40,18 +40,18 @@ public class Vansah {
 	//--------------------------------------------------------------------------------------------------------------------
 	
 	
-	//--------------------------- INFORM YOUR UNIQUE VANSAH TOKEN HERE ----------------------------------------------------
-	private static final String VANSAH_TOKEN = "";
+	//--------------------------- INFORM YOUR UNIQUE VANSAH TOKEN HERE ---------------------------------------------------
+	private static final String VANSAH_TOKEN = "a3b4d9b0-fe8e-11eb-84d7-56e19ace5691";
 	//--------------------------------------------------------------------------------------------------------------------
 	
 	
-	//--------------------------- IF YOU ARE USING VANSAH BINDING BEHIND A PROXY, INFORM THE DETAILS HERE ------------------
-	private static final String hostAddr = "www.host.com";
-	private static final String portNo = "0";
+	//--------------------------- IF YOU ARE USING VANSAH BINDING BEHIND A PROXY, INFORM THE DETAILS HERE ----------------
+	private static final String hostAddr = "";
+	private static final String portNo = "";
 	//--------------------------------------------------------------------------------------------------------------------	
 		
 	
-	//--------------------------- INFORM IF YOU WANT TO UPDATE VANSAH HERE ------------------------------------------------
+	//--------------------------- INFORM IF YOU WANT TO UPDATE VANSAH HERE -----------------------------------------------
 	// 0 = NO RESULTS WILL BE SENT TO VANSAH
 	// 1 = RESULTS WILL BE SENT TO VANSAH
 	private static final String updateVansah = "1";
@@ -102,11 +102,11 @@ public class Vansah {
 
 		connectToVansahRest("addTestRun", null);
 	}
-	//----------------------------------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------------------------------
 	
 	
 	
-	//-------------------------- VANSAH ADD TEST LOG (LOG IDENTIFIER CREATION ----------------------------------------------------
+	//-------------------------- VANSAH ADD TEST LOG (LOG IDENTIFIER CREATION ------------------------------------------------
 	//POST add_test_log https://apidoc.vansah.com/#a0788f90-e751-40b7-a5e3-5879df4cff2c
 	//adds a new test log for the test case_key. Requires "test_run_identifier" from add_test_run
 	
@@ -122,11 +122,11 @@ public class Vansah {
 		this.JIRA_HOST = jiraHost;
 		connectToVansahRest("addTestLog", driver);
 	}
-	//------------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
 	
 
 	
-	//------------------------- VANSAH ADD QUICK TEST ------------------------------------------------------------------------------
+	//------------------------- VANSAH ADD QUICK TEST --------------------------------------------------------------------------
 	//POST add_quick_test https://apidoc.vansah.com/#f9282559-7dc4-407a-a85e-c7e836b7281d
 	//creates a new test run and a new test log for the test case_key. By calling this endpoint, 
 	//you will create a new log entry in Vansah with the respective overal Result. 
@@ -194,7 +194,7 @@ public class Vansah {
 			clientBuilder = HttpClientBuilder.create();
 			// Detecting if the system using any proxy setting.
 		
-			if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
+			if (hostAddr.equals("") && portNo.equals("")) {
 				System.out.println("No proxy");
 				Unirest.setHttpClient(clientBuilder.build());
 			} else {
@@ -245,13 +245,12 @@ public class Vansah {
 		
 		HttpResponse<JsonNode> jsonResponse = null;
 		
-		
 		if (updateVansah.equals("1")) {
 
 			try {
 				clientBuilder = HttpClientBuilder.create();
 				// Detecting if binder is being used behind any proxy setting.
-				if (hostAddr.equals("www.host.com") && portNo.equals("0")) {
+				if (hostAddr.equals("") && portNo.equals("")) {
 					Unirest.setHttpClient(clientBuilder.build());
 				} else {
 					System.out.println("Proxy Server");credsProvider = new BasicCredentialsProvider();
