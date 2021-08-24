@@ -41,7 +41,7 @@ public class vansahjira {
 	
 	
 	//--------------------------- INFORM YOUR UNIQUE VANSAH TOKEN HERE ---------------------------------------------------
-	private static final String VANSAH_TOKEN = "a3b4d9b0-fe8e-11eb-84d7-56e19ace5691";
+	private static final String VANSAH_TOKEN = "";
 	//--------------------------------------------------------------------------------------------------------------------
 	
 	
