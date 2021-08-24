@@ -1,4 +1,4 @@
-package testpoint;
+package com.testpoint.binding;
 
 import java.io.File;
 import java.io.FileInputStream;
