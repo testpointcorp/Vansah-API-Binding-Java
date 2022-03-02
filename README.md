@@ -12,7 +12,7 @@ All written requests must use the HTTP POST method, and all read requests must u
 ## Authentication
 Vansah expects the authentication credentials to be provided via standard HTTP basic authentication for the API. 
 
-**Workspace Project API Token:** Vansah supports API keys. API keys can be generated in Vansah under Settings. Multiple API keys can be generated and revoked at any time under your settings.
+**Using Vansah Test Management for Jira - API for Test Automation:** https://vansahapp.atlassian.net/wiki/spaces/VANSAH/pages/66641/Using+Vansah+API+for+Test+Automation
 
 ## List of the main Endpoints for Automation Testing:
 
