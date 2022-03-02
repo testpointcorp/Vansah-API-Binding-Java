@@ -15,22 +15,7 @@ Vansah expects the authentication credentials to be provided via standard HTTP b
 **Using Vansah Test Management for Jira - API for Test Automation:** https://vansahapp.atlassian.net/wiki/spaces/VANSAH/pages/66641/Using+Vansah+API+for+Test+Automation
 
 ## List of the main Endpoints for Automation Testing:
-
-- **add_test_run**: POST API, creates a new test run Identifier which is then used with the other testing methods: 1) add_test_log 2) remove_test_run
-
-- **add_test_log**: POST API, adds a new test log for the test case_key. Requires "test_run_identifier" from add_test_run. Result. (0 = N/A, 1= FAIL, 2= PASS, 3 = Not Tested)
-
-- **remove_test_run**: POST API, will delete the test log created from add_test_run or add_quick_test
-
-- **update_test_log**: POST API, will perform any updates required using the test log identifier which is returned from add_test_log or add_quick_test
-
-- **remove_test_log**: POST API, will delete a test log identifier created from add_test_log & add_quick_test
-
-- **add_quick_test**: POST API, creates a new test run and a new test log for the test case_key. By calling this endpoint, you will create a new log entry in Vansah with the respective **overal** Result. (0 = N/A, 1= FAIL, 2= PASS, 3 = Not Tested). Add_Quick_Test is useful for test cases in which there are no steps in the test script, where only the overall result is important.
-
-- **test_script**: GET API, Returns the test script for a given case_key. 
-
-You may refer to the APIs documentation here: http://apidoc.vansah.com/
+You may refer to the APIs documentation here: https://vansahapp.atlassian.net/wiki/spaces/VANSAH/pages/66641/Using+Vansah+API+for+Test+Automation
 
 ![image](https://user-images.githubusercontent.com/30623282/112987724-c3c90400-91ae-11eb-9274-6a6f3dd25186.png)
 
@@ -42,12 +27,11 @@ You may refer to the APIs documentation here: http://apidoc.vansah.com/
 
 
 For questions, suggestions, or other requests, please reach out to us through our support channels:
-
-https://community.vansah.com/
+https://community.vansah.com/ to raise a ticket: https://vansahapp.atlassian.net/servicedesk/customer/portals
 
 -- 
 
-© 2021 Vansah®. All rights reserved, See license.md for details.
+© 2022 Vansah®. All rights reserved, See license.md for details.
 
 https://www.vansah.com/
 
