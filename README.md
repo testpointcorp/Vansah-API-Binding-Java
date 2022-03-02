@@ -17,14 +17,11 @@ Vansah expects the authentication credentials to be provided via standard HTTP b
 ## List of the main Endpoints for Automation Testing:
 You may refer to the APIs documentation here: https://vansahapp.atlassian.net/wiki/spaces/VANSAH/pages/66641/Using+Vansah+API+for+Test+Automation
 
-![image](https://user-images.githubusercontent.com/30623282/112987724-c3c90400-91ae-11eb-9274-6a6f3dd25186.png)
-
 ------------
 ## Adding Vansah Java API-Binding to a Selenium project
 --------
 
-1) - Download Vansah API-Binding here: https://github.com/testpointcorp/Vansah-API-Binding-Java.git
-
+Download Vansah API-Binding here: https://github.com/testpointcorp/Vansah-API-Binding-Java.git
 
 For questions, suggestions, or other requests, please reach out to us through our support channels:
 https://community.vansah.com/ to raise a ticket: https://vansahapp.atlassian.net/servicedesk/customer/portals
