@@ -28,8 +28,8 @@ import org.apache.commons.lang3.StringUtils;
 public class vansahjira {
 
 	//--------------------------- ENDPOINTS -------------------------------------------------------------------------------
-	private static final String API_VERSION     = "v2";
-	private static final String VANSAH_URL      = "https://id.vansahapi.app";
+	private static final String API_VERSION     = "v3";
+	private static final String VANSAH_URL      = "https://api.vansah.app";
 	private static final String ADD_TEST_RUN    = VANSAH_URL + "/api/" + API_VERSION     + "/auto/test_case/add_test_run";
 	private static final String ADD_TEST_LOG    = VANSAH_URL + "/api/" + API_VERSION     + "/auto/test_case/add_test_log";
 	private static final String UPDATE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION     + "/auto/test_case/update_test_log";
