@@ -1,4 +1,15 @@
-# Vansah Java API-Binding
+<div align="center">
+  <img src="https://vansah.com/wp-content/uploads/2022/06/512x512.png" style="width:150px"/>
+</div>
+<h1 align="center">
+  Vansah Java API-Binding
+</h1>
+
+<p align="center">
+   Vansah's API can be used to integrate Vansah with various tools, automation and development frameworks including third-party applications.
+</p>
+<br />
+
 ---------
 ## Introduction
 
