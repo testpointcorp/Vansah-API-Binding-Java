@@ -33,19 +33,19 @@ public class vansahnode {
 
 	//--------------------------- ENDPOINTS -------------------------------------------------------------------------------
 	private static final String API_VERSION     = "v1";
-	private static final String VANSAH_URL      = "https://vtrunk.vansahnode.app";
+	private static final String VANSAH_URL      = "https://prod.vansahnode.app";
 	private static final String ADD_TEST_RUN    = VANSAH_URL + "/api/" + API_VERSION+ "/run";
 	private static final String ADD_TEST_LOG    = VANSAH_URL + "/api/" + API_VERSION+ "/logs";
-	private static final String UPDATE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION+ "/auto/test_case/update_test_log";
-	private static final String REMOVE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION+ "/auto/test_case/remove_test_log";
-	private static final String ADD_QUICK_TEST  = VANSAH_URL + "/api/" + API_VERSION+ "/auto/test_case/add_quick_test";
-	private static final String REMOVE_TEST_RUN = VANSAH_URL + "/api/" + API_VERSION+ "/auto/test_case/remove_test_run";
-	private static final String TEST_SCRIPT     = VANSAH_URL + "/api/" + API_VERSION+ "/auto/test_case/test_script";
+	private static final String UPDATE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION+ "/logs/";
+	private static final String REMOVE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION+ "/logs/";
+//	private static final String ADD_QUICK_TEST  = VANSAH_URL + "/api/" + API_VERSION+ "/run";
+	private static final String REMOVE_TEST_RUN = VANSAH_URL + "/api/" + API_VERSION+ "/run/";
+	private static final String TEST_SCRIPT     = VANSAH_URL + "/api/" + API_VERSION+ "/testCase/list/testScripts";
 	//--------------------------------------------------------------------------------------------------------------------
 
 
 	//--------------------------- INFORM YOUR UNIQUE VANSAH TOKEN HERE ---------------------------------------------------
-	private static final String VANSAH_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20udmFuc2FoLmppcmEudmFuc2FoLXBsdWdpbiIsImlhdCI6MTY2NjE3MzY4Miwic3ViIjoiNjE5ZGMzNmJkNTk4NmMwMDZhZDE3YjVlIiwiZXhwIjoyNjY2MTczNjgyLCJhdWQiOlsiNzk5MjAxMDctMzcwZC0zYTQwLTkyMTItYjlmMTE4ODJjYWYxIl0sInR5cGUiOiJjb25uZWN0In0.ne2YWSvuj2FHFgNfWNmZd9_P8Xft4tuA6CO15DMhIFA";
+	private static final String VANSAH_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20udmFuc2FoLmppcmEudmFuc2FoLXBsdWdpbiIsImlhdCI6MTY2NjIzMDMxNCwic3ViIjoiNjE5ZGMzNmJkNTk4NmMwMDZhZDE3YjVlIiwiZXhwIjoyNjY2MjMwMzE0LCJhdWQiOlsiNjIzMWQ5ZWEtN2Q0OC0zODA4LTkxNmQtNGUwN2Y0YWFjZDI3Il0sInR5cGUiOiJjb25uZWN0In0.R0j0a1nggLgf5tEwH-9GH9VO8taaKWDDbkDK5iYUvNE";
 	//--------------------------------------------------------------------------------------------------------------------
 
 
@@ -84,7 +84,7 @@ public class vansahnode {
 	private List<Integer> listOfSteps;
 	private int testRows;
 	private Map<String, String> headers = new HashMap<>();
-
+	private String PROJECT_KEY;
 
 	private JSONObject requestBody = null;
 
@@ -101,8 +101,9 @@ public class vansahnode {
 	 * @param rELEASE_KEY
 	 * @param eNVIRONMENT_KEY
 	 */
-	public vansahnode(String tESTFOLDERS_ID, String jiraIssue, String sprintKey, String release,String environment) {
+	public vansahnode(String project,String tESTFOLDERS_ID, String jiraIssue, String sprintKey, String release,String environment) {
 		super();
+		this.PROJECT_KEY = project;
 		this.TESTFOLDERS_ID = tESTFOLDERS_ID;
 		this.RELEASE_KEY = release;
 		this.ENVIRONMENT_KEY = environment;
@@ -125,7 +126,7 @@ public class vansahnode {
 	//creates a new test run Identifier which is then used with the other testing methods: 1) add_test_log 2) remove_test_run
 
 
-	public void addTestRunFromTestFolder(String testcase, String release, String environment, String TestFolder) throws Exception {
+	public void addTestRunFromTestFolder(String testcase) throws Exception {
 
 		this.CASE_KEY = testcase;
 		this.SEND_SCREENSHOT = false;
@@ -222,7 +223,9 @@ public class vansahnode {
 
 	public int test_script(String case_key) {
 		try {
-			System.out.println("RequestBody : "+requestBody);
+			headers.put("Authorization",VANSAH_TOKEN);
+			headers.put("Content-Type","application/json");
+			
 			clientBuilder = HttpClientBuilder.create();
 			// Detecting if the system using any proxy setting.
 
@@ -239,7 +242,7 @@ public class vansahnode {
 				Unirest.setHttpClient(clientBuilder.build());
 			}
 			HttpResponse<JsonNode> get;
-			get = Unirest.get(TEST_SCRIPT).header("Authorization",VANSAH_TOKEN).queryString("case_key", case_key).asJson();
+			get = Unirest.get(TEST_SCRIPT).headers(headers).queryString("caseKey", case_key).asJson();
 			if (get.getBody().toString().equals("[]")) {
 				System.out.println("Unexpected Response From Server: " + get.getBody().toString());
 			} else {
@@ -252,16 +255,16 @@ public class vansahnode {
 					testResults = new HashMap<Integer, String>();
 					listOfSteps = new ArrayList<Integer>();
 					JSONObject jsonobj = new JSONObject(get.getBody().toString());
-					int testRows = jsonobjInit.getJSONObject("pagination").getInt("page_total");
+					int testRows = jsonobjInit.getJSONArray("data").length();
 					System.out.println("NUMBER OF STEPS: " + testRows);
-
-					JSONArray records = jsonobj.getJSONArray("data");
-					for (int i = 0; i < testRows; i++) {
-						JSONObject record = records.getJSONObject(i);
-						listOfSteps.add(record.getInt("sort_order"));
-						testSteps.put(record.getInt("sort_order"), formatString(record, "plain_step"));
-						testResults.put(record.getInt("sort_order"), formatString(record, "plain_expected_result"));	
-					}
+//
+//					JSONArray records = jsonobj.getJSONArray("data");
+//					for (int i = 0; i < testRows; i++) {
+//						JSONObject record = records.getJSONObject(i);
+//						listOfSteps.add(record.getInt("sort_order"));
+//						testSteps.put(record.getInt("sort_order"), formatString(record, "plain_step"));
+//						testResults.put(record.getInt("sort_order"), formatString(record, "plain_expected_result"));	
+//					}
 
 					return testRows;
 
@@ -335,7 +338,7 @@ public class vansahnode {
 							+ "        }\r\n"
 							+ "    },\r\n"
 							+ "     \"project\" :{\r\n"
-							+ "        \"id\":\"10048\"\r\n"
+							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
 							+ "    }"
 							+ "}");
 
@@ -364,7 +367,7 @@ public class vansahnode {
 							+ "        }\r\n"
 							+ "    },\r\n"
 							+ "     \"project\" :{\r\n"
-							+ "        \"id\":\"10048\"\r\n"
+							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
 							+ "    }"
 							+ "}");
 
@@ -385,35 +388,92 @@ public class vansahnode {
 							+ "	\"result\": {\r\n"
 							+ "		\"id\": 1\r\n"
 							+ "	},\r\n"
-							+ "	\"actualResult\": \"This is from testlog\"\r\n"
+							+ "	\"actualResult\": \"This is from testlog\",\r\n"
+							+ "     \"project\" :{\r\n"
+							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
+							+ "    }"
 							+ "}");
-
+					System.out.println(requestBody);
 					jsonRequestBody = Unirest.post(ADD_TEST_LOG).headers(headers).body(requestBody).asJson();
 				}
 
 
 				if(type == "addQuickTestFromJiraISSUE") {
-					jsonRequestBody = Unirest.post(ADD_QUICK_TEST).header("Authorization",VANSAH_TOKEN).field("case_key", CASE_KEY).field("result_key", RESULT_KEY).field("release_key", RELEASE_KEY).field("environment_key", ENVIRONMENT_KEY)
-							.field("comment", COMMENT).field("issue_key", JIRA_ISSUE_KEY).field("file", FILE).asJson();
+					requestBody = new JSONObject("{\r\n"
+							+ "    \"case\": {\r\n"
+							+ "        \"key\": \""+CASE_KEY+"\"\r\n"
+							+ "    },\r\n"
+							+ "    \"asset\": {\r\n"
+							+ "        \"type\": \"issue\",\r\n"
+							+ "        \"key\": \""+JIRA_ISSUE_KEY+"\"\r\n"
+							+ "    },\r\n"
+							+ "    \"properties\": {\r\n"
+							+ "        \"environment\": {\r\n"
+							+ "            \"name\": \""+ENVIRONMENT_KEY+"\"\r\n"
+							+ "        },\r\n"
+							+ "        \"release\": {\r\n"
+							+ "            \"name\" : \""+RELEASE_KEY+"\"\r\n"
+							+ "        },\r\n"
+							+ "        \"sprint\": {\r\n"
+							+ "            \"name\" : \""+SPRINT_KEY+"\"\r\n"
+							+ "        }\r\n"
+							+ "    },\r\n"
+							+ "     \"project\" :{\r\n"
+							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
+							+ "    },\r\n"
+							+ "      \"result\": {\r\n"
+							+ "        \"id\": \""+RESULT_KEY+"\"\r\n"
+							+ "    }"
+							+ "}");
+
+					System.out.println(requestBody);
+					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
 				}
 				if(type == "addQuickTestFromTestFolders") {
-					jsonRequestBody = Unirest.post(ADD_QUICK_TEST).header("Authorization",VANSAH_TOKEN).field("case_key", CASE_KEY).field("result_key", RESULT_KEY).field("release_key", RELEASE_KEY).field("environment_key", ENVIRONMENT_KEY)
-							.field("comment", COMMENT).field("issue_key", JIRA_ISSUE_KEY).field("file", FILE).asJson();
+					requestBody = new JSONObject("{\r\n"
+							+ "    \"case\": {\r\n"
+							+ "        \"key\": \""+CASE_KEY+"\"\r\n"
+							+ "    },\r\n"
+							+ "    \"asset\": {\r\n"
+							+ "        \"type\": \"folder\",\r\n"
+							+ "        \"identifier\": \""+TESTFOLDERS_ID+"\"\r\n"
+							+ "    },\r\n"
+							+ "    \"properties\": {\r\n"
+							+ "        \"environment\": {\r\n"
+							+ "            \"name\": \""+ENVIRONMENT_KEY+"\"\r\n"
+							+ "        },\r\n"
+							+ "        \"release\": {\r\n"
+							+ "            \"name\" : \""+RELEASE_KEY+"\"\r\n"
+							+ "        },\r\n"
+							+ "        \"sprint\": {\r\n"
+							+ "            \"name\" : \""+SPRINT_KEY+"\"\r\n"
+							+ "        }\r\n"
+							+ "    },\r\n"
+							+ "     \"project\" :{\r\n"
+							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
+							+ "    },\r\n"
+							+ "      \"result\": {\r\n"
+							+ "        \"id\": \""+RESULT_KEY+"\"\r\n"
+							+ "    }"
+							+ "}");
+
+					System.out.println(requestBody);
+					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
 				}
 
 
 				if(type == "removeTestRun") {
-					jsonRequestBody = Unirest.post(REMOVE_TEST_RUN).header("Authorization",VANSAH_TOKEN).field("test_run_identifier", TEST_RUN_IDENTIFIER).asJson();
+					jsonRequestBody = Unirest.post(REMOVE_TEST_RUN+TEST_RUN_IDENTIFIER).headers(headers).field("test_run_identifier", TEST_RUN_IDENTIFIER).asJson();
 				}
 
 
 				if(type == "removeTestLog") {
-					jsonRequestBody = Unirest.post(REMOVE_TEST_LOG).header("Authorization",VANSAH_TOKEN).field("log_identifier", TEST_LOG_IDENTIFIER).asJson();
+					jsonRequestBody = Unirest.post(REMOVE_TEST_LOG+"TEST_LOG_IDENTIFIER").headers(headers).field("log_identifier", TEST_LOG_IDENTIFIER).asJson();
 				}
 
 
 				if(type == "updateTestLog") {
-					jsonRequestBody = Unirest.post(UPDATE_TEST_LOG).header("Authorization",VANSAH_TOKEN).field("log_identifier", TEST_LOG_IDENTIFIER)
+					jsonRequestBody = Unirest.post(UPDATE_TEST_LOG+"TEST_LOG_IDENTIFIER").headers(headers).field("log_identifier", TEST_LOG_IDENTIFIER)
 							.field("result_key", RESULT_KEY).field("comment", COMMENT).field("file", FILE).asJson();
 				}
 
@@ -432,16 +492,16 @@ public class vansahnode {
 					if (success){
 
 						if(type == "addTestRunFromJIRAIssue") {
-							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").get("test_run_identifier").toString();
+							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
 						}
 						if(type == "addTestRunFromTestFolder") {
-							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").get("test_run_identifier").toString();
+							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
 						}
 
 						if(type == "addTestLog") {
-							TEST_LOG_IDENTIFIER = fullBody.getJSONObject("data").get("log_identifier").toString();
+							TEST_LOG_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("log").get("identifier").toString();
 							System.out.println("Test Log Identifier: " + TEST_LOG_IDENTIFIER);
 						}
 
