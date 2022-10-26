@@ -40,7 +40,7 @@ public class vansahnode {
 
 
 	//--------------------------- INFORM YOUR UNIQUE VANSAH TOKEN HERE ---------------------------------------------------
-	private static final String VANSAH_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20udmFuc2FoLmppcmEudmFuc2FoLXBsdWdpbiIsImlhdCI6MTY2NjIzMDMxNCwic3ViIjoiNjE5ZGMzNmJkNTk4NmMwMDZhZDE3YjVlIiwiZXhwIjoyNjY2MjMwMzE0LCJhdWQiOlsiNjIzMWQ5ZWEtN2Q0OC0zODA4LTkxNmQtNGUwN2Y0YWFjZDI3Il0sInR5cGUiOiJjb25uZWN0In0.R0j0a1nggLgf5tEwH-9GH9VO8taaKWDDbkDK5iYUvNE";
+	private static final String VANSAH_TOKEN = "YOUR TOKEN HERE";
 	//--------------------------------------------------------------------------------------------------------------------
 
 
