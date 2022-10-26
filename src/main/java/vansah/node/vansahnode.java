@@ -40,7 +40,7 @@ public class vansahnode {
 
 
 	//--------------------------- INFORM YOUR UNIQUE VANSAH TOKEN HERE ---------------------------------------------------
-	private static final String VANSAH_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20udmFuc2FoLmppcmEudmFuc2FoLXBsdWdpbiIsImlhdCI6MTY2NjIzMDMxNCwic3ViIjoiNjE5ZGMzNmJkNTk4NmMwMDZhZDE3YjVlIiwiZXhwIjoyNjY2MjMwMzE0LCJhdWQiOlsiNjIzMWQ5ZWEtN2Q0OC0zODA4LTkxNmQtNGUwN2Y0YWFjZDI3Il0sInR5cGUiOiJjb25uZWN0In0.R0j0a1nggLgf5tEwH-9GH9VO8taaKWDDbkDK5iYUvNE";
+	private static final String VANSAH_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjb20udmFuc2FoLmppcmEudmFuc2FoLXBsdWdpbiIsImlhdCI6MTY2Njc2MTk3Mywic3ViIjoiNjE5ZGMzNmJkNTk4NmMwMDZhZDE3YjVlIiwiZXhwIjoyNjY2NzYxOTczLCJhdWQiOlsiYjVlZDljNTktMzc5Ni0zODI0LTk2ZjEtZGE4MDIyNGZlZGM2Il0sInR5cGUiOiJjb25uZWN0In0.OlOfvEX58IVS5738-o6IB6GfDiXLl_U-EjUZoUxXI5Y";
 	//--------------------------------------------------------------------------------------------------------------------
 
 
@@ -322,9 +322,9 @@ public class vansahnode {
 							+ "    }"
 							+ "}");
 
-					System.out.println(requestBody);
+//					System.out.println(requestBody);
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
-					System.out.println(jsonRequestBody.getStatus());
+//					System.out.println(jsonRequestBody.getStatus());
 				}
 				if(type == "addTestRunFromTestFolder") {
 					requestBody = new JSONObject("{\r\n"
@@ -351,29 +351,29 @@ public class vansahnode {
 							+ "    }"
 							+ "}");
 
-					System.out.println(requestBody);
+//					System.out.println(requestBody);
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
-					System.out.println(jsonRequestBody.getStatus());
+//					System.out.println(jsonRequestBody.getStatus());
 				}
 
 
 				if(type == "addTestLog") {
 					requestBody = new JSONObject("{\r\n"
 							+ "	\"run\": {\r\n"
-							+ "		\"identifier\": \"{{test_run_identifier}}\"\r\n"
+							+ "		\"identifier\": \""+TEST_RUN_IDENTIFIER+"\"\r\n"
 							+ "	},\r\n"
 							+ "	\"step\": {\r\n"
-							+ "		\"number\": \"0\"\r\n"
+							+ "		\"number\": \""+STEP_ORDER+"\"\r\n"
 							+ "	},\r\n"
 							+ "	\"result\": {\r\n"
-							+ "		\"id\": 1\r\n"
+							+ "		\"id\": "+RESULT_KEY+"\r\n"
 							+ "	},\r\n"
-							+ "	\"actualResult\": \"This is from testlog\",\r\n"
+							+ "	\"actualResult\": \""+COMMENT+"\",\r\n"
 							+ "     \"project\" :{\r\n"
 							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
 							+ "    }"
 							+ "}");
-					System.out.println(requestBody);
+//					System.out.println(requestBody);
 					jsonRequestBody = Unirest.post(ADD_TEST_LOG).headers(headers).body(requestBody).asJson();
 				}
 
@@ -407,7 +407,7 @@ public class vansahnode {
 							+ "    }"
 							+ "}");
 
-					System.out.println(requestBody);
+//					System.out.println(requestBody);
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
 				}
 				if(type == "addQuickTestFromTestFolders") {
@@ -438,24 +438,29 @@ public class vansahnode {
 							+ "    }"
 							+ "}");
 
-					System.out.println(requestBody);
+//					System.out.println(requestBody);
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
 				}
 
 
 				if(type == "removeTestRun") {
-					jsonRequestBody = Unirest.post(REMOVE_TEST_RUN+TEST_RUN_IDENTIFIER).headers(headers).field("test_run_identifier", TEST_RUN_IDENTIFIER).asJson();
+					jsonRequestBody = Unirest.delete(REMOVE_TEST_RUN+TEST_RUN_IDENTIFIER).headers(headers).asJson();
 				}
 
 
 				if(type == "removeTestLog") {
-					jsonRequestBody = Unirest.post(REMOVE_TEST_LOG+"TEST_LOG_IDENTIFIER").headers(headers).field("log_identifier", TEST_LOG_IDENTIFIER).asJson();
+					jsonRequestBody = Unirest.delete(REMOVE_TEST_LOG+TEST_LOG_IDENTIFIER).headers(headers).asJson();
 				}
 
 
 				if(type == "updateTestLog") {
-					jsonRequestBody = Unirest.post(UPDATE_TEST_LOG+"TEST_LOG_IDENTIFIER").headers(headers).field("log_identifier", TEST_LOG_IDENTIFIER)
-							.field("result_key", RESULT_KEY).field("comment", COMMENT).field("file", FILE).asJson();
+					requestBody = new JSONObject("{\r\n"
+							+ "    \"result\": {\r\n"
+							+ "        \"id\": \""+RESULT_KEY+"\"\r\n"
+							+ "    },\r\n"
+							+ "    \"actualResult\": \""+COMMENT+"\"\r\n"
+							+ "}");
+					jsonRequestBody = Unirest.put(UPDATE_TEST_LOG+TEST_LOG_IDENTIFIER).headers(headers).body(requestBody).asJson();
 				}
 
 
