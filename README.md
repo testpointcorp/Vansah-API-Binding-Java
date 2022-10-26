@@ -1,8 +1,8 @@
 <div align="center">
   <img src="https://vansah.com/wp-content/uploads/2022/06/512x512.png" style="width:300px"/>
 </div>
-<h1 align="center" style="background-color: "cornflowerblue !important";
-    color: "white !important;">
+<h1 align="center" style="background-color:cornflowerblue !important;
+    color: white !important;">
   Java API-Binder
 </h1>
 
@@ -65,9 +65,9 @@ Vansah current node api's expects vansahConnectToken as Authentication that can 
 ## List of the All new Node Endpoints for Automation Testing:
 You may refer to the APIs documentation here: <a href="https://vansahapp.atlassian.net/wiki/spaces/VANSAH/pages/66641/Using+Vansah+API+for+Test+Automation">Click Here</a>
 
-------------
+
 ## Adding Vansah Java API-Binding to a Selenium project
---------
+
 
 Download Vansah API-Binding here: https://github.com/testpointcorp/Vansah-API-Binding-Java.git
 
