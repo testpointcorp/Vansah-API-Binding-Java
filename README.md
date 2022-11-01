@@ -25,34 +25,12 @@ You can check out latest api's from the api doc page
 
 <span>We currently support below API's using the Java Binder</span>
 
-<table>
-<tr>
-<th>Node API's</th>
-<th>Use Case</th>
-</tr>
-<td> https://prod.vansahnode.app/api/v1/run </td>
-<td> To create a Test Run Identifier and even this api can be used to a perform quick test </td>
-<tr>
-<td> https://prod.vansahnode.app/api/v1/run/{{test_run_identifier}}</td>
-<td> To delete a test run for a test Case</td>
-</tr>
-<tr>
-<td> https://prod.vansahnode.app/api/v1/logs</td>
-<td> To Add a test log against a test step</td>
-</tr>
-<tr>
-<td> https://prod.vansahnode.app/api/v1/logs/{{testLogIdentifier}}</td>
-<td> To update the current/existing test log of a test step</td>
-</tr>
-<tr>
-<td> https://prod.vansahnode.app/api/v1/logs/{{testLogIdentifier}}</td>
-<td> To delete a test log of a test step</td>
-</tr>
-<tr>
-<td> https://prod.vansahnode.app/api/v1/testCase/list/testScripts?caseKey={{caseKey}}</td>
-<td> To get the test step count of a test case</td>
-</tr>
-</table>
+POST Add Test Run To create a Test Run Identifier or perform a Quick Test (Send a Result against a Test Case)
+DEL Delete Test Run To delete a Test Run for a Test Case
+POST Add Test Log To Add a Test Log (RESULT) against a Test Step
+PUT Update Test Log To update the current/existing Test Log of a Test Step
+DEL Delete Test Log To delete a Test Log of a Test Step
+GET List Test Scripts To get the Test Step count of a Test Case 
 
 
 ## Authentication
