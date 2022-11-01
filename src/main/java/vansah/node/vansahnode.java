@@ -19,10 +19,12 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class vansahnode {
@@ -289,7 +291,8 @@ public class vansahnode {
 						WebDriver augmentedDriver = new Augmenter().augment(driver);
 						image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
 						String encodstring = encodeFileToBase64Binary(image);
-						FILE = "data:image/png;base64," + encodstring;
+						//FILE = "data:image/png;base64," + encodstring;
+						FILE = encodstring;
 						System.out.println("Screenshot succesfully taken.");
 					} catch (Exception e) {
 						System.out.println("Taking Screenshot failed: " + e.toString());
@@ -359,6 +362,13 @@ public class vansahnode {
 
 
 				if(type == "addTestLog") {
+					String filename = "";
+				    long millis = System.currentTimeMillis();
+				    String datetime = new Date().toGMTString();
+				    datetime = datetime.replace(" ", "");
+				    datetime = datetime.replace(":", "");
+				    String rndchars = RandomStringUtils.randomAlphanumeric(16);
+				    filename = rndchars + "_" + datetime + "_" + millis;
 					requestBody = new JSONObject("{\r\n"
 							+ "	\"run\": {\r\n"
 							+ "		\"identifier\": \""+TEST_RUN_IDENTIFIER+"\"\r\n"
@@ -372,7 +382,13 @@ public class vansahnode {
 							+ "	\"actualResult\": \""+COMMENT+"\",\r\n"
 							+ "     \"project\" :{\r\n"
 							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
-							+ "    }"
+							+ "    },\r\n"
+							+ "     \"attachments\" : [\r\n"
+							+ "		{ "
+							+ "		\"name\" : "+filename+","
+							+ "     \"extension\":\"png\",\r\n"
+							+ "		\"file\":\""+FILE+"\"\r\n"
+							+ "}]"
 							+ "}");
 //					System.out.println(requestBody);
 					jsonRequestBody = Unirest.post(ADD_TEST_LOG).headers(headers).body(requestBody).asJson();
