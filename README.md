@@ -23,7 +23,7 @@ New Node API's has been integrated which is making it more secure, reliable and 
 You can check out latest api's from the api doc page
 <a href="https://apidoc.vansah.com/#3734dc31-9d7e-4bb9-84e4-f6f60cdbdf3f">Click Here</a>
 
-<span>We currently support below api's</span>
+<span>We currently support below API's using the Java Binder</span>
 
 <table>
 <tr>
