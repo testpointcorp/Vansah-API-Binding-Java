@@ -97,8 +97,6 @@ public class vansahnode {
 	//Creates an Instance of vansahnode, to set all the required field
 	public vansahnode(String tESTFOLDERS_ID, String jiraIssue, String sprintKey, String release,String environment) {
 		super();
-		String[] project = sprintKey.split(" ");;
-		this.PROJECT_KEY = project[0];
 		this.TESTFOLDERS_ID = tESTFOLDERS_ID;
 		this.RELEASE_KEY = release;
 		this.ENVIRONMENT_KEY = environment;
@@ -112,7 +110,8 @@ public class vansahnode {
 	
 	//For JIRA ISSUES
 	public void addTestRunFromJIRAIssue(String testcase) throws Exception {
-
+		String[] project = testcase.split("-");;
+		this.PROJECT_KEY = project[0];
 		this.CASE_KEY = testcase;
 		this.SEND_SCREENSHOT = false;
 
@@ -121,7 +120,8 @@ public class vansahnode {
 
 	//For TestFolders
 	public void addTestRunFromTestFolder(String testcase) throws Exception {
-
+		String[] project = testcase.split("-");;
+		this.PROJECT_KEY = project[0];
 		this.CASE_KEY = testcase;
 		this.SEND_SCREENSHOT = false;
 
@@ -137,7 +137,7 @@ public class vansahnode {
 	//POST prod.vansahnode.app/api/v1/logs --> https://apidoc.vansah.com/#8cad9d9e-003c-43a2-b29e-26ec2acf67a7
 	//adds a new test log for the test case_key. Requires "test_run_identifier" from add_test_run
 
-	public void add_test_log(int result, String comment, Integer testStepRow, boolean sendScreenShot, WebDriver driver) throws Exception {
+	public void addTestLog(int result, String comment, Integer testStepRow, boolean sendScreenShot, WebDriver driver) throws Exception {
 
 		//0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested
 		this.RESULT_KEY = result;
@@ -185,7 +185,7 @@ public class vansahnode {
 	//POST prod.vansahnode.app/api/v1/run/{{test_run_identifier}} --> https://apidoc.vansah.com/#2f004698-34e9-4097-89ab-759a8d86fca8
 	//will delete the test log created from add_test_run or add_quick_test
 
-	public void remove_test_run() throws Exception {
+	public void removeTestRun() throws Exception {
 		connectToVansahRest("removeTestRun", null);
 	}
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -194,7 +194,7 @@ public class vansahnode {
 	//POST remove_test_log https://apidoc.vansah.com/#789414f9-43e7-4744-b2ca-1aaf9ee878e5
 	//will delete a test_log_identifier created from add_test_log or add_quick_test
 
-	public void remove_test_log() throws Exception {	
+	public void removeTestLog() throws Exception {	
 		connectToVansahRest("removeTestLog", null);
 	}
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -204,7 +204,7 @@ public class vansahnode {
 	//POST update_test_log https://apidoc.vansah.com/#ae26f43a-b918-4ec9-8422-20553f880b48
 	//will perform any updates required using the test log identifier which is returned from add_test_log or add_quick_test
 
-	public void update_test_log(int result, String comment, boolean sendScreenShot, WebDriver driver) throws Exception {
+	public void updateTestLog(int result, String comment, boolean sendScreenShot, WebDriver driver) throws Exception {
 
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.RESULT_KEY = result;
