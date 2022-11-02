@@ -40,17 +40,17 @@ public class CodeTest {
 		for(int i = 1;i<=testExecute.testStepCount(testCase);i++) {
 			
 			//Add logs for each step function(ResultID, AcutalResultComment, TestStepID, screenshotTrueorFalse, chromedriver/OtherBroswerdriver);
-			testExecute.add_test_log(2, "This is From Java Binder Add test log", i, false, driver);
+			testExecute.addTestLog(2, "This is From Java Binder Add test log", i, false, driver);
 			
 			//Will update the current test log
-			testExecute.update_test_log(1, "This is From Java Binder Update Test log", false, driver);
+			testExecute.updateTestLog(1, "This is From Java Binder Update Test log", false, driver);
 			
 			//To remove the current test log
-			testExecute.remove_test_log();
+			testExecute.removeTestLog();
 			
 		}
 		
-		testExecute.remove_test_run(); //Removing current test run
+		testExecute.removeTestRun(); //Removing current test run
 	
 		//From Test folder screen
 		testExecute.addTestRunFromTestFolder(testCase);
@@ -59,10 +59,10 @@ public class CodeTest {
 			
 			//Add logs for each step    function(ResultID, AcutalResultComment, TestStepID, screenshotTrueorFalse, chromedriver/OtherBroswerdriver);
 			
-			testExecute.add_test_log(2, "This is From Java Binder Add test log", i, false, driver);
+			testExecute.addTestLog(2, "This is From Java Binder Add test log", i, false, driver);
 			
 			//Will update the current test log
-			testExecute.update_test_log(1, "This is From Java Binder Update Test log", false, driver);
+			testExecute.updateTestLog(1, "This is From Java Binder Update Test log", false, driver);
 			
 			//To remove the current test log
 			//testExecute.remove_test_log();
