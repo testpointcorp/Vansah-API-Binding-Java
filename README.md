@@ -5,7 +5,6 @@
     color: white !important;">
   Java API-Binder
 </h1>
-
 <p align="center">
    Vansah's API can be used to integrate Vansah with various tools, automation and development frameworks including third-party applications.
    This Java Binder is used for Java web automation projects. Example tools would be Selenium with (Java), Cucumber. 
