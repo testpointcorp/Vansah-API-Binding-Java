@@ -2,7 +2,9 @@ package vansah.test;
 
 import org.openqa.selenium.WebDriver;
 
-import vansah.node.vansahnode;
+import vansah.node.VansahNode;
+
+
 
 public class CodeTest {
 	
@@ -31,7 +33,7 @@ public class CodeTest {
 		
 		
 		//Provide TestFolder ID , JIRA Issue, Sprint Key, Sprint Release and Environment
-		vansahnode testExecute = new vansahnode(testFolderID,issueKey,sprintName,releaseName,environment);
+		VansahNode testExecute = new VansahNode(testFolderID,issueKey,sprintName,releaseName,environment);
 		
 		
 		//From Jira Issue Screen
@@ -71,7 +73,7 @@ public class CodeTest {
 		
 		//Add Quick test for Jira issue  function(testCaseKey, ResultID, AcutalResultComment, screenshotTrueorFalse, chromedriver/OtherBroswerdriver);
 		
-		testExecute.addQuickTestFromJiraISSUE(testCase, 0, "This is from Quick Test Jira issue", false, driver);
+		testExecute.addQuickTestFromJiraIssue(testCase, 0, "This is from Quick Test Jira issue", false, driver);
 		
 		//Add Quick test for Test folders
 		testExecute.addQuickTestFromTestFolders(testCase, 0, "This is from Quick Test Test Folders", false, driver);

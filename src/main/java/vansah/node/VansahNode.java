@@ -27,7 +27,7 @@ import java.util.Map;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
-public class vansahnode {
+public class VansahNode {
 
 	//--------------------------- ENDPOINTS -------------------------------------------------------------------------------
 	private static final String API_VERSION     = "v1";
@@ -95,7 +95,7 @@ public class vansahnode {
 	 */
 	//------------------------ VANSAH INSTANCE CREATION---------------------------------------------------------------------------------
 	//Creates an Instance of vansahnode, to set all the required field
-	public vansahnode(String tESTFOLDERS_ID, String jiraIssue, String sprintKey, String release,String environment) {
+	public VansahNode (String tESTFOLDERS_ID, String jiraIssue, String sprintKey, String release,String environment) {
 		super();
 		this.TESTFOLDERS_ID = tESTFOLDERS_ID;
 		this.RELEASE_KEY = release;
@@ -158,7 +158,7 @@ public class vansahnode {
 	//where only the overall result is important.
 	
 	//For JIRA ISSUES
-	public void addQuickTestFromJiraISSUE(String testcase, int result,String comment, boolean sendScreenShot, WebDriver driver) throws Exception {
+	public void addQuickTestFromJiraIssue(String testcase, int result,String comment, boolean sendScreenShot, WebDriver driver) throws Exception {
 
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.CASE_KEY = testcase;
