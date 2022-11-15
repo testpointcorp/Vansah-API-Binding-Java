@@ -9,7 +9,7 @@
 	<artifactId>VansahJavaBinder</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<name>Vansah Java Binder</name>
-	<url>https://testpoint.com.au/</url>
+	<url>https://vansah.com/</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
