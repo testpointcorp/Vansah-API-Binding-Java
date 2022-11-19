@@ -168,24 +168,20 @@ public class VansahNode {
 	//where only the overall result is important.
 
 	//For JIRA ISSUES
-	public void addQuickTestFromJiraIssue(String testcase, int result,String comment, boolean sendScreenShot, WebDriver driver) throws Exception {
+	public void addQuickTestFromJiraIssue(String testcase, int result) throws Exception {
 
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.CASE_KEY = testcase;
 		this.RESULT_KEY = result;
-		this.COMMENT = comment;
-		this.SEND_SCREENSHOT = sendScreenShot;
-		connectToVansahRest("addQuickTestFromJiraISSUE", driver);
+		connectToVansahRest("addQuickTestFromJiraISSUE", null);
 	}
 	//For TestFolders
-	public void addQuickTestFromTestFolders(String testcase, int result,String comment, boolean sendScreenShot, WebDriver driver) throws Exception {
+	public void addQuickTestFromTestFolders(String testcase, int result) throws Exception {
 
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.CASE_KEY = testcase;
 		this.RESULT_KEY = result;
-		this.COMMENT = comment;
-		this.SEND_SCREENSHOT = sendScreenShot;
-		connectToVansahRest("addQuickTestFromTestFolders", driver);
+		connectToVansahRest("addQuickTestFromTestFolders", null);
 	}
 
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -369,10 +365,8 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
-					if(SEND_SCREENSHOT) {
-						requestBody.append("attachments", addAttachment(FILE));
-					}
-					requestBody.accumulate("actualResult", COMMENT);;
+
+					
 					
 					
 
@@ -386,10 +380,7 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
-					if(SEND_SCREENSHOT) {
-						requestBody.append("attachments", addAttachment(FILE));
-					}
-					requestBody.accumulate("actualResult", COMMENT);;
+
 					
 					
 
