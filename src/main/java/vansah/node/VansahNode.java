@@ -1,12 +1,12 @@
 package vansah.node;
 
 
-
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.LocalDateTime;
+
 import org.apache.http.HttpHost;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
@@ -21,13 +21,12 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import java.util.Base64;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+
 
 public class VansahNode {
 
@@ -44,7 +43,9 @@ public class VansahNode {
 
 
 	//--------------------------- INFORM YOUR UNIQUE VANSAH TOKEN HERE ---------------------------------------------------
-	private static final String VANSAH_TOKEN = "YOUR TOKEN HERE";
+	private static final String VANSAH_TOKEN = "Your Token Here";
+
+
 	//--------------------------------------------------------------------------------------------------------------------
 
 
@@ -64,10 +65,10 @@ public class VansahNode {
 	//--------------------------------------------------------------------------------------------------------------------
 	private String TESTFOLDERS_ID;  //Mandatory (GUID Test folder Identifer) Optional if issue_key is provided
 	private String JIRA_ISSUE_KEY;  //Mandatory (JIRA ISSUE KEY) Optional if Test Folder is provided
-	private String SPRINT_KEY; //Mandatory (SPRINT KEY)
+	private String SPRINT_NAME; //Mandatory (SPRINT KEY)
 	private String CASE_KEY;   //CaseKey ID (Example - TEST-C1) Mandatory
-	private String RELEASE_KEY;  //Release Key (JIRA Release/Version Key) Mandatory
-	private String ENVIRONMENT_KEY; //Enivronment ID from Vansah for JIRA app. (Example SYS or UAT ) Mandatory
+	private String RELEASE_NAME;  //Release Key (JIRA Release/Version Key) Mandatory
+	private String ENVIRONMENT_NAME; //Enivronment ID from Vansah for JIRA app. (Example SYS or UAT ) Mandatory
 	private int RESULT_KEY;    // Result Key such as (Result value. Options: (0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested)) Mandatory
 	private boolean SEND_SCREENSHOT;   // true or false If Required to take a screenshot of the webPage that to be tested.
 	private String COMMENT;  //Actual Result 	
@@ -78,51 +79,38 @@ public class VansahNode {
 	private File image;
 	private HttpClientBuilder clientBuilder;
 	private CredentialsProvider credsProvider;
-	private HashMap<Integer, String> testSteps = new HashMap<Integer, String>();
-	private HashMap<Integer, String> testResults = new HashMap<Integer, String>();
-	private List<Integer> listOfSteps;
-	private int testRows;
 	private Map<String, String> headers = new HashMap<>();
-	private String PROJECT_KEY;
 	private HashMap<String,Integer> resultAsName = new HashMap<>();
-
-
-
 	private JSONObject requestBody = null;
 
 	/**
 	 * @param tESTFOLDERS_ID
 	 * @param jIRA_ISSUE_KEY
-	 * @param sPRINT_KEY
-	 * @param rELEASE_KEY
-	 * @param eNVIRONMENT_KEY
+	 * @param SPRINT_NAME
+	 * @param RELEASE_NAME
+	 * @param ENVIRONMENT_NAME
 	 */
 	//------------------------ VANSAH INSTANCE CREATION---------------------------------------------------------------------------------
-	//Creates an Instance of vansahnode, to set all the required field
-	public VansahNode (String testFolder_ID, String jiraIssue, String sprintKey, String release,String environment) {
+	//Creates an Instance of vansahnode, to set TESTFOLDERS_ID and to set JIRA_ISSUEKEY
+	public VansahNode (String TESTFOLDERS_ID, String JIRA_ISSUE_KEY) {
 		super();
-		this.TESTFOLDERS_ID = testFolder_ID;
-		this.RELEASE_KEY = release;
-		this.ENVIRONMENT_KEY = environment;
-		this.JIRA_ISSUE_KEY = jiraIssue;
-		this.SPRINT_KEY = sprintKey;
-
-		validate(TESTFOLDERS_ID,"TESTFOLDERS_ID");
-		validate(JIRA_ISSUE_KEY,"JIRA_ISSUE_KEY");
-
+		this.TESTFOLDERS_ID = TESTFOLDERS_ID;
+		this.JIRA_ISSUE_KEY = JIRA_ISSUE_KEY;
 		//Creating key Object Pair for Test Result
 		resultAsName.put("NA",0);
 		resultAsName.put("FAILED",1);
 		resultAsName.put("PASSED",2);
 		resultAsName.put("UNTESTED",3);
 	}
-	//Validate Vansah Resources before execution
-	public void validate(String PROPERTY,String VariableName) {
-		if(PROPERTY==null || PROPERTY.length()<=2) {
-			System.out.println("Please Provide "+VariableName);
-			
-		}
+	public VansahNode() {
+		super();
+		//Creating key Object Pair for Test Result
+		resultAsName.put("NA",0);
+		resultAsName.put("FAILED",1);
+		resultAsName.put("PASSED",2);
+		resultAsName.put("UNTESTED",3);
 	}
+
 
 	//------------------------ VANSAH ADD TEST RUN(TEST RUN IDENTIFIER CREATION) -------------------------------------------
 	//POST prod.vansahnode.app/api/v1/run --> https://apidoc.vansah.com/#0ebf5b8f-edc5-4adb-8333-aca93059f31c
@@ -130,23 +118,15 @@ public class VansahNode {
 
 	//For JIRA ISSUES
 	public void addTestRunFromJIRAIssue(String testcase) throws Exception {
-		String[] project = testcase.split("-");;
-		this.PROJECT_KEY = project[0];
 		this.CASE_KEY = testcase;
 		this.SEND_SCREENSHOT = false;
-		validate(CASE_KEY,"CASE_KEY");
 		connectToVansahRest("addTestRunFromJIRAIssue", null);
 	}
 
 	//For TestFolders
 	public void addTestRunFromTestFolder(String testcase) throws Exception {
-		String[] project = testcase.split("-");;
-		this.PROJECT_KEY = project[0];
 		this.CASE_KEY = testcase;
 		this.SEND_SCREENSHOT = false;
-		validate(CASE_KEY,"CASE_KEY");
-
-
 		connectToVansahRest("addTestRunFromTestFolder", null);
 	}
 	//------------------------------------------------------------------------------------------------------------------------
@@ -164,18 +144,16 @@ public class VansahNode {
 		this.COMMENT = comment;
 		this.STEP_ORDER = testStepRow;
 		this.SEND_SCREENSHOT = sendScreenShot;
-		validate(COMMENT,"At Least 3 Character Comment");
 		connectToVansahRest("addTestLog", driver);
 	}
 	public void addTestLog(String result, String comment, Integer testStepRow, boolean sendScreenShot, WebDriver driver) throws Exception {
 
-		//0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested
+		//0 = N/A, 1 = FAILED, 2 = PASSED, 3 = UNTESTED
 
 		this.RESULT_KEY = resultAsName.get(result.toUpperCase());
 		this.COMMENT = comment;
 		this.STEP_ORDER = testStepRow;
 		this.SEND_SCREENSHOT = sendScreenShot;
-		validate(COMMENT,"At Least 3 Character Comment");
 		connectToVansahRest("addTestLog", driver);
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
@@ -190,28 +168,20 @@ public class VansahNode {
 	//where only the overall result is important.
 
 	//For JIRA ISSUES
-	public void addQuickTestFromJiraIssue(String testcase, int result,String comment, boolean sendScreenShot, WebDriver driver) throws Exception {
+	public void addQuickTestFromJiraIssue(String testcase, int result) throws Exception {
 
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.CASE_KEY = testcase;
 		this.RESULT_KEY = result;
-		this.COMMENT = comment;
-		this.SEND_SCREENSHOT = sendScreenShot;
-		validate(CASE_KEY,"CASE_KEY");
-		validate(COMMENT,"At Least 3 Character Comment");
-		connectToVansahRest("addQuickTestFromJiraISSUE", driver);
+		connectToVansahRest("addQuickTestFromJiraISSUE", null);
 	}
 	//For TestFolders
-	public void addQuickTestFromTestFolders(String testcase, int result,String comment, boolean sendScreenShot, WebDriver driver) throws Exception {
+	public void addQuickTestFromTestFolders(String testcase, int result) throws Exception {
 
 		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
 		this.CASE_KEY = testcase;
 		this.RESULT_KEY = result;
-		this.COMMENT = comment;
-		this.SEND_SCREENSHOT = sendScreenShot;
-		validate(CASE_KEY,"CASE_KEY");
-		validate(COMMENT,"At Least 3 Character Comment");
-		connectToVansahRest("addQuickTestFromTestFolders", driver);
+		connectToVansahRest("addQuickTestFromTestFolders", null);
 	}
 
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -222,7 +192,6 @@ public class VansahNode {
 	//will delete the test log created from add_test_run or add_quick_test
 
 	public void removeTestRun() throws Exception {
-		validate(TEST_RUN_IDENTIFIER,"TEST_RUN_IDENTIFIER");
 		connectToVansahRest("removeTestRun", null);
 	}
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -232,7 +201,6 @@ public class VansahNode {
 	//will delete a test_log_identifier created from add_test_log or add_quick_test
 
 	public void removeTestLog() throws Exception {	
-		validate(TEST_LOG_IDENTIFIER,"TEST_LOG_IDENTIFIER");
 		connectToVansahRest("removeTestLog", null);
 	}
 	//------------------------------------------------------------------------------------------------------------------------------
@@ -248,7 +216,14 @@ public class VansahNode {
 		this.RESULT_KEY = result;
 		this.COMMENT = comment;
 		this.SEND_SCREENSHOT = sendScreenShot;
-		validate(COMMENT,"At Least 3 Character Comment");
+		connectToVansahRest("updateTestLog", driver);
+	}
+	public void updateTestLog(String result, String comment, boolean sendScreenShot, WebDriver driver) throws Exception {
+
+		//0 = N/A, 1= FAIL, 2= PASS, 3 = Not tested
+		this.RESULT_KEY = resultAsName.get(result.toUpperCase());
+		this.COMMENT = comment;
+		this.SEND_SCREENSHOT = sendScreenShot;
 		connectToVansahRest("updateTestLog", driver);
 	}
 	//----------------------------------------------VANSAH GET TEST SCRIPT-----------------------------------------------------------
@@ -256,19 +231,17 @@ public class VansahNode {
 	//Returns the test script for a given case_key
 
 	public int testStepCount(String case_key) {
-		
-		validate(case_key,"CASE_KEY"); 
-		
+
+
 		try {
 			headers.put("Authorization",VANSAH_TOKEN);
 			headers.put("Content-Type","application/json");
 
 			clientBuilder = HttpClientBuilder.create();
 			// Detecting if the system using any proxy setting.
-			
-			
+
+
 			if (hostAddr.equals("") && portNo.equals("")) {
-				//System.out.println("No proxy");
 				Unirest.setHttpClient(clientBuilder.build());
 			} else {
 				System.out.println("Proxy Server");
@@ -334,7 +307,6 @@ public class VansahNode {
 						WebDriver augmentedDriver = new Augmenter().augment(driver);
 						image = ((TakesScreenshot) augmentedDriver).getScreenshotAs(OutputType.FILE);
 						String encodstring = encodeFileToBase64Binary(image);
-						//FILE = "data:image/png;base64," + encodstring;
 						FILE = encodstring;
 						System.out.println("Screenshot succesfully taken.");
 					} catch (Exception e) {
@@ -345,114 +317,40 @@ public class VansahNode {
 
 				if(type == "addTestRunFromJIRAIssue") {
 
-					requestBody = new JSONObject("{\r\n"
-							+ "    \"case\": {\r\n"
-							+ "        \"key\": \""+CASE_KEY+"\"\r\n"
-							+ "    },\r\n"
-							+ "    \"asset\": {\r\n"
-							+ "        \"type\": \"issue\",\r\n"
-							+ "        \"key\": \""+JIRA_ISSUE_KEY+"\"\r\n"
-							+ "    },\r\n"
-							+ "    \"properties\": {\r\n"
-							+ "        \"environment\": {\r\n"
-							+ "            \"name\": \""+ENVIRONMENT_KEY+"\"\r\n"
-							+ "        },\r\n"
-							+ "        \"release\": {\r\n"
-							+ "            \"name\" : \""+RELEASE_KEY+"\"\r\n"
-							+ "        },\r\n"
-							+ "        \"sprint\": {\r\n"
-							+ "            \"name\" : \""+SPRINT_KEY+"\"\r\n"
-							+ "        }\r\n"
-							+ "    },\r\n"
-							+ "     \"project\" :{\r\n"
-							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
-							+ "    }"
-							+ "}");
+					requestBody = new JSONObject();
+					requestBody.accumulate("case", testCase());
+					requestBody.accumulate("asset", jiraIssueAsset());
+					if(properties().length()!=0) {
+						requestBody.accumulate("properties", properties());
+					}
 
-					//System.out.println(requestBody);
+					
+
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
-					//					System.out.println(jsonRequestBody.getStatus());
+
 				}
 				if(type == "addTestRunFromTestFolder") {
-					requestBody = new JSONObject("{\r\n"
-							+ "    \"case\": {\r\n"
-							+ "        \"key\": \""+CASE_KEY+"\"\r\n"
-							+ "    },\r\n"
-							+ "    \"asset\": {\r\n"
-							+ "        \"type\": \"folder\",\r\n"
-							+ "        \"identifier\": \""+TESTFOLDERS_ID+"\"\r\n"
-							+ "    },\r\n"
-							+ "    \"properties\": {\r\n"
-							+ "        \"environment\": {\r\n"
-							+ "            \"name\": \""+ENVIRONMENT_KEY+"\"\r\n"
-							+ "        },\r\n"
-							+ "        \"release\": {\r\n"
-							+ "            \"name\" : \""+RELEASE_KEY+"\"\r\n"
-							+ "        },\r\n"
-							+ "        \"sprint\": {\r\n"
-							+ "            \"name\" : \""+SPRINT_KEY+"\"\r\n"
-							+ "        }\r\n"
-							+ "    },\r\n"
-							+ "     \"project\" :{\r\n"
-							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
-							+ "    }"
-							+ "}");
+					requestBody = new JSONObject();
+					requestBody.accumulate("case", testCase());
+					requestBody.accumulate("asset", testFolderAsset());
+					if(properties().length()!=0) {
+						requestBody.accumulate("properties", properties());
+					}
 
-					//					System.out.println(requestBody);
+					
+
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
-					//					System.out.println(jsonRequestBody.getStatus());
+
 				}
 
 
 				if(type == "addTestLog") {
-					String filename = "";
-					long millis = System.currentTimeMillis();
-					String datetime = new Date().toGMTString();
-					datetime = datetime.replace(" ", "");
-					datetime = datetime.replace(":", "");
-					String rndchars = RandomStringUtils.randomAlphanumeric(16);
-					filename = rndchars + "_" + datetime + "_" + millis;
+					requestBody =  addTestLogProp();
 					if(SEND_SCREENSHOT) {
-					requestBody = new JSONObject("{\r\n"
-							+ "	\"run\": {\r\n"
-							+ "		\"identifier\": \""+TEST_RUN_IDENTIFIER+"\"\r\n"
-							+ "	},\r\n"
-							+ "	\"step\": {\r\n"
-							+ "		\"number\": \""+STEP_ORDER+"\"\r\n"
-							+ "	},\r\n"
-							+ "	\"result\": {\r\n"
-							+ "		\"id\": "+RESULT_KEY+"\r\n"
-							+ "	},\r\n"
-							+ "	\"actualResult\": \""+COMMENT+"\",\r\n"
-							+ "     \"project\" :{\r\n"
-							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
-							+ "    },\r\n"
-							+ "     \"attachments\" : [\r\n"
-							+ "		{ "
-							+ "		\"name\" : "+filename+","
-							+ "     \"extension\":\"png\",\r\n"
-							+ "		\"file\":\""+FILE+"\"\r\n"
-							+ "}]"
-							+ "}");
+						
+						requestBody.append("attachments", addAttachment(FILE));
+						
 					}
-					else {
-						requestBody = new JSONObject("{\r\n"
-								+ "	\"run\": {\r\n"
-								+ "		\"identifier\": \""+TEST_RUN_IDENTIFIER+"\"\r\n"
-								+ "	},\r\n"
-								+ "	\"step\": {\r\n"
-								+ "		\"number\": \""+STEP_ORDER+"\"\r\n"
-								+ "	},\r\n"
-								+ "	\"result\": {\r\n"
-								+ "		\"id\": "+RESULT_KEY+"\r\n"
-								+ "	},\r\n"
-								+ "	\"actualResult\": \""+COMMENT+"\",\r\n"
-								+ "     \"project\" :{\r\n"
-								+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
-								+ "    }\r\n"
-								+ "}");
-					}
-					//					System.out.println(requestBody);
 					
 					jsonRequestBody = Unirest.post(ADD_TEST_LOG).headers(headers).body(requestBody).asJson();
 				}
@@ -460,65 +358,33 @@ public class VansahNode {
 
 				if(type == "addQuickTestFromJiraISSUE") {
 
-					requestBody = new JSONObject("{\r\n"
-							+ "    \"case\": {\r\n"
-							+ "        \"key\": \""+CASE_KEY+"\"\r\n"
-							+ "    },\r\n"
-							+ "    \"asset\": {\r\n"
-							+ "        \"type\": \"issue\",\r\n"
-							+ "        \"key\": \""+JIRA_ISSUE_KEY+"\"\r\n"
-							+ "    },\r\n"
-							+ "    \"properties\": {\r\n"
-							+ "        \"environment\": {\r\n"
-							+ "            \"name\": \""+ENVIRONMENT_KEY+"\"\r\n"
-							+ "        },\r\n"
-							+ "        \"release\": {\r\n"
-							+ "            \"name\" : \""+RELEASE_KEY+"\"\r\n"
-							+ "        },\r\n"
-							+ "        \"sprint\": {\r\n"
-							+ "            \"name\" : \""+SPRINT_KEY+"\"\r\n"
-							+ "        }\r\n"
-							+ "    },\r\n"
-							+ "     \"project\" :{\r\n"
-							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
-							+ "    },\r\n"
-							+ "      \"result\": {\r\n"
-							+ "        \"id\": \""+RESULT_KEY+"\"\r\n"
-							+ "    }"
-							+ "}");
+					requestBody = new JSONObject();
+					requestBody.accumulate("case", testCase());
+					requestBody.accumulate("asset", jiraIssueAsset());
+					if(properties().length()!=0) {
+						requestBody.accumulate("properties", properties());
+					}
+					requestBody.accumulate("result", resultObj(RESULT_KEY));
 
-					//					System.out.println(requestBody);
+					
+					
+					
+
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
 				}
 				if(type == "addQuickTestFromTestFolders") {
-					requestBody = new JSONObject("{\r\n"
-							+ "    \"case\": {\r\n"
-							+ "        \"key\": \""+CASE_KEY+"\"\r\n"
-							+ "    },\r\n"
-							+ "    \"asset\": {\r\n"
-							+ "        \"type\": \"folder\",\r\n"
-							+ "        \"identifier\": \""+TESTFOLDERS_ID+"\"\r\n"
-							+ "    },\r\n"
-							+ "    \"properties\": {\r\n"
-							+ "        \"environment\": {\r\n"
-							+ "            \"name\": \""+ENVIRONMENT_KEY+"\"\r\n"
-							+ "        },\r\n"
-							+ "        \"release\": {\r\n"
-							+ "            \"name\" : \""+RELEASE_KEY+"\"\r\n"
-							+ "        },\r\n"
-							+ "        \"sprint\": {\r\n"
-							+ "            \"name\" : \""+SPRINT_KEY+"\"\r\n"
-							+ "        }\r\n"
-							+ "    },\r\n"
-							+ "     \"project\" :{\r\n"
-							+ "        \"key\":\""+PROJECT_KEY+"\"\r\n"
-							+ "    },\r\n"
-							+ "      \"result\": {\r\n"
-							+ "        \"id\": \""+RESULT_KEY+"\"\r\n"
-							+ "    }"
-							+ "}");
+					requestBody = new JSONObject();
+					requestBody.accumulate("case", testCase());
+					requestBody.accumulate("asset", testFolderAsset());
+					if(properties().length()!=0) {
+						requestBody.accumulate("properties", properties());
+					}
+					requestBody.accumulate("result", resultObj(RESULT_KEY));
 
-					//					System.out.println(requestBody);
+					
+					
+
+
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
 				}
 
@@ -534,12 +400,13 @@ public class VansahNode {
 
 
 				if(type == "updateTestLog") {
-					requestBody = new JSONObject("{\r\n"
-							+ "    \"result\": {\r\n"
-							+ "        \"id\": \""+RESULT_KEY+"\"\r\n"
-							+ "    },\r\n"
-							+ "    \"actualResult\": \""+COMMENT+"\"\r\n"
-							+ "}");
+					requestBody = new JSONObject();
+					requestBody.accumulate("result", resultObj(RESULT_KEY));
+					requestBody.accumulate("actualResult", COMMENT);
+					if(SEND_SCREENSHOT) {
+						requestBody.append("attachments", addAttachment(FILE));
+					}
+					
 					jsonRequestBody = Unirest.put(UPDATE_TEST_LOG+TEST_LOG_IDENTIFIER).headers(headers).body(requestBody).asJson();
 				}
 
@@ -580,17 +447,8 @@ public class VansahNode {
 			}
 		}
 	}
-	//*******************************************************************************************************************
 
-	public int getNumberOfTestRows() {
-		return testRows;
-	}
-
-	public HashMap<Integer, String> getTestSteps() {
-		return testSteps;
-	}
-
-	//To capture a Screenshot
+	//To convert Image to base64
 	private static String encodeFileToBase64Binary(File file) {
 		String encodedfile = null;
 		try {
@@ -607,5 +465,178 @@ public class VansahNode {
 
 		return encodedfile;
 	}
+	
+	//Setter and Getter's 
+	
+	//To Set the TestFolderID 
+	public void setTESTFOLDERS_ID(String tESTFOLDERS_ID) {
+		this.TESTFOLDERS_ID = tESTFOLDERS_ID;
+	}
+	
+	//To Set the JIRA_ISSUE_KEY
+	public void setJIRA_ISSUE_KEY(String jIRA_ISSUE_KEY) {
+		this.JIRA_ISSUE_KEY = jIRA_ISSUE_KEY;
+	}
+	
+	//To Set the SPRINT_NAME
+	public void setSPRINT_NAME(String SPRINT_NAME) {
+		this.SPRINT_NAME = SPRINT_NAME;
+	}
 
+	//To Set the RELEASE_NAME
+	public void setRELEASE_NAME(String RELEASE_NAME) {
+		this.RELEASE_NAME = RELEASE_NAME;
+	}
+
+	//To Set the ENVIRONMENT_NAME
+	public void setENVIRONMENT_NAME(String ENVIRONMENT_NAME) {
+		this.ENVIRONMENT_NAME = ENVIRONMENT_NAME;
+	}
+
+	//JSONObject - Test Run Properties 
+	private JSONObject properties(){
+		JSONObject environment = new JSONObject();
+		environment.accumulate("name",ENVIRONMENT_NAME);
+
+		JSONObject release = new JSONObject();
+		release.accumulate("name",RELEASE_NAME);
+
+		JSONObject sprint = new JSONObject();
+		sprint.accumulate("name",SPRINT_NAME);
+
+		JSONObject Properties = new JSONObject();
+		if(SPRINT_NAME!=null) {
+			if(SPRINT_NAME.length()>=2) {
+				Properties.accumulate("sprint", sprint);
+			}
+		}
+		if(RELEASE_NAME!=null) {
+			if(RELEASE_NAME.length()>=2) {
+				Properties.accumulate("release", release);
+			}
+		}
+		if(ENVIRONMENT_NAME!=null) {
+			if(ENVIRONMENT_NAME.length()>=2) {
+				Properties.accumulate("environment", environment);
+			}
+		}
+
+		return Properties;
+	}
+
+
+	//JSONObject - To add TestCase Key
+	private JSONObject testCase() {
+
+		JSONObject testCase = new JSONObject();
+		if(CASE_KEY!=null) {
+			if(CASE_KEY.length()>=2) {
+				testCase.accumulate("key", CASE_KEY);
+			}
+		}
+		else {
+			System.out.println("Please Provide Valid TestCase Key");
+		}
+
+		return testCase;
+	}
+	//JSONObject - To add Result ID
+	private JSONObject resultObj(int result) {
+		
+		JSONObject resultID = new JSONObject();
+		
+		resultID.accumulate("id", result);
+		
+		
+		return resultID;
+	}
+	//JSONObject - To add JIRA Issue name
+	private JSONObject jiraIssueAsset() {
+
+		JSONObject asset = new JSONObject();
+		if(JIRA_ISSUE_KEY!=null){
+			if(JIRA_ISSUE_KEY.length()>=2) {
+				asset.accumulate("type", "issue");
+				asset.accumulate("key", JIRA_ISSUE_KEY);
+			}
+		}
+		else {
+			System.out.println("Please Provide Valid JIRA Issue Key");
+		}
+
+
+		return asset;
+	}
+	//JSONObject - To add TestFolder ID 
+	private JSONObject testFolderAsset() {
+
+		JSONObject asset = new JSONObject();
+		if(TESTFOLDERS_ID!=null){
+			if(TESTFOLDERS_ID.length()>=2) {
+				asset.accumulate("type", "folder");
+				asset.accumulate("identifier", TESTFOLDERS_ID);
+			}
+		}
+		else {
+			System.out.println("Please Provide Valid TestFolder ID");
+		}
+
+
+		return asset;
+	}
+
+	//JSONObject - To addTestLog
+	private JSONObject addTestLogProp() {
+
+		JSONObject testRun = new JSONObject();
+		testRun.accumulate("identifier", TEST_RUN_IDENTIFIER);
+
+		JSONObject stepNumber = new JSONObject();
+		stepNumber.accumulate("number", STEP_ORDER);
+
+		JSONObject testResult = new JSONObject();
+		testResult.accumulate("id", RESULT_KEY);
+
+		JSONObject testLogProp = new JSONObject();
+
+		testLogProp.accumulate("run", testRun);
+
+		testLogProp.accumulate("step", stepNumber);
+
+		testLogProp.accumulate("result", testResult);
+
+		testLogProp.accumulate("actualResult", COMMENT);
+
+
+		return testLogProp;
+	}
+	//JSONObject - To Add Add Attachments to a Test Log
+	private JSONObject addAttachment(String FILE) {
+
+		JSONObject attachmentsInfo = new JSONObject();
+		attachmentsInfo.accumulate("name", FileName());
+		attachmentsInfo.accumulate("extension", "png");
+		//System.out.println(attachmentsInfo);
+		attachmentsInfo.accumulate("file", FILE);
+
+		return attachmentsInfo;
+
+	}
+	//To create FileName of the Screenshot with Date TimeStamp
+	private String FileName() {
+
+		String fileName = "";
+		long millis = System.currentTimeMillis();
+		String datetime = LocalDateTime.now().toString();
+
+		datetime = datetime.replace(" ", "");
+		datetime = datetime.replace(":", "");
+		String rndchars = RandomStringUtils.randomAlphanumeric(16);
+		fileName = rndchars + "_" + datetime + "_" + millis;
+
+
+		return fileName;
+	}
+	
 }
+
