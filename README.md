@@ -3,7 +3,7 @@
 </div>
 <h1 align="center" style="background-color:cornflowerblue !important;
     color: white !important;">
-  Java API-Binder
+  Java API-Binding
 </h1>
 <p align="center">
    Vansah's API can be used to integrate Vansah with various tools, automation and development frameworks including third-party applications.
