@@ -15,7 +15,8 @@
   - [Prerequisite](#Prerequisite)
   - [Configuration](#Configuration)
   - [Dependencies](#Dependencies)
-  - [Usage examples](#usage-examples)
+  - [Usage examples](#Usage-examples)
+  - [Methods Overview](#Methods-Overview)
 
 ## Features
 
@@ -100,29 +101,174 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
 ```
 
 ## Usage examples
-
-### Example 1 using TestNG: Executing a Test Case with Steps against a Jira Issue
+- Executing a Test Case with Steps against a Jira Issue
 
 ```java
+    public class LoginTest {
 
-        VansahNode app = new VansahNode();  
+    private WebDriver driver;
+
+    @Before
+    public void setUp() {
+       // Method implementation...
+    }
+
+    @Test
+    public void testLogin() {
+    
+        VansahNode apptest = new VansahNode();
         
-    //Set Jira Issue
-     testExecute.setJIRA_ISSUE_KEY(issueKey);
-     //Set Environment
-     testExecute.setENVIRONMENT_NAME(environment);
-     //Running Test Case for an Issue
-      testExecute.addTestRunFromJIRAIssue(testCase);
-    //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, chromedriver/OtherBrowserdriver);  
-     testExecute.addTestLog(Result.PASSED.id, "As expected, Url is opened", TestStep.Step_1.number, Screenshot.TRUE.takeScreenshot, driver);
-```
+        //Set Jira Issue or Test Folder Identifier
+        apptest.setJIRA_ISSUE_KEY("TEST-1");
+        
+        //Set Environment
+        apptest.setENVIRONMENT_NAME("QA");
+        
+        //Running Test Case for an Issue
+        apptest.addTestRunFromJIRAIssue("TEST-C1");
+        
+        // Step 1: Navigate to the login page
+        driver.get("https://example.com/login");
+        
+
+        // Step 2: Enter credentials and submit the form
+        WebElement usernameInput = driver.findElement(By.id("username"));
+        WebElement passwordInput = driver.findElement(By.id("password"));
+        WebElement loginButton = driver.findElement(By.id("loginButton"));
     
-### Example 2 : Execute a Quick Test for a Test Case against a Jira Issue
+        try{
+        usernameInput.sendKeys("your_username");
+        passwordInput.sendKeys("your_password");
+        loginButton.click();
+        
+        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, chromedriver/OtherBrowserdriver);  
+        apptest.addTestLog("passed", "As expected, User is able to enter the username and password",0, true, driver);
+
+        }catch(Exception e){
+        
+        //Updates an existing test log with new information when there is any Exception
+        apptest.updateTestLog("failed","User is not able to click on Login Button",true,driver);
+        }
+
+
+        // Step 3: Verify successful login
+        WebElement welcomeMessage = driver.findElement(By.id("welcomeMessage"));
+        try{
+        assertTrue("Login was successful", welcomeMessage.isDisplayed());
+        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, chromedriver/OtherBrowserdriver);  
+        apptest.addTestLog("passed", "As expected, Welcome Message is shown as "+welcomeMessage.isDisplayed(),0, true, driver);
+        }catch(Exception e){
+        
+        //Updates an existing test log with new information when there is any Exception
+        apptest.updateTestLog("failed","Welcome Message is not shown",true,driver);
+        }
+       
+    }
+
+    @After
+    public void tearDown() {
+        // Method implementation...
+    }
+}
+```
+
+## Methods Overview
+The `VansahNode` class provides a comprehensive interface for interacting with Vansah Test Management for Jira directly from Java applications. Below is a description of its public methods, designed to facilitate various test management tasks such as creating test runs, logging test results, and managing test assets.
+### `addTestRunFromJIRAIssue(String testcase)`
+
+Creates a new test run linked to a specific JIRA issue. This method is ideal for tests associated directly with JIRA issues, allowing for automated test run creation within Vansah based on the issue key provided.
+
+- **Parameters**:
+  - `testcase`: The test case identifier linked to the JIRA issue.
+
+### `addTestRunFromTestFolder(String testcase)`
+
+Initiates a new test run within a specified test folder. Use this method to organize your test runs within Vansah's folder structure, facilitating structured test management.
+
+- **Parameters**:
+  - `testcase`: The identifier of the test case to be included in the test folder.
+
+### `addTestLog(String result, String comment, Integer testStepRow, boolean sendScreenShot, WebDriver driver)`
+
+Logs the result of a specific test step, optionally including a comment and a screenshot. This method provides detailed tracking of test execution outcomes.
+
+- **Parameters**:
+  - `result`: The outcome of the test step (e.g., PASSED, FAILED).
+  - `comment`: An optional comment describing the test step outcome.
+  - `testStepRow`: The index of the test step within the test case.
+  - `sendScreenShot`: Flag indicating whether to include a screenshot.
+  - `driver`: The Selenium WebDriver instance for screenshot capture.
+
+### `addQuickTestFromJiraIssue(String testcase, int result)` and `addQuickTestFromTestFolders(String testcase, int result)`
+
+Quickly logs the overall result of a test case associated with either a JIRA issue or a test folder. These methods are suited for tests that do not require detailed step-by-step logging.
+
+- **Parameters**:
+  - `testcase`: The test case identifier.
+  - `result`: The overall test result (e.g., PASS, FAIL).
+
+### `removeTestRun()` and `removeTestLog()`
+
+Deletes a previously created test run or log. These methods are useful for cleaning up data in Vansah that is no longer relevant or was created in error.
+
+### `updateTestLog(String result, String comment, boolean sendScreenShot, WebDriver driver)`
+
+Updates an existing test log with new information, such as a revised result or an additional comment, and optionally includes a new screenshot.
+
+- **Parameters**:
+  - Similar to `addTestLog`, with the same purpose of detailed logging but for updates.
+
+## Setter Methods of Vansah Binding
+
+The `VansahNode` class provides a set of setter methods to configure your test management context before performing operations such as creating test runs, adding test logs, and more. Here's a detailed overview of each setter method:
+
+### `setTESTFOLDERS_ID(String TESTFOLDERS_ID)`
+
+Configures the test folder ID for the VansahNode instance. This ID is essential for associating your test runs and logs with the correct test folder in Vansah.
+
+- **Parameters**:
+  - `TESTFOLDERS_ID`: The unique identifier for the test folder in Vansah.
+
+### `setJIRA_ISSUE_KEY(String JIRA_ISSUE_KEY)`
+
+Sets the JIRA issue key. Use this method to link your test runs or logs with a specific issue in Jira, facilitating better traceability and integration between testing and issue tracking.
+
+- **Parameters**:
+  - `JIRA_ISSUE_KEY`: The key of the Jira issue you want to associate with your test runs or logs.
+
+### `setSPRINT_NAME(String SPRINT_NAME)`
+
+Defines the sprint name related to the test activities. Setting the sprint name helps in organizing and filtering test results by specific development sprints.
+
+- **Parameters**:
+  - `SPRINT_NAME`: The name of the sprint to associate with your test runs or logs.
+
+### `setRELEASE_NAME(String RELEASE_NAME)`
+
+Assigns the release name to the VansahNode instance. This information is used to group test runs and logs under specific release cycles in Vansah, aiding in release management and reporting.
+
+- **Parameters**:
+  - `RELEASE_NAME`: The name of the release or version you're testing against.
+
+### `setENVIRONMENT_NAME(String ENVIRONMENT_NAME)`
+
+Sets the testing environment's name. This helps in categorizing and understanding the context of test runs or logs, especially when managing tests across multiple environments (e.g., development, staging, production).
+
+- **Parameters**:
+  - `ENVIRONMENT_NAME`: The name of the environment where the tests are executed.
+
+### Usage
+
+To use these setter methods in your application, create an instance of `VansahNode` and call the relevant setter methods with the appropriate values before proceeding with any test management operations. For example:
+
 ```java
-    
+VansahNode vansahNode = new VansahNode();
+vansahNode.setTESTFOLDERS_ID("your-test-folder-id");
+vansahNode.setJIRA_ISSUE_KEY("your-jira-issue-key");
+vansahNode.setSPRINT_NAME("your-sprint-name");
+vansahNode.setRELEASE_NAME("your-release-name");
+vansahNode.setENVIRONMENT_NAME("your-environment-name");
 ```
-
-
 ## Developed By
 
 [Vansah](https://vansah.com/)

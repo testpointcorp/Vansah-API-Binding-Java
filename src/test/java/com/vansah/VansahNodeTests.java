@@ -32,6 +32,8 @@ public class VansahNodeTests {
 		
 		//Provide TestFolder ID , JIRA Issue, Sprint Key, Sprint Release and Environment
 		VansahNode testExecute = new VansahNode(testFolderID,issueKey);
+		String c = new String("sdasdasd");
+		
 		
 		
 		//From Jira Issue Screen
