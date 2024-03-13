@@ -123,10 +123,20 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
         
         //Running Test Case for an Issue
         apptest.addTestRunFromJIRAIssue("TEST-C1");
-        
-        // Step 1: Navigate to the login page
+
+ 	// Step 1: Navigate to the login page
+         try{
         driver.get("https://example.com/login");
         
+        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, File Screenshot);  
+        apptest.addTestLog("passed", "Website loaded successfully",1, true, screenshotFile);
+
+        }catch(Exception e){
+        
+        //Updates an existing test log with new information when there is any Exception
+        apptest.updateTestLog("failed","Failed to load the website URL",true,screenshotFile);
+        }
+
 
         // Step 2: Enter credentials and submit the form
         WebElement usernameInput = driver.findElement(By.id("username"));
@@ -139,7 +149,7 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
         loginButton.click();
         
         //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, File Screenshot);  
-        apptest.addTestLog("passed", "As expected, User is able to enter the username and password",0, true, screenshotFile);
+        apptest.addTestLog("passed", "As expected, User is able to enter the username and password",2, true, screenshotFile);
 
         }catch(Exception e){
         
@@ -153,7 +163,7 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
         try{
         assertTrue("Login was successful", welcomeMessage.isDisplayed());
         //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, File Screenshot);  
-        apptest.addTestLog("passed", "As expected, Welcome Message is shown as "+welcomeMessage.isDisplayed(),0, true, screenshotFile);
+        apptest.addTestLog("passed", "As expected, Welcome Message is shown as "+welcomeMessage.isDisplayed(),3, true, screenshotFile);
         }catch(Exception e){
         
         //Updates an existing test log with new information when there is any Exception
