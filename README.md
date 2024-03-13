@@ -2,7 +2,7 @@
    <a href="https://vansah.com"><img src="https://vansah.com/wp-content/uploads/2021/07/256x256-3.png" /></a><br>
 </div>
 
-<p align="center">The "Vansah API binding for Java" enables seamless integration with Maven, Selenium, Playwright, TestNG, Cucumber, and more, while efficiently sending test results to Vansah Test Management for Jira</p>
+<p align="center">The "Vansah API binding for Java" enables seamless integration with Maven, Selenium, Playwright, TestNG, Cucumber and more, while efficiently sending test results to Vansah Test Management for Jira</p>
 
 <p align="center">
     <a href="https://vansah.com/"><b>Website</b></a> •
@@ -12,11 +12,11 @@
 ## Table of Contents
 
   - [Features](#features)
-  - [Prerequisite](#Prerequisite)
-  - [Configuration](#Configuration)
-  - [Dependencies](#Dependencies)
-  - [Usage examples](#Usage-examples)
-  - [Methods Overview](#Methods-Overview)
+  - [Prerequisite](#prerequisite)
+  - [Configuration](#configuration)
+  - [Dependencies](#dependencies)
+  - [Usage examples](#usage-examples)
+  - [Methods Overview](#methods-overview)
 
 ## Features
 
@@ -33,7 +33,7 @@
 - Make sure that [`Vansah`](https://marketplace.atlassian.com/apps/1224250/vansah-test-management-for-jira?tab=overview&hosting=cloud) is installed in your Jira workspace
 - You need to Generate Vansah [`connect`](https://docs.vansah.com/docs-base/generate-a-vansah-api-token-from-jira-cloud/) token to authenticate with Vansah APIs.
 - Your Automation Project requires Java JDK version 8 or newer.
-- You need to add Apache Commons Lang, and Unirest into your Maven project (`[pom.xml](#Dependencies)`).
+- You need to add Apache Commons Lang, and Unirest into your Maven project [pom.xml](#dependencies) .
 
 
 ## Configuration
