@@ -2,7 +2,7 @@
    <a href="https://vansah.com"><img src="https://vansah.com/wp-content/uploads/2021/07/256x256-3.png" /></a><br>
 </div>
 
-<p align="center">The "Vansah API binding for Java" enables seamless integration with Maven, Selenium, TestNG, Cucumber, and more, while efficiently sending test results to Vansah Test Management for Jira</p>
+<p align="center">The "Vansah API binding for Java" enables seamless integration with Maven, Selenium, Playwright, TestNG, Cucumber and more, while efficiently sending test results to Vansah Test Management for Jira</p>
 
 <p align="center">
     <a href="https://vansah.com/"><b>Website</b></a> •
@@ -12,17 +12,17 @@
 ## Table of Contents
 
   - [Features](#features)
-  - [Prerequisite](#Prerequisite)
-  - [Configuration](#Configuration)
-  - [Dependencies](#Dependencies)
-  - [Usage examples](#Usage-examples)
-  - [Methods Overview](#Methods-Overview)
+  - [Prerequisite](#prerequisite)
+  - [Configuration](#configuration)
+  - [Dependencies](#dependencies)
+  - [Usage examples](#usage-examples)
+  - [Methods Overview](#methods-overview)
 
 ## Features
 
 - Easily connect your Java applications with `Vansah Test Management for Jira` to report test results, and update test runs without manual intervention.
 - Automatically send test results to `Vansah` as they are generated, ensuring that your test management system reflects the most current test outcomes.
-- Attach files, such as screenshots or logs, to test cases or test runs in `Vansah` for more detailed reporting and analysis.
+- Attach screenshots to test runs in `Vansah` for more detailed reporting and analysis.
 - Configure the library to suit your project's specific needs, including proxy settings.
 - Robust error handling and logging mechanisms to troubleshoot issues during integration and test result reporting.
 - Detailed documentation and usage examples to help you get started quickly and make the most out of the `Vansah Binding for Java`.
@@ -33,7 +33,7 @@
 - Make sure that [`Vansah`](https://marketplace.atlassian.com/apps/1224250/vansah-test-management-for-jira?tab=overview&hosting=cloud) is installed in your Jira workspace
 - You need to Generate Vansah [`connect`](https://docs.vansah.com/docs-base/generate-a-vansah-api-token-from-jira-cloud/) token to authenticate with Vansah APIs.
 - Your Automation Project requires Java JDK version 8 or newer.
-- You need to add Selenium WebDriver, Apache Commons Lang, and Unirest into your Maven project (`[pom.xml](#Dependencies)`).
+- You need to add Apache Commons Lang, and Unirest into your Maven project [pom.xml](#dependencies) .
 
 
 ## Configuration
@@ -82,11 +82,6 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
 
 	<dependencies>
 		<dependency>
-			<groupId>org.seleniumhq.selenium</groupId>
-			<artifactId>selenium-remote-driver</artifactId>
-			<version>3.8.1</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.0</version>
@@ -101,12 +96,14 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
 ```
 
 ## Usage examples
-- Executing a Test Case with Steps against a Jira Issue
+- Executing a Test Case with Steps against a Jira Issue 
 
 ```java
     public class LoginTest {
 
-    private WebDriver driver;
+    private File screenshotFile;
+    
+    public WebDriver driver;
 
     @Before
     public void setUp() {
@@ -126,10 +123,20 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
         
         //Running Test Case for an Issue
         apptest.addTestRunFromJIRAIssue("TEST-C1");
-        
-        // Step 1: Navigate to the login page
+
+ 	// Step 1: Navigate to the login page
+         try{
         driver.get("https://example.com/login");
         
+        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, File Screenshot);  
+        apptest.addTestLog("passed", "Website loaded successfully",1, true, screenshotFile);
+
+        }catch(Exception e){
+        
+        //Updates an existing test log with new information when there is any Exception
+        apptest.updateTestLog("failed","Failed to load the website URL",true,screenshotFile);
+        }
+
 
         // Step 2: Enter credentials and submit the form
         WebElement usernameInput = driver.findElement(By.id("username"));
@@ -141,13 +148,13 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
         passwordInput.sendKeys("your_password");
         loginButton.click();
         
-        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, chromedriver/OtherBrowserdriver);  
-        apptest.addTestLog("passed", "As expected, User is able to enter the username and password",0, true, driver);
+        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, File Screenshot);  
+        apptest.addTestLog("passed", "As expected, User is able to enter the username and password",2, true, screenshotFile);
 
         }catch(Exception e){
         
         //Updates an existing test log with new information when there is any Exception
-        apptest.updateTestLog("failed","User is not able to click on Login Button",true,driver);
+        apptest.updateTestLog("failed","User is not able to click on Login Button",true,screenshotFile);
         }
 
 
@@ -155,12 +162,12 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
         WebElement welcomeMessage = driver.findElement(By.id("welcomeMessage"));
         try{
         assertTrue("Login was successful", welcomeMessage.isDisplayed());
-        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, chromedriver/OtherBrowserdriver);  
-        apptest.addTestLog("passed", "As expected, Welcome Message is shown as "+welcomeMessage.isDisplayed(),0, true, driver);
+        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, File Screenshot);  
+        apptest.addTestLog("passed", "As expected, Welcome Message is shown as "+welcomeMessage.isDisplayed(),3, true, screenshotFile);
         }catch(Exception e){
         
         //Updates an existing test log with new information when there is any Exception
-        apptest.updateTestLog("failed","Welcome Message is not shown",true,driver);
+        apptest.updateTestLog("failed","Welcome Message is not shown",true,screenshotFile);
         }
        
     }
@@ -188,7 +195,7 @@ Initiates a new test run within a specified test folder. Use this method to orga
 - **Parameters**:
   - `testcase`: The identifier of the test case to be included in the test folder.
 
-### `addTestLog(String result, String comment, Integer testStepRow, boolean sendScreenShot, WebDriver driver)`
+### `addTestLog(String result, String comment, Integer testStepRow, boolean sendScreenShot, File screenshotFile)`
 
 Logs the result of a specific test step, optionally including a comment and a screenshot. This method provides detailed tracking of test execution outcomes.
 
@@ -197,7 +204,7 @@ Logs the result of a specific test step, optionally including a comment and a sc
   - `comment`: An optional comment describing the test step outcome.
   - `testStepRow`: The index of the test step within the test case.
   - `sendScreenShot`: Flag indicating whether to include a screenshot.
-  - `driver`: The Selenium WebDriver instance for screenshot capture.
+  - `screenshotFile`: The Screenshot file to upload to Test Runs.
 
 ### `addQuickTestFromJiraIssue(String testcase, int result)` and `addQuickTestFromTestFolders(String testcase, int result)`
 
@@ -211,7 +218,7 @@ Quickly logs the overall result of a test case associated with either a JIRA iss
 
 Deletes a previously created test run or log. These methods are useful for cleaning up data in Vansah that is no longer relevant or was created in error.
 
-### `updateTestLog(String result, String comment, boolean sendScreenShot, WebDriver driver)`
+### `updateTestLog(String result, String comment, boolean sendScreenShot, File screenshotFile)`
 
 Updates an existing test log with new information, such as a revised result or an additional comment, and optionally includes a new screenshot.
 
@@ -263,6 +270,7 @@ To use these setter methods in your application, create an instance of `VansahNo
 
 ```java
 VansahNode vansahNode = new VansahNode();
+vansahNode.setVansahToken("Add your Token here");
 vansahNode.setTESTFOLDERS_ID("your-test-folder-id");
 vansahNode.setJIRA_ISSUE_KEY("your-jira-issue-key");
 vansahNode.setSPRINT_NAME("your-sprint-name");

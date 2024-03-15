@@ -1,13 +1,6 @@
 package com.vansah;
 
-import org.openqa.selenium.WebDriver;
-
-
-
 public class VansahNodeTests {
-	
-	//Required
-	private static WebDriver driver = null;  // Required if screenshot is needed
 	
 	//Optional if IssueKey is provided
 	private static String testFolderID = "1ba1372f-54ed-11ed-8e52-5658ef8eadd5"; //TestFolder ID to which test Execution is to be perform
@@ -32,20 +25,17 @@ public class VansahNodeTests {
 		
 		//Provide TestFolder ID , JIRA Issue, Sprint Key, Sprint Release and Environment
 		VansahNode testExecute = new VansahNode(testFolderID,issueKey);
-		String c = new String("sdasdasd");
-		
-		
-		
+				
 		//From Jira Issue Screen
 		testExecute.addTestRunFromJIRAIssue(testCase);
 		
 		for(int i = 1;i<=testExecute.testStepCount(testCase);i++) {
 			
-			//Add logs for each step function(ResultID, AcutalResultComment, TestStepID, screenshotTrueorFalse, chromedriver/OtherBroswerdriver);
-			testExecute.addTestLog(2, "This is From Java Binder Add test log", i, false, driver);
+			//Add logs for each step function(ResultID, AcutalResultComment, TestStepID, screenshotTrueorFalse, screenshot file);
+			testExecute.addTestLog(2, "This is From Java Binder Add test log", i, false, null);
 			
 			//Will update the current test log
-			testExecute.updateTestLog(1, "This is From Java Binder Update Test log", false, driver);
+			testExecute.updateTestLog(1, "This is From Java Binder Update Test log", false, null);
 			
 			//To remove the current test log
 			testExecute.removeTestLog();
@@ -59,19 +49,19 @@ public class VansahNodeTests {
 		
 		for(int i = 1;i<=testExecute.testStepCount(testCase);i++) {
 			
-			//Add logs for each step    function(ResultID, AcutalResultComment, TestStepID, screenshotTrueorFalse, chromedriver/OtherBroswerdriver);
+			//Add logs for each step    function(ResultID, AcutalResultComment, TestStepID, screenshotTrueorFalse, screenshot file);
 			
-			testExecute.addTestLog(2, "This is From Java Binder Add test log", i, false, driver);
+			testExecute.addTestLog(2, "This is From Java Binder Add test log", i, false, null);
 			
 			//Will update the current test log
-			testExecute.updateTestLog(1, "This is From Java Binder Update Test log", false, driver);
+			testExecute.updateTestLog(1, "This is From Java Binder Update Test log", false, null);
 			
 			//To remove the current test log
 			//testExecute.remove_test_log();
 			
 		}
 		
-		//Add Quick test for Jira issue  function(testCaseKey, ResultID, AcutalResultComment, screenshotTrueorFalse, chromedriver/OtherBroswerdriver);
+		//Add Quick test for Jira issue  function(testCaseKey, ResultID, AcutalResultComment, screenshotTrueorFalse, screenshot file);
 		
 		testExecute.addQuickTestFromJiraIssue(testCase, 0);
 		
