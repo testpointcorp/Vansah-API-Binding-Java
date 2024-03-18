@@ -128,13 +128,13 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
          try{
         driver.get("https://example.com/login");
         
-        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, File Screenshot);  
-        apptest.addTestLog("passed", "Website loaded successfully",1, true, screenshotFile);
+        //Add logs for each step function without screenshot(ResultID, ActualResultComment , TestStepID);  
+        apptest.addTestLog("passed", "Website loaded successfully",1);
 
         }catch(Exception e){
         
-        //Updates an existing test log with new information when there is any Exception
-        apptest.updateTestLog("failed","Failed to load the website URL",true,screenshotFile);
+        //Updates an existing test log with new information or failure screenshot when there is any Exception
+        apptest.updateTestLog("failed","Failed to load the website URL",screenshotFile);
         }
 
 
@@ -148,13 +148,13 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
         passwordInput.sendKeys("your_password");
         loginButton.click();
         
-        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, File Screenshot);  
-        apptest.addTestLog("passed", "As expected, User is able to enter the username and password",2, true, screenshotFile);
+        //Add logs for each step function with screenshot(ResultID, ActualResultComment , TestStepID, File Screenshot);  
+        apptest.addTestLog("passed", "As expected, User is able to enter the username and password",2,screenshotFile);
 
         }catch(Exception e){
         
-        //Updates an existing test log with new information when there is any Exception
-        apptest.updateTestLog("failed","User is not able to click on Login Button",true,screenshotFile);
+        //Updates an existing test log with new information or failure screenshot when there is any Exception
+        apptest.updateTestLog("failed","User is not able to click on Login Button",screenshotFile);
         }
 
 
@@ -162,12 +162,12 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
         WebElement welcomeMessage = driver.findElement(By.id("welcomeMessage"));
         try{
         assertTrue("Login was successful", welcomeMessage.isDisplayed());
-        //Add logs for each step function(ResultID, ActualResultComment , TestStepID, screenshotTrueorFalse, File Screenshot);  
-        apptest.addTestLog("passed", "As expected, Welcome Message is shown as "+welcomeMessage.isDisplayed(),3, true, screenshotFile);
+        //Add logs for each step function with screenshot(ResultID, ActualResultComment , TestStepID, File Screenshot);  
+        apptest.addTestLog("passed", "As expected, Welcome Message is shown as "+welcomeMessage.isDisplayed(),3,screenshotFile);
         }catch(Exception e){
         
         //Updates an existing test log with new information when there is any Exception
-        apptest.updateTestLog("failed","Welcome Message is not shown",true,screenshotFile);
+        apptest.updateTestLog("failed","Welcome Message is not shown");
         }
        
     }
@@ -195,16 +195,15 @@ Initiates a new test run within a specified test folder. Use this method to orga
 - **Parameters**:
   - `testcase`: The identifier of the test case to be included in the test folder.
 
-### `addTestLog(String result, String comment, Integer testStepRow, boolean sendScreenShot, File screenshotFile)`
+### `addTestLog(String/Integer result, String comment, Integer testStepRow, File screenshotFile (optional))`
 
 Logs the result of a specific test step, optionally including a comment and a screenshot. This method provides detailed tracking of test execution outcomes.
 
 - **Parameters**:
-  - `result`: The outcome of the test step (e.g., PASSED, FAILED).
+  - `result`: The outcome of the test step (e.g., PASSED, FAILED)|| (e.g  0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested).
   - `comment`: An optional comment describing the test step outcome.
   - `testStepRow`: The index of the test step within the test case.
-  - `sendScreenShot`: Flag indicating whether to include a screenshot.
-  - `screenshotFile`: The Screenshot file to upload to Test Runs.
+  - `screenshotFile`: (Optional) The File Object of the screenshot taken to upload : Provide file object or Path of the screenshot.
 
 ### `addQuickTestFromJiraIssue(String testcase, int result)` and `addQuickTestFromTestFolders(String testcase, int result)`
 
@@ -218,7 +217,7 @@ Quickly logs the overall result of a test case associated with either a JIRA iss
 
 Deletes a previously created test run or log. These methods are useful for cleaning up data in Vansah that is no longer relevant or was created in error.
 
-### `updateTestLog(String result, String comment, boolean sendScreenShot, File screenshotFile)`
+### `updateTestLog(String result, String comment, File screenshotFile (optional))`
 
 Updates an existing test log with new information, such as a revised result or an additional comment, and optionally includes a new screenshot.
 
