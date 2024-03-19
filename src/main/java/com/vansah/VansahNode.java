@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 
 public class VansahNode {
-	
+
 	/**
 	 * The API version used for the Vansah API calls. This versioning helps in targeting
 	 * the specific iteration of the API for compatibility and feature availability.
@@ -140,8 +140,8 @@ public class VansahNode {
 	/** The result key indicating the test outcome. Options: 0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested. Mandatory. */
 	private int RESULT_KEY;
 
-	/** Whether to take a screenshot of the webpage being tested. True to take a screenshot; otherwise, false. */
-	private boolean SEND_SCREENSHOT;
+	/** Whether to upload the Test screenshot of the webpage being tested. default : false. - For Internal logic*/
+	private boolean SEND_SCREENSHOT = false;
 
 	/** A comment describing the actual result of the test. */
 	private String COMMENT;
@@ -177,7 +177,7 @@ public class VansahNode {
 	private JSONObject requestBody = null;
 
 
-	
+
 	/**
 	 * Constructs an instance of VansahNode with specified test folder ID and JIRA issue key.
 	 * Initializes the mapping for test result codes. This constructor is used when both
@@ -188,14 +188,14 @@ public class VansahNode {
 	 * @param JIRA_ISSUE_KEY The key for the JIRA issue. Mandatory unless a test folder identifier is provided.
 	 */
 	public VansahNode(String TESTFOLDERS_ID, String JIRA_ISSUE_KEY) {
-	    super();
-	    this.TESTFOLDERS_ID = TESTFOLDERS_ID;
-	    this.JIRA_ISSUE_KEY = JIRA_ISSUE_KEY;
-	    // Initialize test result mapping
-	    resultAsName.put("NA", 0);
-	    resultAsName.put("FAILED", 1);
-	    resultAsName.put("PASSED", 2);
-	    resultAsName.put("UNTESTED", 3);
+		super();
+		this.TESTFOLDERS_ID = TESTFOLDERS_ID;
+		this.JIRA_ISSUE_KEY = JIRA_ISSUE_KEY;
+		// Initialize test result mapping
+		resultAsName.put("NA", 0);
+		resultAsName.put("FAILED", 1);
+		resultAsName.put("PASSED", 2);
+		resultAsName.put("UNTESTED", 3);
 	}
 
 	/**
@@ -204,12 +204,12 @@ public class VansahNode {
 	 * identifiers will be set later or in a different manner.
 	 */
 	public VansahNode() {
-	    super();
-	    // Initialize test result mapping
-	    resultAsName.put("NA", 0);
-	    resultAsName.put("FAILED", 1);
-	    resultAsName.put("PASSED", 2);
-	    resultAsName.put("UNTESTED", 3);
+		super();
+		// Initialize test result mapping
+		resultAsName.put("NA", 0);
+		resultAsName.put("FAILED", 1);
+		resultAsName.put("PASSED", 2);
+		resultAsName.put("UNTESTED", 3);
 	}
 
 
@@ -222,9 +222,8 @@ public class VansahNode {
 	 * @throws Exception If there's an error in the API connection or request execution.
 	 */
 	public void addTestRunFromJIRAIssue(String testcase) throws Exception {
-	    this.CASE_KEY = testcase;
-	    this.SEND_SCREENSHOT = false;
-	    connectToVansahRest("addTestRunFromJIRAIssue");
+		this.CASE_KEY = testcase;	    
+		connectToVansahRest("addTestRunFromJIRAIssue");
 	}
 
 	/**
@@ -236,13 +235,9 @@ public class VansahNode {
 	 * @throws Exception If there's an error in the API connection or request execution.
 	 */
 	public void addTestRunFromTestFolder(String testcase) throws Exception {
-	    this.CASE_KEY = testcase;
-	    this.SEND_SCREENSHOT = false;
-	    connectToVansahRest("addTestRunFromTestFolder");
+		this.CASE_KEY = testcase;	    
+		connectToVansahRest("addTestRunFromTestFolder");
 	}
-
-
-
 	/**
 	 * Adds a new test log entry for a specific test case. This method is used after creating a test run
 	 * to log individual test results. It requires a test run identifier obtained from a previous test run creation.
@@ -251,17 +246,13 @@ public class VansahNode {
 	 *               0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested.
 	 * @param comment A comment describing the test outcome or any relevant details.
 	 * @param testStepRow The index of the test step within the test case to which this log belongs.
-	 * @param sendScreenShot A boolean indicating whether a screenshot should be sent along with the test log.
-	 * @param image The Test Screenshot File to upload if sendScreenShot is true or provide null
 	 * @throws Exception If there's an error in connecting to the Vansah REST API or during request execution.
 	 */
-	public void addTestLog(int result, String comment, Integer testStepRow, boolean sendScreenShot, File image) throws Exception {
-	    this.RESULT_KEY = result;
-	    this.COMMENT = comment;
-	    this.STEP_ORDER = testStepRow;
-	    this.SEND_SCREENSHOT = sendScreenShot;
-	    this.image = image;
-	    connectToVansahRest("addTestLog");
+	public void addTestLog(int result, String comment, Integer testStepRow) throws Exception {
+		this.RESULT_KEY = result;
+		this.COMMENT = comment;
+		this.STEP_ORDER = testStepRow;
+		connectToVansahRest("addTestLog");
 	}
 	/**
 	 * Adds a new test log entry for a specific test case, allowing the result to be specified as a string.
@@ -272,17 +263,54 @@ public class VansahNode {
 	 *               "NA", "FAILED", "PASSED", "UNTESTED", with case-insensitivity.
 	 * @param comment A comment detailing the test outcome or any other pertinent information.
 	 * @param testStepRow The test step's index within the test case, associated with this log.
-	 * @param sendScreenShot Indicates whether to capture and send a screenshot with the test log.
-	 * @param image The Test Screenshot File to upload if sendScreenShot is true or provide null
 	 * @throws Exception If an error occurs in the Vansah REST API connection or during the execution of the request.
 	 */
-	public void addTestLog(String result, String comment, Integer testStepRow, boolean sendScreenShot, File image) throws Exception {
-	    this.RESULT_KEY = resultAsName.getOrDefault(result.toUpperCase(), 0); // Default to 0 (N/A) if result is unknown
-	    this.COMMENT = comment;
-	    this.STEP_ORDER = testStepRow;
-	    this.SEND_SCREENSHOT = sendScreenShot;
-	    this.image = image;
-	    connectToVansahRest("addTestLog");
+	public void addTestLog(String result, String comment, Integer testStepRow) throws Exception {
+		this.RESULT_KEY = resultAsName.getOrDefault(result.toUpperCase(), 0); // Default to 0 (N/A) if result is unknown
+		this.COMMENT = comment;
+		this.STEP_ORDER = testStepRow;
+		connectToVansahRest("addTestLog");
+	}
+
+
+	/**
+	 * Adds a new test log entry for a specific test case. This method is used after creating a test run
+	 * to log individual test results. It requires a test run identifier obtained from a previous test run creation.
+	 *
+	 * @param result The result of the test as an integer. The possible values are:
+	 *               0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested.
+	 * @param comment A comment describing the test outcome or any relevant details.
+	 * @param testStepRow The index of the test step within the test case to which this log belongs.
+	 * @param image The File Object of the screenshot taken to upload : Provide file object or Path of the screenshot.
+	 * Ex : "C:\Users\Username\Pictures\screenshot.png"
+	 * @throws Exception If there's an error in connecting to the Vansah REST API or during request execution.
+	 */
+	public void addTestLog(int result, String comment, Integer testStepRow, File image) throws Exception {
+		this.RESULT_KEY = result;
+		this.COMMENT = comment;
+		this.STEP_ORDER = testStepRow;
+		validateScreenshotFile(image);
+		connectToVansahRest("addTestLog");
+	}
+	/**
+	 * Adds a new test log entry for a specific test case, allowing the result to be specified as a string.
+	 * This variant facilitates the use of human-readable result codes ("NA", "FAILED", "PASSED", "UNTESTED").
+	 * It also requires a test run identifier from a previous test run creation.
+	 *
+	 * @param result The result of the test as a string. Accepts:
+	 *               "NA", "FAILED", "PASSED", "UNTESTED", with case-insensitivity.
+	 * @param comment A comment detailing the test outcome or any other pertinent information.
+	 * @param testStepRow The test step's index within the test case, associated with this log.
+	 * @param image The File Object of the screenshot taken to upload : Provide file object or Path of the screenshot.
+	 * Ex : "C:\Users\Username\Pictures\screenshot.png"
+	 * @throws Exception If an error occurs in the Vansah REST API connection or during the execution of the request.
+	 */
+	public void addTestLog(String result, String comment, Integer testStepRow, File image) throws Exception {
+		this.RESULT_KEY = resultAsName.getOrDefault(result.toUpperCase(), 0); // Default to 0 (N/A) if result is unknown
+		this.COMMENT = comment;
+		this.STEP_ORDER = testStepRow;
+		validateScreenshotFile(image);
+		connectToVansahRest("addTestLog");
 	}
 
 	/**
@@ -296,9 +324,9 @@ public class VansahNode {
 	 * @throws Exception If there's an error in connecting to the Vansah REST API or during the execution of the request.
 	 */
 	public void addQuickTestFromJiraIssue(String testcase, int result) throws Exception {
-	    this.CASE_KEY = testcase;
-	    this.RESULT_KEY = result;
-	    connectToVansahRest("addQuickTestFromJiraISSUE");
+		this.CASE_KEY = testcase;
+		this.RESULT_KEY = result;
+		connectToVansahRest("addQuickTestFromJiraISSUE");
 	}
 	/**
 	 * Creates a new test run and logs an overall result for a specified test case within a test folder.
@@ -312,9 +340,9 @@ public class VansahNode {
 	 * @throws Exception If an error occurs during the API connection or request processing.
 	 */
 	public void addQuickTestFromTestFolders(String testcase, int result) throws Exception {
-	    this.CASE_KEY = testcase;
-	    this.RESULT_KEY = result;
-	    connectToVansahRest("addQuickTestFromTestFolders");
+		this.CASE_KEY = testcase;
+		this.RESULT_KEY = result;
+		connectToVansahRest("addQuickTestFromTestFolders");
 	}
 
 
@@ -329,7 +357,7 @@ public class VansahNode {
 	 *                   identifier does not exist.
 	 */
 	public void removeTestRun() throws Exception {
-	    connectToVansahRest("removeTestRun");
+		connectToVansahRest("removeTestRun");
 	}
 
 	/**
@@ -343,9 +371,8 @@ public class VansahNode {
 	 *                   authentication, or non-existent test log identifiers.
 	 */
 	public void removeTestLog() throws Exception {	
-	    connectToVansahRest("removeTestLog");
+		connectToVansahRest("removeTestLog");
 	}
-
 
 	/**
 	 * Updates an existing test log with new information. This method allows for changing the result,
@@ -356,18 +383,14 @@ public class VansahNode {
 	 * @param result The updated result of the test as an integer. Acceptable values are:
 	 *               0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested.
 	 * @param comment A new or updated comment about the test outcome or relevant details.
-	 * @param sendScreenShot Indicates whether a new screenshot should be sent along with the test log update.
-	 * @param image The Test Screenshot File to upload if sendScreenShot is true or provide null
 	 * @throws Exception If an error occurs during the connection to the Vansah REST API or the execution
 	 *                   of the update request. This might be due to network issues, authentication errors,
 	 *                   or invalid test log identifiers.
 	 */
-	public void updateTestLog(int result, String comment, boolean sendScreenShot, File image) throws Exception {
-	    this.RESULT_KEY = result;
-	    this.COMMENT = comment;
-	    this.SEND_SCREENSHOT = sendScreenShot;
-	    this.image = image;
-	    connectToVansahRest("updateTestLog");
+	public void updateTestLog(int result, String comment) throws Exception {
+		this.RESULT_KEY = result;
+		this.COMMENT = comment;
+		connectToVansahRest("updateTestLog");
 	}
 
 	/**
@@ -378,19 +401,57 @@ public class VansahNode {
 	 *
 	 * @param result The test result as a string. Expected values are "NA", "FAIL", "PASSED", or "UNTESTED".
 	 * @param comment An updated or new comment detailing the test outcome or any pertinent information.
-	 * @param sendScreenShot A boolean flag indicating whether to attach a screenshot with the test log update.
-	 * @param image The Test Screenshot File to upload if sendScreenShot is true or provide null
 	 * @throws Exception If there's an issue with the API connection or during the request's execution,
 	 *                   such as network problems, authentication failures, or incorrect test log identifiers.
 	 */
-	public void updateTestLog(String result, String comment, boolean sendScreenShot, File image) throws Exception {
-	    this.RESULT_KEY = resultAsName.getOrDefault(result.toUpperCase(), 0); // Default to 0 (N/A) if result is unknown
-	    this.COMMENT = comment;
-	    this.SEND_SCREENSHOT = sendScreenShot;
-	    this.image = image;
-	    connectToVansahRest("updateTestLog");
+	public void updateTestLog(String result, String comment) throws Exception {
+		this.RESULT_KEY = resultAsName.getOrDefault(result.toUpperCase(), 0); // Default to 0 (N/A) if result is unknown
+		this.COMMENT = comment;
+		connectToVansahRest("updateTestLog");
 	}
-	
+
+	/**
+	 * Updates an existing test log with new information. This method allows for changing the result,
+	 * adding a comment, and deciding whether to include a screenshot for a test log identified by a
+	 * specific test log identifier. It is intended to be used after a test log has been created with
+	 * either addTestLog or addQuickTest methods.
+	 *
+	 * @param result The updated result of the test as an integer. Acceptable values are:
+	 *               0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested.
+	 * @param comment A new or updated comment about the test outcome or relevant details.
+	 * @param image The File Object of the screenshot taken to upload : Provide file object or Path of the screenshot.
+	 * Ex : "C:\Users\Username\Pictures\screenshot.png"
+	 * @throws Exception If an error occurs during the connection to the Vansah REST API or the execution
+	 *                   of the update request. This might be due to network issues, authentication errors,
+	 *                   or invalid test log identifiers.
+	 */
+	public void updateTestLog(int result, String comment, File image) throws Exception {
+		this.RESULT_KEY = result;
+		this.COMMENT = comment;
+		validateScreenshotFile(image);
+		connectToVansahRest("updateTestLog");
+	}
+
+	/**
+	 * Updates an existing test log, similar to the integer-based method, but allows specifying the result
+	 * as a string for improved readability. This method updates the test log's result, comment, and screenshot
+	 * status based on the provided parameters. Suitable for use when test log identifiers are already obtained
+	 * from previous interactions with the Vansah API.
+	 *
+	 * @param result The test result as a string. Expected values are "NA", "FAIL", "PASSED", or "UNTESTED".
+	 * @param comment An updated or new comment detailing the test outcome or any pertinent information.
+	* @param image The File Object of the screenshot taken to upload : Provide file object or Path of the screenshot.
+	 * Ex : "C:\Users\Username\Pictures\screenshot.png"
+	 * @throws Exception If there's an issue with the API connection or during the request's execution,
+	 *                   such as network problems, authentication failures, or incorrect test log identifiers.
+	 */
+	public void updateTestLog(String result, String comment, File image) throws Exception {
+		this.RESULT_KEY = resultAsName.getOrDefault(result.toUpperCase(), 0); // Default to 0 (N/A) if result is unknown
+		this.COMMENT = comment;
+		validateScreenshotFile(image);
+		connectToVansahRest("updateTestLog");
+	}
+
 	/**
 	 * Retrieves the count of test steps for a given test case from Vansah. This method sends a GET request
 	 * to the Vansah API to fetch the test script associated with the specified case key and calculates the
@@ -503,10 +564,6 @@ public class VansahNode {
 						System.out.println("Please provide the correct Screenshot file - supports (*.png, *.jpeg)" + e.toString());
 					}
 				}
-				if(!SEND_SCREENSHOT && image!=null) {
-					
-					System.out.println("Please ensure to provide \"true\" if you are submitting the screenshot file.");
-				}
 
 				if(type == "addTestRunFromJIRAIssue") {
 
@@ -517,7 +574,7 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 
-					
+
 
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
 
@@ -530,7 +587,7 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 
-					
+
 
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
 
@@ -540,11 +597,11 @@ public class VansahNode {
 				if(type == "addTestLog") {
 					requestBody =  addTestLogProp();
 					if(SEND_SCREENSHOT) {
-						
+
 						requestBody.append("attachments", addAttachment(FILE));
-						
+
 					}
-					
+
 					jsonRequestBody = Unirest.post(ADD_TEST_LOG).headers(headers).body(requestBody).asJson();
 				}
 
@@ -559,9 +616,9 @@ public class VansahNode {
 					}
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
 
-					
-					
-					
+
+
+
 
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
 				}
@@ -574,8 +631,8 @@ public class VansahNode {
 					}
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
 
-					
-					
+
+
 
 
 					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
@@ -599,7 +656,7 @@ public class VansahNode {
 					if(SEND_SCREENSHOT) {
 						requestBody.append("attachments", addAttachment(FILE));
 					}
-					
+
 					jsonRequestBody = Unirest.put(UPDATE_TEST_LOG+TEST_LOG_IDENTIFIER).headers(headers).body(requestBody).asJson();
 				}
 
@@ -664,7 +721,7 @@ public class VansahNode {
 
 		return encodedfile;
 	}
-	
+
 	/**
 	 * Sets the test folder ID for the current instance. This ID is used to associate test runs and logs
 	 * with a specific test folder in Vansah.
@@ -674,7 +731,7 @@ public class VansahNode {
 	public void setTESTFOLDERS_ID(String TESTFOLDERS_ID) {
 		this.TESTFOLDERS_ID = TESTFOLDERS_ID;
 	}
-	
+
 	/**
 	 * Sets the JIRA issue key for the current instance. This key is used to link test runs and logs to a
 	 * specific issue in JIRA.
@@ -684,7 +741,7 @@ public class VansahNode {
 	public void setJIRA_ISSUE_KEY(String JIRA_ISSUE_KEY) {
 		this.JIRA_ISSUE_KEY = JIRA_ISSUE_KEY;
 	}
-	
+
 	/**
 	 * Sets the sprint name for the test context. This name is used to associate the test runs and logs
 	 * with a specific sprint in the test management tool. It's essential for organizing test results
@@ -784,12 +841,12 @@ public class VansahNode {
 	 *         provided result identifier.
 	 */
 	private JSONObject resultObj(int result) {
-		
+
 		JSONObject resultID = new JSONObject();
-		
+
 		resultID.accumulate("id", result);
-		
-		
+
+
 		return resultID;
 	}
 	/**
@@ -894,14 +951,38 @@ public class VansahNode {
 		String fileinfo[] = image.getName().split("\\.");
 		String fileName = fileinfo[0];
 		String fileExtension = fileinfo[1];
-		
+
 		JSONObject attachmentsInfo = new JSONObject();
 		attachmentsInfo.accumulate("name",fileName);
 		attachmentsInfo.accumulate("extension",fileExtension);
 		attachmentsInfo.accumulate("file", base64file);
-		
+
 		return attachmentsInfo;
 
 	}
-	
+
+	/**
+	 * Checks if the provided file is valid for uploading as a screenshot.
+	 * If the file is valid, sets the SEND_SCREENSHOT flag to true and assigns the file to the 'image' variable.
+	 * If the file is invalid (null, does not exist, or is not a file), sets the SEND_SCREENSHOT flag to false.
+	 *
+	 * @param file The File object representing the screenshot file to be checked.
+	 */
+	private void validateScreenshotFile(File file) {
+		try {
+			if(file == null || !file.exists() || !file.isFile()) {
+				this.SEND_SCREENSHOT = false;
+				System.out.println("The Screenshot File provided does not exists or is not a File");
+			}
+			else {
+				this.image = file;
+				this.SEND_SCREENSHOT = true;			
+			}
+
+		}catch(Exception e) {
+			System.out.println("Please provide correct File ( Ex: screenshot.png || screenshot.jpeg"+ "\n"+"**"+e);
+		}
+
+	}
+
 }
