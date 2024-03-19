@@ -31,14 +31,15 @@ public class VansahNodeTests {
 		
 		for(int i = 1;i<=testExecute.testStepCount(testCase);i++) {
 			
-			//Add logs for each step function(ResultID, AcutalResultComment, TestStepID, screenshotTrueorFalse, screenshot file);
-			testExecute.addTestLog(2, "This is From Java Binder Add test log", i, false, null);
+			//Add logs for each step function(ResultID, AcutalResultComment, TestStepID, screenshot file);
+			testExecute.addTestLog(2, "This is From Java Binder Add test log", i, null);
 			
 			//Will update the current test log
-			testExecute.updateTestLog(1, "This is From Java Binder Update Test log", false, null);
+			testExecute.updateTestLog(1, "This is From Java Binder Update Test log", null);
 			
 			//To remove the current test log
 			testExecute.removeTestLog();
+	
 			
 		}
 		
@@ -49,19 +50,19 @@ public class VansahNodeTests {
 		
 		for(int i = 1;i<=testExecute.testStepCount(testCase);i++) {
 			
-			//Add logs for each step    function(ResultID, AcutalResultComment, TestStepID, screenshotTrueorFalse, screenshot file);
+			//Add logs for each step    function(ResultID, AcutalResultComment, TestStepID, screenshot file);
 			
-			testExecute.addTestLog(2, "This is From Java Binder Add test log", i, false, null);
+			testExecute.addTestLog(2, "This is From Java Binder Add test log", i, null);
 			
 			//Will update the current test log
-			testExecute.updateTestLog(1, "This is From Java Binder Update Test log", false, null);
+			testExecute.updateTestLog(1, "This is From Java Binder Update Test log", null);
 			
 			//To remove the current test log
 			//testExecute.remove_test_log();
 			
 		}
 		
-		//Add Quick test for Jira issue  function(testCaseKey, ResultID, AcutalResultComment, screenshotTrueorFalse, screenshot file);
+		//Add Quick test for Jira issue  function(testCaseKey, ResultID, AcutalResultComment, screenshot file);
 		
 		testExecute.addQuickTestFromJiraIssue(testCase, 0);
 		
