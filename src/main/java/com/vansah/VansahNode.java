@@ -31,55 +31,108 @@ public class VansahNode {
 	 * The default base URL of the Vansah API.
 	 * Note : For Data Residency support user can now set this URL to their region URL.
 	 */
-	private static String VANSAH_URL = "https://prod.vansahnode.app";
-
-	/**
-	 * The endpoint URL for adding a test run. This URL is constructed by appending the
-	 * specific API operation path to the base Vansah URL and API version, facilitating
-	 * the creation of new test runs in the Vansah system.
-	 */
-	private static final String ADD_TEST_RUN = VANSAH_URL + "/api/" + API_VERSION + "/run";
-
-	/**
-	 * The endpoint URL for adding a test log. Similar to the add test run URL, this
-	 * endpoint allows for the logging of individual test results within a test run, providing
-	 * a way to programmatically report overall test outcomes.
-	 */
-	private static final String ADD_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION + "/logs";
-
-	/**
-	 * The endpoint URL for updating a test log. This URL supports modifying existing test
-	 * logs, enabling updates to the outcomes or details of a test after its initial logging.
-	 */
-	private static final String UPDATE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION + "/logs/";
-
-	/**
-	 * The endpoint URL for removing a test log. This operation allows for the deletion of
-	 * specific test logs from a test run, offering flexibility in managing test records.
-	 */
-	private static final String REMOVE_TEST_LOG = VANSAH_URL + "/api/" + API_VERSION + "/logs/";
-
-	/**
-	 * The endpoint URL for removing a test run. This URL enables the deletion of entire test
-	 * runs, facilitating the cleanup of test records or the removal of erroneously created entries.
-	 */
-	private static final String REMOVE_TEST_RUN = VANSAH_URL + "/api/" + API_VERSION + "/run/";
-
-	/**
-	 * The endpoint URL for retrieving test scripts associated with a test case. This URL
-	 * provides access to the list of test scripts that are part of a specific test case,
-	 * supporting the automation and management of test executions.
-	 */
-	private static final String TEST_SCRIPT = VANSAH_URL + "/api/" + API_VERSION + "/testCase/list/testScripts";
-
+	private static String VANSAH_URL = "https://prod.vansah.com";
 	
 	/**
-	 * Sets a custom URL for the Vansah APIs. 
-	 * If a null value is provided, it defaults back to the predefined URL ("https://prod.vansahnode.app").
-	 * @param vansahURL The custom URL for the Vansah APIs.
+     * The key of the JIRA project.
+     * Note: This should be set to a valid project key (e.g., "DEMO").
+     * If null or empty, related API calls may not function correctly.
+     */	
+	private static String PROJECT_KEY = null;
+
+	/**
+	 * Returns the endpoint URL for adding a test run.
+	 * This dynamically constructs the URL using the current Vansah base URL and API version.
+	 *
+	 * @return The complete URL for the "add test run" API.
+	 */
+	private static String getAddTestRunUrl() {
+	    return VANSAH_URL + "/api/" + API_VERSION + "/run";
+	}
+
+	/**
+	 * Returns the endpoint URL for adding a test log.
+	 * This method dynamically generates the URL to post test log entries.
+	 *
+	 * @return The complete URL for the "add test log" API.
+	 */
+	private static String getAddTestLogUrl() {
+	    return VANSAH_URL + "/api/" + API_VERSION + "/logs";
+	}
+
+	/**
+	 * Returns the endpoint URL for updating a specific test log.
+	 * This URL is used to modify an existing test log based on its identifier.
+	 *
+	 * @param identifier The identifier of the test log to update.
+	 * @return The complete URL for the "update test log" API call.
+	 */
+	private static String getUpdateTestLogUrl(String identifier) {
+	    return VANSAH_URL + "/api/" + API_VERSION + "/logs/" + identifier;
+	}
+
+	/**
+	 * Returns the endpoint URL for removing a specific test log.
+	 * This URL is used to delete a test log entry from Vansah.
+	 *
+	 * @param identifier The identifier of the test log to remove.
+	 * @return The complete URL for the "remove test log" API call.
+	 */
+	private static String getRemoveTestLogUrl(String identifier) {
+	    return VANSAH_URL + "/api/" + API_VERSION + "/logs/" + identifier;
+	}
+
+	/**
+	 * Returns the endpoint URL for removing a specific test run.
+	 * This URL is used to delete a test run from Vansah.
+	 *
+	 * @param identifier The identifier of the test run to remove.
+	 * @return The complete URL for the "remove test run" API call.
+	 */
+	private static String getRemoveTestRunUrl(String identifier) {
+	    return VANSAH_URL + "/api/" + API_VERSION + "/run/" + identifier;
+	}
+
+	/**
+	 * Returns the endpoint URL for retrieving test scripts associated with a test case.
+	 * This dynamically builds the URL to query test scripts by case key.
+	 *
+	 * @return The complete URL for the "get test script list" API call.
+	 */
+	private static String getTestScriptUrl() {
+	    return VANSAH_URL + "/api/" + API_VERSION + "/testCase/list/testScripts";
+	}
+
+	/**
+	 * Sets a custom base URL for the Vansah API.
+	 * <p>
+	 * If a valid non-empty URL is provided, it updates the base Vansah URL used for all API operations.
+	 * If the input is null, empty, or only whitespace, the URL is reset to the default Vansah production URL: {@code https://prod.vansah.com}.
+	 * <p>
+	 * This method allows flexibility to switch between different Vansah environments (e.g., staging, region-specific, or self-hosted instances).
+	 *
+	 * @param vansahURL The custom base URL to use for Vansah API requests. Must be non-null and non-empty.
 	 */
 	public static void setVansahURL(String vansahURL) {
-		VANSAH_URL = vansahURL;
+	    if (vansahURL != null && !vansahURL.trim().isEmpty()) {
+	        VANSAH_URL = vansahURL.trim();
+	        System.out.println("✅ VANSAH_URL updated to: " + VANSAH_URL);
+	    } else {
+	        VANSAH_URL = "https://prod.vansah.com"; // fallback to default
+	        System.out.println("⚠️ Invalid VANSAH_URL. Resetting to default: " + VANSAH_URL);
+	    }
+	}
+	/**
+	 * Sets the JIRA project key.
+	 * 
+	 * @param projectKey A valid non-empty project key (e.g., "DEMO")
+	 */
+	public static void setProjectKey(String projectKey) {
+	    if (projectKey != null && !projectKey.trim().isEmpty()) {
+	        PROJECT_KEY = projectKey.trim();
+	    } else {
+	        System.out.println("⚠️ Warning: Provided project key is null or empty. Value not updated.");
+	    }
 	}
 	/**
 	 * The authentication token required for making requests to the Vansah API. This token
@@ -127,8 +180,8 @@ public class VansahNode {
 	private static final String updateVansah = "1";
 
 
-	/** The unique identifier for the test folder. Mandatory unless a JIRA issue key is provided. */
-	private String TESTFOLDERS_ID;
+	/** The Path for the test folder. Mandatory unless a JIRA issue key is provided. */
+	private String FOLDERPATH;
 
 	/** The key for the JIRA issue. Mandatory unless a test folder identifier is provided. */
 	private String JIRA_ISSUE_KEY;
@@ -192,12 +245,12 @@ public class VansahNode {
 	 * the test folder's identifier and the JIRA issue key are known and need to be set
 	 * for the instance.
 	 *
-	 * @param TESTFOLDERS_ID The unique identifier for the test folder. Mandatory unless a JIRA issue key is provided.
+	 * @param FOLDERPATH The Path for the test folder. Mandatory unless a JIRA issue key is provided.
 	 * @param JIRA_ISSUE_KEY The key for the JIRA issue. Mandatory unless a test folder identifier is provided.
 	 */
-	public VansahNode(String TESTFOLDERS_ID, String JIRA_ISSUE_KEY) {
+	public VansahNode(String FOLDERPATH, String JIRA_ISSUE_KEY) {
 		super();
-		this.TESTFOLDERS_ID = TESTFOLDERS_ID;
+		this.FOLDERPATH = FOLDERPATH;
 		this.JIRA_ISSUE_KEY = JIRA_ISSUE_KEY;
 		// Initialize test result mapping
 		resultAsName.put("NA", 0);
@@ -448,7 +501,7 @@ public class VansahNode {
 	 *
 	 * @param result The test result as a string. Expected values are "NA", "FAIL", "PASSED", or "UNTESTED".
 	 * @param comment An updated or new comment detailing the test outcome or any pertinent information.
-	* @param image The File Object of the screenshot taken to upload : Provide file object or Path of the screenshot.
+	 * @param image The File Object of the screenshot taken to upload : Provide file object or Path of the screenshot.
 	 * Ex : "C:\Users\Username\Pictures\screenshot.png"
 	 * @throws Exception If there's an issue with the API connection or during the request's execution,
 	 *                   such as network problems, authentication failures, or incorrect test log identifiers.
@@ -500,7 +553,7 @@ public class VansahNode {
 				Unirest.setHttpClient(clientBuilder.build());
 			}
 			HttpResponse<JsonNode> get;
-			get = Unirest.get(TEST_SCRIPT).headers(headers).queryString("caseKey", case_key).asJson();
+			get = Unirest.get(getTestScriptUrl()).headers(headers).queryString("caseKey", case_key).asJson();
 			if (get.getBody().toString().equals("[]")) {
 				System.out.println("Unexpected Response From Server: " + get.getBody().toString());
 			} else {
@@ -582,9 +635,9 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 
+					requestBody.accumulate("project", jiraProjectAsset());
 
-
-					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
+					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 
 				}
 				if(type == "addTestRunFromTestFolder") {
@@ -594,10 +647,10 @@ public class VansahNode {
 					if(properties().length()!=0) {
 						requestBody.accumulate("properties", properties());
 					}
+					
+					requestBody.accumulate("project", jiraProjectAsset());
 
-
-
-					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
+					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 
 				}
 
@@ -609,8 +662,9 @@ public class VansahNode {
 						requestBody.append("attachments", addAttachment(FILE));
 
 					}
+					requestBody.accumulate("project", jiraProjectAsset());
 
-					jsonRequestBody = Unirest.post(ADD_TEST_LOG).headers(headers).body(requestBody).asJson();
+					jsonRequestBody = Unirest.post( getAddTestLogUrl()).headers(headers).body(requestBody).asJson();
 				}
 
 
@@ -623,12 +677,10 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
+					
+					requestBody.accumulate("project", jiraProjectAsset());
 
-
-
-
-
-					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
+					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 				}
 				if(type == "addQuickTestFromTestFolders") {
 					requestBody = new JSONObject();
@@ -638,22 +690,20 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
+					
+					requestBody.accumulate("project", jiraProjectAsset());
 
-
-
-
-
-					jsonRequestBody = Unirest.post(ADD_TEST_RUN).headers(headers).body(requestBody).asJson();
+					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 				}
 
 
 				if(type == "removeTestRun") {
-					jsonRequestBody = Unirest.delete(REMOVE_TEST_RUN+TEST_RUN_IDENTIFIER).headers(headers).asJson();
+					jsonRequestBody = Unirest.delete(getRemoveTestRunUrl(TEST_RUN_IDENTIFIER)).headers(headers).asJson();
 				}
 
 
 				if(type == "removeTestLog") {
-					jsonRequestBody = Unirest.delete(REMOVE_TEST_LOG+TEST_LOG_IDENTIFIER).headers(headers).asJson();
+					jsonRequestBody = Unirest.delete(getRemoveTestRunUrl(TEST_LOG_IDENTIFIER)).headers(headers).asJson();
 				}
 
 
@@ -664,8 +714,9 @@ public class VansahNode {
 					if(SEND_SCREENSHOT) {
 						requestBody.append("attachments", addAttachment(FILE));
 					}
+					requestBody.accumulate("project", jiraProjectAsset());
 
-					jsonRequestBody = Unirest.put(UPDATE_TEST_LOG+TEST_LOG_IDENTIFIER).headers(headers).body(requestBody).asJson();
+					jsonRequestBody = Unirest.put(getUpdateTestLogUrl(TEST_LOG_IDENTIFIER)).headers(headers).body(requestBody).asJson();
 				}
 
 
@@ -734,10 +785,10 @@ public class VansahNode {
 	 * Sets the test folder ID for the current instance. This ID is used to associate test runs and logs
 	 * with a specific test folder in Vansah.
 	 *
-	 * @param TESTFOLDERS_ID The test folder ID to set.
+	 * @param FOLDERPATH The test folder Path to set.
 	 */
-	public void setTESTFOLDERS_ID(String TESTFOLDERS_ID) {
-		this.TESTFOLDERS_ID = TESTFOLDERS_ID;
+	public void setFOLDERPATH(String FOLDERPATH) {
+		this.FOLDERPATH = FOLDERPATH;
 	}
 
 	/**
@@ -885,31 +936,88 @@ public class VansahNode {
 		return asset;
 	}
 	/**
-	 * Creates a JSONObject that represents a test folder asset. This object is used to specify the test folder
-	 * when making API requests that require associating test runs or logs with a specific test folder in Vansah.
+	 * Returns a JSONObject representing a JIRA project asset.
+	 * Logs a warning if the project key is null or empty.
+	 * 
+	 * Example output:
+	 * {
+	 *     "project": {
+	 *         "key": "DEMO"
+	 *     }
+	 * }
 	 *
-	 * Precondition: The TESTFOLDERS_ID field should be set to a valid test folder identifier. If the identifier
-	 * is not set or is invalid (less than 2 characters), the method will print a warning message.
-	 *
-	 * @return A JSONObject that includes the folder type and its identifier, prepared for inclusion in API requests.
-	 *         Returns an empty JSONObject if the TESTFOLDERS_ID is not valid.
+	 * @return JSONObject with project key, or empty object if invalid
 	 */
+	private JSONObject jiraProjectAsset() {
+		JSONObject asset = new JSONObject();
+
+		if (PROJECT_KEY != null && !PROJECT_KEY.trim().isEmpty()) {
+			
+			asset.put("key", PROJECT_KEY);
+
+		} else {
+			// Print warning if key is invalid
+			System.out.println("⚠️ Warning: Please provide a valid JIRA Project Key.");
+		}
+
+		return asset;
+	}
+	/**
+	 * Creates a JSONObject that represents a test folder asset using the specified Test Folder Path.
+	 * This object is used to associate test runs or logs with a specific test folder in Vansah API requests.
+	 *
+	 * Precondition: The Test Folder Path (FOLDERPATH) must be set to a valid path. 
+	 * If the path is null or shorter than 2 characters, a warning will be printed, and an empty JSONObject is returned.
+	 *
+	 * @return A JSONObject containing the folder type and its path, suitable for inclusion in Vansah API requests.
+	 *         Returns an empty JSONObject if the Test Folder Path is invalid.
+	 */
+
 	private JSONObject testFolderAsset() {
 
 		JSONObject asset = new JSONObject();
-		if(TESTFOLDERS_ID!=null){
-			if(TESTFOLDERS_ID.length()>=2) {
-				asset.accumulate("type", "folder");
-				asset.accumulate("identifier", TESTFOLDERS_ID);
+		if(FOLDERPATH!=null){
+			if(isValidFolderPath(FOLDERPATH)) {
+
 			}
+			asset.accumulate("type", "folder");
+			asset.accumulate("folderPath", FOLDERPATH);
+
 		}
 		else {
-			System.out.println("Please Provide Valid TestFolder ID");
+			System.out.println("Please Provide Valid TestFolder Path");
 		}
 
 
 		return asset;
 	}
+	/**
+	 * Validates the Test Folder Path based on the following rules:
+	 * - It should not start with a forward slash (/).
+	 * - It must contain at least one forward slash (/).
+	 *
+	 * @param folderPath The test folder path to validate.
+	 * @return true if the folder path is valid, false otherwise. Prints a warning message if invalid.
+	 */
+	public boolean isValidFolderPath(String folderPath) {
+		if (folderPath == null || folderPath.isEmpty()) {
+			System.out.println("⚠️ Warning: Folder path cannot be null or empty.");
+			return false;
+		}
+
+		if (folderPath.startsWith("/")) {
+			System.out.println("⚠️ Warning: Folder path should not start with '/'.");
+			return false;
+		}
+
+		if (!folderPath.contains("/")) {
+			System.out.println("⚠️ Warning: Folder path must contain at least one '/'.");
+			return false;
+		}
+
+		return true;
+	}
+
 
 	/**
 	 * Constructs a JSONObject with properties for adding a test log. This includes identifiers for the test run
