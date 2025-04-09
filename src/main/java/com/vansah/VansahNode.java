@@ -39,6 +39,14 @@ public class VansahNode {
      * If null or empty, related API calls may not function correctly.
      */	
 	private static String PROJECT_KEY = null;
+	
+	/**
+	 * The key of the Advanced Test Plan (ATP) in Vansah.
+	 * This key is used to associate test runs with a specific advanced test plan.
+	 * 
+	 * Example: "MU-P76"
+	 */
+	private static String ADVANCED_TEST_PLAN_KEY = null;
 
 	/**
 	 * Returns the endpoint URL for adding a test run.
@@ -133,6 +141,15 @@ public class VansahNode {
 	    } else {
 	        System.out.println("⚠️ Warning: Provided project key is null or empty. Value not updated.");
 	    }
+	}
+	/**
+	 * Sets the key for the Advanced Test Plan (ATP). This key is used to associate test runs
+	 * with a specific Advanced Test Plan within Vansah.
+	 *
+	 * @param ADVANCED_TEST_PLAN_KEY The unique key of the Advanced Test Plan (e.g., "MU-P76").
+	 */
+	public void setAdvancedTestPlanKey(String ADVANCED_TEST_PLAN_KEY) {
+	    this.ADVANCED_TEST_PLAN_KEY = ADVANCED_TEST_PLAN_KEY;
 	}
 	/**
 	 * The authentication token required for making requests to the Vansah API. This token
@@ -236,7 +253,20 @@ public class VansahNode {
 
 	/** The JSON object representing the body of the API request. */
 	private JSONObject requestBody = null;
-
+	
+	/**
+	 * The type of the test plan asset.
+	 * 
+	 * This value determines how the testPlanAsset should be interpreted in Vansah API requests.
+	 * It can either be:
+	 * - "folder": to specify a test folder by path
+	 * - "issue": to specify a Jira issue by key
+	 *
+	 * Example:
+	 *  - type = "folder"
+	 *  - type = "issue"
+	 */
+	private String TEST_PLAN_ASSET_TYPE = null;
 
 
 	/**
@@ -279,11 +309,11 @@ public class VansahNode {
 	 * This method sets the case key and prepares the instance for connecting to the
 	 * Vansah REST API to initiate a test run. Screenshots are not sent by default.
 	 *
-	 * @param testcase The test case identifier (e.g., "TEST-C1").
+	 * @param testCase The test case identifier (e.g., "TEST-C1").
 	 * @throws Exception If there's an error in the API connection or request execution.
 	 */
-	public void addTestRunFromJIRAIssue(String testcase) throws Exception {
-		this.CASE_KEY = testcase;	    
+	public void addTestRunFromJIRAIssue(String testCase) throws Exception {
+		this.CASE_KEY = testCase;	    
 		connectToVansahRest("addTestRunFromJIRAIssue");
 	}
 
@@ -292,13 +322,33 @@ public class VansahNode {
 	 * Similar to the JIRA issue-based method, this sets the case key and disables screenshot
 	 * sending, preparing for a REST API call to create a test run within a specific test folder.
 	 *
-	 * @param testcase The test case identifier (e.g., "TEST-C1").
+	 * @param testCase The test case identifier (e.g., "TEST-C1").
 	 * @throws Exception If there's an error in the API connection or request execution.
 	 */
-	public void addTestRunFromTestFolder(String testcase) throws Exception {
-		this.CASE_KEY = testcase;	    
+	public void addTestRunFromTestFolder(String testCase) throws Exception {		
+		this.CASE_KEY = testCase;	    
 		connectToVansahRest("addTestRunFromTestFolder");
 	}
+	/**
+	 * Creates a new test run for a given test case based on the specified test plan asset type.
+	 * 
+	 * This method allows associating the test run with either a test folder (using a folder path)
+	 * or a Jira issue (using an issue key), depending on the provided asset type. It sets the 
+	 * test case key and test plan asset type, then invokes the Vansah API to register the test run.
+	 *
+	 * Supported asset types:
+	 * - "folder": Uses the test folder path.
+	 * - "issue": Uses the Jira issue key.
+	 *
+	 * @param testPlanAssetType The type of the test plan asset ("folder" or "issue").
+	 * @param testCase The test case identifier (e.g., "TEST-C1") to associate with the test run.
+	 * @throws Exception If there's an error during the API connection or while executing the request.
+	 */
+	public void addTestRunFromAdvancedTestPlan(String testPlanAssetType ,String testCase) {
+		this.TEST_PLAN_ASSET_TYPE = testPlanAssetType;
+		this.CASE_KEY = testCase;	    
+		connectToVansahRest("addTestRunFromAdvancedTestPlan");
+	}	
 	/**
 	 * Adds a new test log entry for a specific test case. This method is used after creating a test run
 	 * to log individual test results. It requires a test run identifier obtained from a previous test run creation.
@@ -379,13 +429,13 @@ public class VansahNode {
 	 * This method is ideal for test cases without detailed steps, where only the overall result is needed.
 	 * It sets the case key and result, then connects to the Vansah REST API to create a new log entry.
 	 *
-	 * @param testcase The test case identifier (e.g., "TEST-C1") associated with a JIRA issue.
+	 * @param testCase The test case identifier (e.g., "TEST-C1") associated with a JIRA issue.
 	 * @param result The overall result of the test case. Acceptable values are:
 	 *               0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested.
 	 * @throws Exception If there's an error in connecting to the Vansah REST API or during the execution of the request.
 	 */
-	public void addQuickTestFromJiraIssue(String testcase, int result) throws Exception {
-		this.CASE_KEY = testcase;
+	public void addQuickTestFromJiraIssue(String testCase, int result) throws Exception {
+		this.CASE_KEY = testCase;
 		this.RESULT_KEY = result;
 		connectToVansahRest("addQuickTestFromJiraISSUE");
 	}
@@ -395,13 +445,13 @@ public class VansahNode {
 	 * focusing on the overall test result. It updates the instance with the test case key and result before
 	 * making an API call to Vansah to create a new log entry.
 	 *
-	 * @param testcase The identifier of the test case (e.g., "TEST-C1") within a test folder.
+	 * @param testCase The identifier of the test case (e.g., "TEST-C1") within a test folder.
 	 * @param result The overall result of the test case. Possible values are:
 	 *               0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested.
 	 * @throws Exception If an error occurs during the API connection or request processing.
 	 */
-	public void addQuickTestFromTestFolders(String testcase, int result) throws Exception {
-		this.CASE_KEY = testcase;
+	public void addQuickTestFromTestFolders(String testCase, int result) throws Exception {
+		this.CASE_KEY = testCase;
 		this.RESULT_KEY = result;
 		connectToVansahRest("addQuickTestFromTestFolders");
 	}
@@ -653,8 +703,19 @@ public class VansahNode {
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 
 				}
+				if(type == "addTestRunFromAdvancedTestPlan") {
+					requestBody = new JSONObject();
+					requestBody.accumulate("case", testCase());
+					requestBody.accumulate("asset", advancedTestPlanAsset());					
+					requestBody.accumulate("testPlanAsset", testPlanAsset(TEST_PLAN_ASSET_TYPE, FOLDERPATH, JIRA_ISSUE_KEY));
+					if(properties().length()!=0) {
+						requestBody.accumulate("properties", properties());
+					}
+					
+					requestBody.accumulate("project", jiraProjectAsset());
 
-
+					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
+				}				
 				if(type == "addTestLog") {
 					requestBody =  addTestLogProp();
 					if(SEND_SCREENSHOT) {
@@ -672,7 +733,7 @@ public class VansahNode {
 
 					requestBody = new JSONObject();
 					requestBody.accumulate("case", testCase());
-					requestBody.accumulate("asset", jiraIssueAsset());
+					requestBody.accumulate("asset", jiraIssueAsset());					
 					if(properties().length()!=0) {
 						requestBody.accumulate("properties", properties());
 					}
@@ -738,6 +799,10 @@ public class VansahNode {
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
 						}
 						if(type == "addTestRunFromTestFolder") {
+							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
+							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
+						}
+						if(type == "addTestRunFromAdvancedTestPlan") {
 							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
 						}
@@ -885,7 +950,7 @@ public class VansahNode {
 			}
 		}
 		else {
-			System.out.println("Please Provide Valid TestCase Key");
+			System.out.println("Please Provide Valid testCase Key");
 		}
 
 		return testCase;
@@ -991,6 +1056,70 @@ public class VansahNode {
 
 		return asset;
 	}
+	/**
+	 * Creates a JSONObject that represents an Advanced Test Plan (ATP) asset using the specified plan key.
+	 * This object is used to associate test runs with a specific planned test run in Vansah API requests.
+	 *
+	 * Precondition: The Advanced Test Plan Key (ADVANCED_TEST_PLAN_KEY) must be valid (non-null and non-empty).
+	 * If the key is not set or invalid, a warning will be printed and an empty JSONObject will be returned.
+	 *
+	 * @return A JSONObject containing the ATP type, key, and iteration number, suitable for inclusion in Vansah API requests.
+	 *         Returns an empty JSONObject if the Advanced Test Plan Key is invalid.
+	 */
+	private JSONObject advancedTestPlanAsset() {
+	    JSONObject asset = new JSONObject();
+
+	    if (ADVANCED_TEST_PLAN_KEY != null && !ADVANCED_TEST_PLAN_KEY.trim().isEmpty()) {
+	        asset.accumulate("type", "plannedRun");
+	        asset.accumulate("key", ADVANCED_TEST_PLAN_KEY);
+	        asset.accumulate("iteration", 1); // Optionally, use a variable like ATP_ITERATION
+	    } else {
+	        System.out.println("⚠️ Warning: Please provide a valid Advanced Test Plan Key.");
+	    }
+
+	    return asset;
+	}
+	/**
+	 * Creates a JSONObject representing the testPlanAsset properties, which can refer to a folder or a Jira issue.
+	 *
+	 * Depending on the 'type' ("folder" or "issue"), it includes either the folderPath or the issue key.
+	 *
+	 * Precondition:
+	 * - If type is "folder", a valid folder path must be provided (not null, not starting with "/", and must contain "/").
+	 * - If type is "issue", a valid Jira issue key must be provided (non-null and non-empty).
+	 *
+	 * @param type The type of the test plan asset. Valid values: "folder" or "issue".
+	 * @param folderPath The test folder path (used if type is "folder").
+	 * @param issueKey The Jira issue key (used if type is "issue").
+	 * @return A JSONObject representing the test plan asset for Vansah API requests.
+	 */
+	private JSONObject testPlanAsset(String type, String folderPath, String issueKey) {
+	    JSONObject asset = new JSONObject();
+
+	    if (type == null || (!type.equalsIgnoreCase("folder") && !type.equalsIgnoreCase("issue"))) {
+	        System.out.println("⚠️ Warning: 'type' must be either 'folder' or 'issue'.");
+	        return asset;
+	    }
+
+	    asset.accumulate("type", type);
+
+	    if (type.equalsIgnoreCase("folder")) {
+	        if (isValidFolderPath(folderPath)) {
+	            asset.accumulate("folderPath", folderPath);
+	        } else {
+	            System.out.println("⚠️ Warning: Invalid folder path provided for testPlanAsset.");
+	        }
+	    } else if (type.equalsIgnoreCase("issue")) {
+	        if (issueKey != null && !issueKey.trim().isEmpty()) {
+	            asset.accumulate("key", issueKey);
+	        } else {
+	            System.out.println("⚠️ Warning: Invalid issue key provided for testPlanAsset.");
+	        }
+	    }
+
+	    return asset;
+	}
+
 	/**
 	 * Validates the Test Folder Path based on the following rules:
 	 * - It should not start with a forward slash (/).

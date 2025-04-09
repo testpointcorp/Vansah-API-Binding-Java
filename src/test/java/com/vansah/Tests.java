@@ -15,6 +15,10 @@ class Tests {
 	
 	private final String projectKey = "KAN";
 	
+	private final String testPlanKey = "KAN-P17";
+	
+	private final String testPlanAssetType = "folder"; //or issue
+	
 	
 	@SuppressWarnings("static-access")
 	@BeforeEach
@@ -27,6 +31,8 @@ class Tests {
 		sendResults.setProjectKey(projectKey);
 		
 		sendResults.setFOLDERPATH(testfolderPath);
+		
+		sendResults.setAdvancedTestPlanKey(testPlanKey);
 	
 		
 	}
@@ -35,6 +41,16 @@ class Tests {
 	void sendingResultstoVansah_usingTestFolderPath() throws Exception {
 		
 		sendResults.addTestRunFromTestFolder(testCaseKey);
+		
+		sendResults.addTestLog("passed", "Actual result for the Test Step", 1);
+		
+		
+	}
+	
+	@Test
+	void sendingResultstoVansahforATP() throws Exception {
+		
+		sendResults.addTestRunFromAdvancedTestPlan(testPlanAssetType,testCaseKey);
 		
 		sendResults.addTestLog("passed", "Actual result for the Test Step", 1);
 		
