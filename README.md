@@ -234,12 +234,14 @@ Updates an existing test log with new information, such as a revised result or a
 
 The `VansahNode` class provides a set of setter methods to configure your test management context before performing operations such as creating test runs, adding test logs, and more. Here's a detailed overview of each setter method:
 
-### `setTESTFOLDERS_ID(String TESTFOLDERS_ID)`
+### `setTESTFOLDER_PATH(String TESTFOLDER_PATH)`
 
-Configures the test folder ID for the VansahNode instance. This ID is essential for associating your test runs and logs with the correct test folder in Vansah.
+Configures the **Test Folder Path** for the VansahNode instance. This path is essential for associating your test runs and logs with the correct test folder structure in Vansah.
 
 - **Parameters**:
-  - `TESTFOLDERS_ID`: The unique identifier for the test folder in Vansah.
+  - `TESTFOLDER_PATH`: The folder path for the test folder in Vansah. The path must contain at least one `/` and must not start with `/`.
+
+> **Note:** Invalid paths (e.g., those starting with `/` or lacking `/`) will print a warning and be ignored.
 
 ### `setJIRA_ISSUE_KEY(String JIRA_ISSUE_KEY)`
 
@@ -276,7 +278,7 @@ To use these setter methods in your application, create an instance of `VansahNo
 ```java
 VansahNode vansahNode = new VansahNode();
 vansahNode.setVansahToken("Add your Token here");
-vansahNode.setTESTFOLDERS_ID("your-test-folder-id");
+vansahNode.setTESTFOLDER_PATH("feature-tests/login");
 vansahNode.setJIRA_ISSUE_KEY("your-jira-issue-key");
 vansahNode.setSPRINT_NAME("your-sprint-name");
 vansahNode.setRELEASE_NAME("your-release-name");
