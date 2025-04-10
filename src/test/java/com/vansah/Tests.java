@@ -15,9 +15,11 @@ class Tests {
 	
 	private final String projectKey = "KAN";
 	
-	private final String testPlanKey = "KAN-P17";
+	private final String testPlanKeyforATP = "KAN-P17";
 	
-	private final String testPlanAssetType = "folder"; //or issue
+	private final String testPlanAssetType = "folder"; //or issue only for ATP - Advanced Test Plan
+	
+	private final String testPlanKeyforSTP = "KAN-P18"; //required for Standard Test Plan
 	
 	
 	@SuppressWarnings("static-access")
@@ -32,7 +34,9 @@ class Tests {
 		
 		sendResults.setFOLDERPATH(testfolderPath);
 		
-		sendResults.setAdvancedTestPlanKey(testPlanKey);
+		sendResults.setAdvancedTestPlanKey(testPlanKeyforATP);
+		
+		sendResults.setStandardTestPlanKey(testPlanKeyforSTP);
 	
 		
 	}
@@ -51,6 +55,16 @@ class Tests {
 	void sendingResultstoVansahforATP() throws Exception {
 		
 		sendResults.addTestRunFromAdvancedTestPlan(testPlanAssetType,testCaseKey);
+		
+		sendResults.addTestLog("passed", "Actual result for the Test Step", 1);
+		
+		
+	}
+	
+	@Test
+	void sendingResultstoVansahforSTP() throws Exception {
+		
+		sendResults.addTestRunFromStandardTestPlan(testCaseKey);
 		
 		sendResults.addTestLog("passed", "Actual result for the Test Step", 1);
 		

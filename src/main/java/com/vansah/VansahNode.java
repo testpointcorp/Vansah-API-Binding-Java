@@ -47,6 +47,14 @@ public class VansahNode {
 	 * Example: "MU-P76"
 	 */
 	private static String ADVANCED_TEST_PLAN_KEY = null;
+	
+	/**
+	 * The key of the Standard Test Plan (ATP) in Vansah.
+	 * This key is used to associate test runs with a specific standard test plan.
+	 * 
+	 * Example: "MU-P76"
+	 */
+	private static String STANDARD_TEST_PLAN_KEY = null;
 
 	/**
 	 * Returns the endpoint URL for adding a test run.
@@ -150,6 +158,15 @@ public class VansahNode {
 	 */
 	public void setAdvancedTestPlanKey(String ADVANCED_TEST_PLAN_KEY) {
 	    this.ADVANCED_TEST_PLAN_KEY = ADVANCED_TEST_PLAN_KEY;
+	}
+	/**
+	 * Sets the key for the Standard Test Plan. This key is used to associate test runs
+	 * with a specific Standard Test Plan within Vansah.
+	 *
+	 * @param STANDARD_TEST_PLAN_KEY The unique key of the Standard Test Plan (e.g., "MU-P76").
+	 */
+	public void setStandardTestPlanKey(String STANDARD_TEST_PLAN_KEY) {
+	    this.STANDARD_TEST_PLAN_KEY = STANDARD_TEST_PLAN_KEY;
 	}
 	/**
 	 * The authentication token required for making requests to the Vansah API. This token
@@ -348,7 +365,20 @@ public class VansahNode {
 		this.TEST_PLAN_ASSET_TYPE = testPlanAssetType;
 		this.CASE_KEY = testCase;	    
 		connectToVansahRest("addTestRunFromAdvancedTestPlan");
-	}	
+	}
+	/**
+	 * Adds a test run for a given test case based on a standard test plan.
+	 * <p>
+	 * This method sets the test case key and initiates a connection to the 
+	 * Vansah REST API using the "addTestRunFromStandardTestPlan" operation.
+	 * </p>
+	 *
+	 * @param testCase the unique identifier (key) of the test case to be added
+	 */
+	public void addTestRunFromStandardTestPlan(String testCase) {
+	    this.CASE_KEY = testCase;
+	    connectToVansahRest("addTestRunFromStandardTestPlan");
+	}
 	/**
 	 * Adds a new test log entry for a specific test case. This method is used after creating a test run
 	 * to log individual test results. It requires a test run identifier obtained from a previous test run creation.
@@ -715,7 +745,18 @@ public class VansahNode {
 					requestBody.accumulate("project", jiraProjectAsset());
 
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
-				}				
+				}		
+				if(type == "addTestRunFromStandardTestPlan") {
+					requestBody = new JSONObject();
+					requestBody.accumulate("case", testCase());
+					requestBody.accumulate("asset", standardTestPlanAsset());					
+					if(properties().length()!=0) {
+						requestBody.accumulate("properties", properties());
+					}
+					
+					requestBody.accumulate("project", jiraProjectAsset());					
+					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
+				}	
 				if(type == "addTestLog") {
 					requestBody =  addTestLogProp();
 					if(SEND_SCREENSHOT) {
@@ -803,6 +844,10 @@ public class VansahNode {
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
 						}
 						if(type == "addTestRunFromAdvancedTestPlan") {
+							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
+							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
+						}
+						if(type == "addTestRunFromStandardTestPlan") {
 							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
 						}
@@ -1075,6 +1120,29 @@ public class VansahNode {
 	        asset.accumulate("iteration", 1); // Optionally, use a variable like ATP_ITERATION
 	    } else {
 	        System.out.println("⚠️ Warning: Please provide a valid Advanced Test Plan Key.");
+	    }
+
+	    return asset;
+	}
+	/**
+	 * Creates a JSONObject that represents a Standard Test Plan asset using the specified plan key.
+	 * This object is used to associate test runs with a specific planned test run in Vansah API requests.
+	 *
+	 * Precondition: The Standard Test Plan Key (STANDARD_TEST_PLAN_KEY) must be valid (non-null and non-empty).
+	 * If the key is not set or invalid, a warning will be printed and an empty JSONObject will be returned.
+	 *
+	 * @return A JSONObject containing the planned run type, key, and iteration number, suitable for inclusion in Vansah API requests.
+	 *         Returns an empty JSONObject if the Standard Test Plan Key is invalid.
+	 */
+	private JSONObject standardTestPlanAsset() {
+	    JSONObject asset = new JSONObject();
+
+	    if (STANDARD_TEST_PLAN_KEY != null && !STANDARD_TEST_PLAN_KEY.trim().isEmpty()) {
+	        asset.accumulate("type", "plannedRun");
+	        asset.accumulate("key", STANDARD_TEST_PLAN_KEY);
+	        asset.accumulate("iteration", 1);
+	    } else {
+	        System.out.println("⚠️ Warning: Please provide a valid Standard Test Plan Key.");
 	    }
 
 	    return asset;
