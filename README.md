@@ -185,6 +185,95 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
 }
 ```
 
+- Adding Test Runs using Folder Path, Advanced Test Plan (ATP), and Standard Test Plan (STP)
+
+```java
+
+/**
+ * Sample JUnit test class demonstrating how to send test execution results to Vansah.
+ * 
+ * This class uses VansahNode to:
+ * - Connect to Vansah with a project key and token
+ * - Send test results using:
+ *   1. Test Folder path
+ *   2. Advanced Test Plan (ATP)
+ *   3. Standard Test Plan (STP)
+ */
+class Tests {
+
+    // VansahNode instance for sending results
+    private final VansahNode sendResults = new VansahNode();
+
+    // Vansah server URL
+    private final String vansahURL = "https://prodau.vansah.com";
+
+    // Folder path in Vansah where the test cases are organized
+    private final String testfolderPath = "vansah test automation/regression 2025/";
+
+    // Test Case key from Jira
+    private final String testCaseKey = "KAN-C17";
+
+    // Jira Project key
+    private final String projectKey = "KAN";
+
+    // Advanced Test Plan key used for ATP-based test executions
+    private final String testPlanKeyforATP = "KAN-P17";
+
+    // Asset type for ATP (can be "folder" or "issue")
+    private final String testPlanAssetType = "folder";
+
+    // Standard Test Plan key used for STP-based test executions
+    private final String testPlanKeyforSTP = "KAN-P18";
+
+    /**
+     * Setup method that runs before each test.
+     * It initializes VansahNode with URL, API token, project key, folder path,
+     * and test plan keys for both ATP and STP.
+     */
+    @SuppressWarnings("static-access")
+    @BeforeEach
+    void setup() {
+        sendResults.setVansahURL(vansahURL);
+        sendResults.setVansahToken(System.getenv("CONNECT_DEMO_TOKEN")); // Token should be set as environment variable
+        sendResults.setProjectKey(projectKey);
+        sendResults.setFOLDERPATH(testfolderPath);
+        sendResults.setAdvancedTestPlanKey(testPlanKeyforATP);
+        sendResults.setStandardTestPlanKey(testPlanKeyforSTP);
+    }
+
+    /**
+     * Sends a test result to Vansah using the configured test folder path.
+     * This is useful when test cases are organized and executed based on folders.
+     */
+    @Test
+    void sendingResultstoVansah_usingTestFolderPath() throws Exception {
+        sendResults.addTestRunFromTestFolder(testCaseKey);
+        sendResults.addTestLog("passed", "Actual result for the Test Step", 1);
+    }
+
+    /**
+     * Sends a test result to Vansah using an Advanced Test Plan (ATP).
+     * ATP helps manage test execution based on either folder or issue assets.
+     */
+    @Test
+    void sendingResultstoVansahforATP() throws Exception {
+        sendResults.addTestRunFromAdvancedTestPlan(testPlanAssetType, testCaseKey);
+        sendResults.addTestLog("passed", "Actual result for the Test Step", 1);
+    }
+
+    /**
+     * Sends a test result to Vansah using a Standard Test Plan (STP).
+     * STPs are used to group test runs without needing folder or issue context.
+     */
+    @Test
+    void sendingResultstoVansahforSTP() throws Exception {
+        sendResults.addTestRunFromStandardTestPlan(testCaseKey);
+        sendResults.addTestLog("passed", "Actual result for the Test Step", 1);
+    }
+}
+```
+
+
 ## Methods Overview
 The `VansahNode` class provides a comprehensive interface for interacting with Vansah Test Management for Jira directly from Java applications. Below is a description of its public methods, designed to facilitate various test management tasks such as creating test runs, logging test results, and managing test assets.
 ### `addTestRunFromJIRAIssue(String testcase)`
@@ -218,6 +307,23 @@ Quickly logs the overall result of a test case associated with either a JIRA iss
 - **Parameters**:
   - `testcase`: The test case identifier.
   - `result`: The overall test result (e.g., PASS, FAIL).
+  
+### `addTestRunFromAdvancedTestPlan(String testPlanAssetType, String testCaseKey)`
+
+Adds a new test run in Vansah under an Advanced Test Plan (ATP). The method links the given test case to a specific asset type (either a folder or an issue) defined in the ATP, enabling organized execution tracking.
+
+- **Parameters**:
+  - `testPlanAssetType`: The type of asset linked to the ATP. Accepted values are:
+  	- `folder` – If the ATP is structured by test folder.
+  	- `issue` – If the ATP is linked to a specific Jira issue.
+  - `testCaseKey`: The key of the test case to be executed (e.g., "KAN-C17").
+  
+### `addTestRunFromStandardTestPlan(String testCaseKey)`
+
+Adds a new test run in Vansah under a Standard Test Plan (STP). This method links the specified test case to the configured Standard Test Plan, enabling execution tracking and reporting without the need for a specific folder or issue reference.
+
+- **Parameters**:
+  - `testCaseKey`: The key of the test case to be executed under the Standard Test Plan (e.g., "KAN-C17").
 
 ### `removeTestRun()` and `removeTestLog()`
 
@@ -234,12 +340,14 @@ Updates an existing test log with new information, such as a revised result or a
 
 The `VansahNode` class provides a set of setter methods to configure your test management context before performing operations such as creating test runs, adding test logs, and more. Here's a detailed overview of each setter method:
 
-### `setTESTFOLDERS_ID(String TESTFOLDERS_ID)`
+### `setTESTFOLDER_PATH(String TESTFOLDER_PATH)`
 
-Configures the test folder ID for the VansahNode instance. This ID is essential for associating your test runs and logs with the correct test folder in Vansah.
+Configures the **Test Folder Path** for the VansahNode instance. This path is essential for associating your test runs and logs with the correct test folder structure in Vansah.
 
 - **Parameters**:
-  - `TESTFOLDERS_ID`: The unique identifier for the test folder in Vansah.
+  - `TESTFOLDER_PATH`: The folder path for the test folder in Vansah. The path must contain at least one `/` and must not start with `/`.
+
+> **Note:** Invalid paths (e.g., those starting with `/` or lacking `/`) will print a warning and be ignored.
 
 ### `setJIRA_ISSUE_KEY(String JIRA_ISSUE_KEY)`
 
@@ -268,7 +376,22 @@ Sets the testing environment's name. This helps in categorizing and understandin
 
 - **Parameters**:
   - `ENVIRONMENT_NAME`: The name of the environment where the tests are executed.
+  
+### `setAdvancedTestPlanKey(String testPlanKey);`
 
+Sets the key for the Advanced Test Plan (ATP). This key is used to associate test runs with a specific Advanced Test Plan in Vansah. It is essential when executing test cases that belong to structured test planning under ATP.
+
+- **Parameters**:
+  - `testPlanKey`: The unique key of the Advanced Test Plan (e.g., "KAN-P17"), used to link test executions to a defined test plan in Vansah.
+  
+### `setStandardTestPlanKey(String testPlanKey);`
+
+Sets the key for the Standard Test Plan (STP). This key is used to associate test runs with a specific Standard Test Plan in Vansah. It allows you to group and track test executions under a defined test plan without linking to a specific folder or issue.
+
+- **Parameters**:
+  - `testPlanKey`: The unique key of the Standard Test Plan (e.g., "KAN-P17"), used to organize and manage test executions in Vansah.
+  
+  
 ### Usage
 
 To use these setter methods in your application, create an instance of `VansahNode` and call the relevant setter methods with the appropriate values before proceeding with any test management operations. For example:
@@ -276,11 +399,13 @@ To use these setter methods in your application, create an instance of `VansahNo
 ```java
 VansahNode vansahNode = new VansahNode();
 vansahNode.setVansahToken("Add your Token here");
-vansahNode.setTESTFOLDERS_ID("your-test-folder-id");
+vansahNode.setTESTFOLDER_PATH("feature-tests/login");
 vansahNode.setJIRA_ISSUE_KEY("your-jira-issue-key");
 vansahNode.setSPRINT_NAME("your-sprint-name");
 vansahNode.setRELEASE_NAME("your-release-name");
 vansahNode.setENVIRONMENT_NAME("your-environment-name");
+vansahNode.setAdvancedTestPlanKey("KAN-P18");
+vansahNode.setStandardTestPlanKey("KAN-P17");
 ```
 ## Developed By
 
