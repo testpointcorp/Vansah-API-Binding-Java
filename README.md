@@ -32,7 +32,7 @@
 ## Prerequisite
 
 - Make sure that [`Vansah`](https://marketplace.atlassian.com/apps/1224250/vansah-test-management-for-jira?tab=overview&hosting=cloud) is installed in your Jira workspace
-- You need to Generate Vansah [`connect`](https://docs.vansah.com/docs-base/generate-a-vansah-api-token-from-jira-cloud/) token to authenticate with Vansah APIs.
+- You need to Generate Vansah [`connect`](https://help.vansah.com/en/articles/9824979-generate-a-vansah-api-token-from-jira) token to authenticate with Vansah APIs.
 - Your Automation Project requires Java JDK version 8 or newer.
 - You need to add Apache Commons Lang, and Unirest into your Maven project [pom.xml](#dependencies) .
 
@@ -40,7 +40,7 @@
 ## Configuration
 
 - Download/Copy the latest Vansah Binding Java [VansahNode.java](/src/main/java/com/vansah/VansahNode.java) file and extract it into your maven project under test package.
-- Now You need to provide your Vansah [`connect`](https://docs.vansah.com/docs-base/generate-a-vansah-api-token-from-jira-cloud/) token into your VansahNode.java file.
+- Now You need to provide your Vansah [`connect`](https://help.vansah.com/en/articles/9824979-generate-a-vansah-api-token-from-jira) token into your VansahNode.java file.
     - We have two options : 
 	    - Add Directly into VansahNode.file
 		    ```Java
