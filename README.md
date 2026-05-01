@@ -12,25 +12,20 @@
 <hr>
 
 > [!WARNING]
-> **⚠️ Upcoming breaking change — v1 API discontinued on 5 May 2026**
+> **⚠️ Upcoming breaking change — v1 API will be discontinued**
 >
-> **Vansah API v1** will stop working on **5 May 2026**. This integration will be
-> non-functional after that date until it is updated to use v2 routes.
->
-> Learn more:
-> - [What's new in Vansah — Migration to Forge Platform](https://vansah.com/blog/whats-new-in-vansah-migration-to-forge-platform/)
-> - [Vansah for Jira — May 2026](https://help.vansah.com/en/articles/13298303-vansah-for-jira-may-2026)
+> **Vansah API v1** will stop working once Vansah migrates to the Forge platform. This integration will be non-functional after that point until it is updated to use **Vansah API v2**.
 
 > [!NOTE]
-> **🚀 Vansah API v2 Release**
+> **🚀 Vansah API v2 — Coming Soon**
 >
-> **Vansah API v2** is coming soon. We will update this repository with full v2
-> support before the deadline.
+> This repository will be updated with full v2 support before the migration. **Watch this repo** to get notified when the update is released.
 >
-> **Watch this repo** to get notified when the update is released.
-> In the meantime, if you have questions or concerns, please
-> [open an issue](../../issues) or contact us via the
-> [Vansah Support Portal](https://vansahapp.atlassian.net/servicedesk/customer/portals).
+> In the meantime, for more details check out:
+> - [Vansah for Jira — May 2026 Forge Release](https://help.vansah.com/en/articles/13298303-vansah-for-jira-may-2026)
+> - [What's new in Vansah — Migration to Forge Platform](https://vansah.com/blog/whats-new-in-vansah-migration-to-forge-platform/)
+>
+> Questions? [Open an issue](../../issues) or reach out via the [Vansah Support Portal](https://vansahapp.atlassian.net/servicedesk/customer/portals).
 
 
 <hr>
