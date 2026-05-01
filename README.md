@@ -9,6 +9,27 @@
     <a href="https://vansah.com/connect-integrations/"><b>More Connect Integrations</b></a>
 </p>
 
+<hr>
+
+> [!WARNING]
+> **⚠️ Upcoming breaking change — v1 API will be discontinued**
+>
+> **Vansah API v1** will stop working once Vansah migrates to the Forge platform. This integration will be non-functional after that point until it is updated to use **Vansah API v2**.
+
+> [!NOTE]
+> **🚀 Vansah API v2 — Coming Soon**
+>
+> This repository will be updated with full v2 support before the migration. **Watch this repo** to get notified when the update is released.
+>
+> In the meantime, for more details check out:
+> - [Vansah for Jira — May 2026 Forge Release](https://help.vansah.com/en/articles/13298303-vansah-for-jira-may-2026)
+> - [What's new in Vansah — Migration to Forge Platform](https://vansah.com/blog/whats-new-in-vansah-migration-to-forge-platform/)
+>
+> Questions? [Open an issue](../../issues) or reach out via the [Vansah Support Portal](https://vansahapp.atlassian.net/servicedesk/customer/portals).
+
+
+<hr>
+
 ## Table of Contents
 
   - [Features](#features)
