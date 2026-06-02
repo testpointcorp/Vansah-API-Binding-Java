@@ -25,11 +25,12 @@ public class VansahNode {
 	 * The API version used for the Vansah API calls. This versioning helps in targeting
 	 * the specific iteration of the API for compatibility and feature availability.
 	 */
-	private static final String API_VERSION = "v1";
+	private static final String API_VERSION = "v2";
 
 	/**
 	 * The default base URL of the Vansah API.
 	 * Note : For Data Residency support user can now set this URL to their region URL.
+	 * https://help.vansah.com/en/articles/10407923-vansah-api-connect-url
 	 */
 	private static String VANSAH_URL = "https://prod.vansah.com";
 	
