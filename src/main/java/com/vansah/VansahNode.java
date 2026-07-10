@@ -148,7 +148,7 @@ public class VansahNode {
 	    if (projectKey != null && !projectKey.trim().isEmpty()) {
 	        PROJECT_KEY = projectKey.trim();
 	    } else {
-	        System.out.println("⚠️ Warning: Provided project key is null or empty. Value not updated.");
+	        System.out.println("⚠️ Warning: Provided Space Key is null or empty. Value not updated.");
 	    }
 	}
 	/**
@@ -187,6 +187,38 @@ public class VansahNode {
 	 */
 	public static void setVansahToken(String vansahToken) {
 		VANSAH_TOKEN = vansahToken;
+	}
+
+	/**
+	 * Controls whether outgoing request payloads are logged before being sent to Vansah.
+	 * Useful for diagnosing integration issues (e.g. malformed folder paths, missing
+	 * project keys) without inspecting network traffic. Defaults to enabled when the
+	 * VANSAH_DEBUG environment variable is set to "true" or "1".
+	 */
+	private static boolean DEBUG = "true".equalsIgnoreCase(System.getenv("VANSAH_DEBUG"))
+			|| "1".equals(System.getenv("VANSAH_DEBUG"));
+
+	/**
+	 * Enables or disables debug payload logging for outgoing Vansah API requests.
+	 *
+	 * @param debug true to log request payloads before they are sent, false to disable.
+	 */
+	public static void setDebug(boolean debug) {
+		DEBUG = debug;
+	}
+
+	/**
+	 * Logs the outgoing request payload for a given endpoint when debug mode is enabled.
+	 * Called before any base64 attachment is added to the payload so the log isn't
+	 * flooded with encoded file data.
+	 *
+	 * @param endpoint The Vansah API endpoint being called.
+	 * @param payload The JSON request body about to be sent.
+	 */
+	private static void emitPayload(String endpoint, JSONObject payload) {
+		if (DEBUG) {
+			System.out.println("🐛 [DEBUG] Request to " + endpoint + ": " + payload.toString());
+		}
 	}
 	/**
 	 * The hostname or IP address of the proxy server used when the Vansah API binding operates behind a proxy.
@@ -718,6 +750,7 @@ public class VansahNode {
 
 					requestBody.accumulate("project", jiraProjectAsset());
 
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 
 				}
@@ -731,6 +764,7 @@ public class VansahNode {
 					
 					requestBody.accumulate("project", jiraProjectAsset());
 
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 
 				}
@@ -745,8 +779,9 @@ public class VansahNode {
 					
 					requestBody.accumulate("project", jiraProjectAsset());
 
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
-				}		
+				}
 				if(type == "addTestRunFromStandardTestPlan") {
 					requestBody = new JSONObject();
 					requestBody.accumulate("case", testCase());
@@ -755,17 +790,21 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 					
-					requestBody.accumulate("project", jiraProjectAsset());					
+					requestBody.accumulate("project", jiraProjectAsset());
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
-				}	
+				}
 				if(type == "addTestLog") {
 					requestBody =  addTestLogProp();
+					requestBody.accumulate("project", jiraProjectAsset());
+
+					emitPayload(getAddTestLogUrl(), requestBody);
+
 					if(SEND_SCREENSHOT) {
 
 						requestBody.append("attachments", addAttachment(FILE));
 
 					}
-					requestBody.accumulate("project", jiraProjectAsset());
 
 					jsonRequestBody = Unirest.post( getAddTestLogUrl()).headers(headers).body(requestBody).asJson();
 				}
@@ -780,9 +819,10 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
-					
+
 					requestBody.accumulate("project", jiraProjectAsset());
 
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 				}
 				if(type == "addQuickTestFromTestFolders") {
@@ -793,9 +833,10 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
-					
+
 					requestBody.accumulate("project", jiraProjectAsset());
 
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 				}
 
@@ -806,7 +847,7 @@ public class VansahNode {
 
 
 				if(type == "removeTestLog") {
-					jsonRequestBody = Unirest.delete(getRemoveTestRunUrl(TEST_LOG_IDENTIFIER)).headers(headers).asJson();
+					jsonRequestBody = Unirest.delete(getRemoveTestLogUrl(TEST_LOG_IDENTIFIER)).headers(headers).asJson();
 				}
 
 
@@ -814,10 +855,13 @@ public class VansahNode {
 					requestBody = new JSONObject();
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
 					requestBody.accumulate("actualResult", COMMENT);
+					requestBody.accumulate("project", jiraProjectAsset());
+
+					emitPayload(getUpdateTestLogUrl(TEST_LOG_IDENTIFIER), requestBody);
+
 					if(SEND_SCREENSHOT) {
 						requestBody.append("attachments", addAttachment(FILE));
 					}
-					requestBody.accumulate("project", jiraProjectAsset());
 
 					jsonRequestBody = Unirest.put(getUpdateTestLogUrl(TEST_LOG_IDENTIFIER)).headers(headers).body(requestBody).asJson();
 				}
@@ -1068,7 +1112,7 @@ public class VansahNode {
 
 		} else {
 			// Print warning if key is invalid
-			System.out.println("⚠️ Warning: Please provide a valid JIRA Project Key.");
+			System.out.println("⚠️ Warning: Please provide a valid Space Key.");
 		}
 
 		return asset;
