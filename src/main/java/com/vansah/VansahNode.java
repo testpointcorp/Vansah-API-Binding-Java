@@ -9,6 +9,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -300,6 +301,20 @@ public class VansahNode {
 
 	/** A mapping from result names to their corresponding numeric codes. */
 	private HashMap<String, Integer> resultAsName = new HashMap<>();
+
+	/**
+	 * The result id sent by default when a test run is created. Creating a run as UNTESTED (id 3)
+	 * makes Vansah pre-create one UNTESTED test log per step of the test case; those per-step logs
+	 * are then updated (rather than newly created) by {@link #addTestLog}.
+	 */
+	private static final int UNTESTED_RESULT_ID = 3;
+
+	/**
+	 * Maps a test step number to the identifier of the (UNTESTED) test log Vansah pre-creates for
+	 * that step when a run is created. Populated from the "logs" array of the add-test-run response
+	 * and used by {@link #addTestLog} to update the correct step log.
+	 */
+	private Map<Integer, String> stepLogIdentifiers = new HashMap<>();
 
 	/** The JSON object representing the body of the API request. */
 	private JSONObject requestBody = null;
@@ -748,6 +763,8 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 
+					// Create the run as UNTESTED so Vansah pre-creates a log for each step.
+					requestBody.accumulate("result", resultObj(UNTESTED_RESULT_ID));
 					requestBody.accumulate("project", jiraProjectAsset());
 
 					emitPayload(getAddTestRunUrl(), requestBody);
@@ -761,7 +778,9 @@ public class VansahNode {
 					if(properties().length()!=0) {
 						requestBody.accumulate("properties", properties());
 					}
-					
+
+					// Create the run as UNTESTED so Vansah pre-creates a log for each step.
+					requestBody.accumulate("result", resultObj(UNTESTED_RESULT_ID));
 					requestBody.accumulate("project", jiraProjectAsset());
 
 					emitPayload(getAddTestRunUrl(), requestBody);
@@ -776,7 +795,9 @@ public class VansahNode {
 					if(properties().length()!=0) {
 						requestBody.accumulate("properties", properties());
 					}
-					
+
+					// Create the run as UNTESTED so Vansah pre-creates a log for each step.
+					requestBody.accumulate("result", resultObj(UNTESTED_RESULT_ID));
 					requestBody.accumulate("project", jiraProjectAsset());
 
 					emitPayload(getAddTestRunUrl(), requestBody);
@@ -785,28 +806,51 @@ public class VansahNode {
 				if(type == "addTestRunFromStandardTestPlan") {
 					requestBody = new JSONObject();
 					requestBody.accumulate("case", testCase());
-					requestBody.accumulate("asset", standardTestPlanAsset());					
+					requestBody.accumulate("asset", standardTestPlanAsset());
 					if(properties().length()!=0) {
 						requestBody.accumulate("properties", properties());
 					}
-					
+
+					// Create the run as UNTESTED so Vansah pre-creates a log for each step.
+					requestBody.accumulate("result", resultObj(UNTESTED_RESULT_ID));
 					requestBody.accumulate("project", jiraProjectAsset());
 					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 				}
 				if(type == "addTestLog") {
-					requestBody =  addTestLogProp();
-					requestBody.accumulate("project", jiraProjectAsset());
+					String stepLogIdentifier = stepLogIdentifiers.get(STEP_ORDER);
+					if (stepLogIdentifier != null) {
+						// A log for this step was pre-created (UNTESTED) when the run was created.
+						// Update it in place rather than posting a new one (which Vansah rejects
+						// with "A Test Log already exists for provided Step.").
+						requestBody = new JSONObject();
+						requestBody.accumulate("result", resultObj(RESULT_KEY));
+						requestBody.accumulate("actualResult", COMMENT);
+						requestBody.accumulate("project", jiraProjectAsset());
 
-					emitPayload(getAddTestLogUrl(), requestBody);
+						emitPayload(getUpdateTestLogUrl(stepLogIdentifier), requestBody);
 
-					if(SEND_SCREENSHOT) {
+						if(SEND_SCREENSHOT) {
+							requestBody.append("attachments", addAttachment(FILE));
+						}
 
-						requestBody.append("attachments", addAttachment(FILE));
+						jsonRequestBody = Unirest.put(getUpdateTestLogUrl(stepLogIdentifier)).headers(headers).body(requestBody).asJson();
+						TEST_LOG_IDENTIFIER = stepLogIdentifier;
+					} else {
+						// Fallback: no pre-created log for this step (e.g. the case has no steps) -- create one.
+						requestBody =  addTestLogProp();
+						requestBody.accumulate("project", jiraProjectAsset());
 
+						emitPayload(getAddTestLogUrl(), requestBody);
+
+						if(SEND_SCREENSHOT) {
+
+							requestBody.append("attachments", addAttachment(FILE));
+
+						}
+
+						jsonRequestBody = Unirest.post( getAddTestLogUrl()).headers(headers).body(requestBody).asJson();
 					}
-
-					jsonRequestBody = Unirest.post( getAddTestLogUrl()).headers(headers).body(requestBody).asJson();
 				}
 
 
@@ -881,20 +925,28 @@ public class VansahNode {
 					if (success){
 
 						if(type == "addTestRunFromJIRAIssue") {
-							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
+							JSONObject runObject = fullBody.getJSONObject("data").getJSONObject("run");
+							TEST_RUN_IDENTIFIER = runObject.get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
+							storeStepLogs(runObject);
 						}
 						if(type == "addTestRunFromTestFolder") {
-							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
+							JSONObject runObject = fullBody.getJSONObject("data").getJSONObject("run");
+							TEST_RUN_IDENTIFIER = runObject.get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
+							storeStepLogs(runObject);
 						}
 						if(type == "addTestRunFromAdvancedTestPlan") {
-							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
+							JSONObject runObject = fullBody.getJSONObject("data").getJSONObject("run");
+							TEST_RUN_IDENTIFIER = runObject.get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
+							storeStepLogs(runObject);
 						}
 						if(type == "addTestRunFromStandardTestPlan") {
-							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
+							JSONObject runObject = fullBody.getJSONObject("data").getJSONObject("run");
+							TEST_RUN_IDENTIFIER = runObject.get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
+							storeStepLogs(runObject);
 						}
 
 						if(type == "addTestLog") {
@@ -1273,6 +1325,29 @@ public class VansahNode {
 	 *         step number, result ID, and actual result comment. This object can be directly used as the body
 	 *         of an API request to add or update test logs.
 	 */
+	/**
+	 * Records the per-step test logs that Vansah pre-creates when a run is created as UNTESTED.
+	 * Reads the "logs" array from the add-test-run response and maps each step number to its log
+	 * identifier so {@link #addTestLog} can update the correct step log instead of creating a new one.
+	 * Any previously stored mapping is cleared first, so each new run starts fresh.
+	 *
+	 * @param runObject The "run" object from the add-test-run response body (data.run).
+	 */
+	private void storeStepLogs(JSONObject runObject) {
+		stepLogIdentifiers.clear();
+		if (runObject == null || !runObject.has("logs")) {
+			return;
+		}
+		JSONArray logs = runObject.getJSONArray("logs");
+		for (int i = 0; i < logs.length(); i++) {
+			JSONObject log = logs.getJSONObject(i);
+			if (log.has("identifier") && log.has("step") && log.getJSONObject("step").has("number")) {
+				stepLogIdentifiers.put(log.getJSONObject("step").getInt("number"),
+						log.get("identifier").toString());
+			}
+		}
+	}
+
 	private JSONObject addTestLogProp() {
 
 		JSONObject testRun = new JSONObject();
