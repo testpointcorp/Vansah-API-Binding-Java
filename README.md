@@ -335,13 +335,17 @@ Adds a new test run in Vansah under an Advanced Test Plan (ATP). The method link
   	- `folder` – If the ATP is structured by test folder.
   	- `issue` – If the ATP is linked to a specific Jira issue.
   - `testCaseKey`: The key of the test case to be executed (e.g., "KAN-C17").
-  
+
+The run targets **iteration 1** by default. To target a different iteration, call `setTestPlanIteration(int)` (range 1–5) before this method.
+
 ### `addTestRunFromStandardTestPlan(String testCaseKey)`
 
 Adds a new test run in Vansah under a Standard Test Plan (STP). This method links the specified test case to the configured Standard Test Plan, enabling execution tracking and reporting without the need for a specific folder or issue reference.
 
 - **Parameters**:
   - `testCaseKey`: The key of the test case to be executed under the Standard Test Plan (e.g., "KAN-C17").
+
+The run targets **iteration 1** by default. To target a different iteration, call `setTestPlanIteration(int)` (range 1–5) before this method.
 
 ### `removeTestRun()` and `removeTestLog()`
 
@@ -417,6 +421,15 @@ Sets the key for the Standard Test Plan (STP). This key is used to associate tes
 
 - **Parameters**:
   - `testPlanKey`: The unique key of the Standard Test Plan (e.g., "KAN-P17"), used to organize and manage test executions in Vansah.
+
+### `setTestPlanIteration(int iteration)`
+
+Sets the **iteration** to target when creating a run from a Standard or Advanced Test Plan. This is **optional** — if you never call it, runs default to **iteration 1**. Only call this when you need to record results against a specific iteration of the test plan.
+
+- **Parameters**:
+  - `iteration`: The test plan iteration to target. Valid range is **1–5**. Values outside this range are ignored (a warning is printed and the default of 1 is kept).
+
+> **Note:** The iteration applies only to `addTestRunFromStandardTestPlan(...)` and `addTestRunFromAdvancedTestPlan(...)`. It has no effect on Jira-issue or test-folder runs.
 
 ### `setDebug(boolean debug)`
 

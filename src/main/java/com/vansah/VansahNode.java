@@ -59,6 +59,14 @@ public class VansahNode {
 	private static String STANDARD_TEST_PLAN_KEY = null;
 
 	/**
+	 * The iteration number for a Standard or Advanced Test Plan run.
+	 * Defaults to {@code 1} (Vansah's first iteration). Only sent to the API when the
+	 * caller explicitly overrides it via {@link #setTestPlanIteration(int)}; otherwise
+	 * the default iteration of 1 is used. Valid range is 1–5.
+	 */
+	private static Integer TEST_PLAN_ITERATION = null;
+
+	/**
 	 * Returns the endpoint URL for adding a test run.
 	 * This dynamically constructs the URL using the current Vansah base URL and API version.
 	 *
@@ -169,6 +177,20 @@ public class VansahNode {
 	 */
 	public void setStandardTestPlanKey(String STANDARD_TEST_PLAN_KEY) {
 	    this.STANDARD_TEST_PLAN_KEY = STANDARD_TEST_PLAN_KEY;
+	}
+	/**
+	 * Sets the iteration number for a Standard or Advanced Test Plan run.
+	 * If this is never called, the run defaults to iteration 1. Only call this when you
+	 * need to target a specific iteration of the test plan.
+	 *
+	 * @param iteration The test plan iteration to target. Valid range is 1–5.
+	 */
+	public void setTestPlanIteration(int iteration) {
+	    if (iteration >= 1 && iteration <= 5) {
+	        this.TEST_PLAN_ITERATION = iteration;
+	    } else {
+	        System.out.println("⚠️ Warning: Test plan iteration must be between 1 and 5. Value not updated (default is 1).");
+	    }
 	}
 	/**
 	 * The authentication token required for making requests to the Vansah API. This token
@@ -1230,7 +1252,7 @@ public class VansahNode {
 	    if (ADVANCED_TEST_PLAN_KEY != null && !ADVANCED_TEST_PLAN_KEY.trim().isEmpty()) {
 	        asset.accumulate("type", "plannedRun");
 	        asset.accumulate("key", ADVANCED_TEST_PLAN_KEY);
-	        asset.accumulate("iteration", 1); // Optionally, use a variable like ATP_ITERATION
+	        asset.accumulate("iteration", TEST_PLAN_ITERATION != null ? TEST_PLAN_ITERATION : 1);
 	    } else {
 	        System.out.println("⚠️ Warning: Please provide a valid Advanced Test Plan Key.");
 	    }
@@ -1253,7 +1275,7 @@ public class VansahNode {
 	    if (STANDARD_TEST_PLAN_KEY != null && !STANDARD_TEST_PLAN_KEY.trim().isEmpty()) {
 	        asset.accumulate("type", "plannedRun");
 	        asset.accumulate("key", STANDARD_TEST_PLAN_KEY);
-	        asset.accumulate("iteration", 1);
+	        asset.accumulate("iteration", TEST_PLAN_ITERATION != null ? TEST_PLAN_ITERATION : 1);
 	    } else {
 	        System.out.println("⚠️ Warning: Please provide a valid Standard Test Plan Key.");
 	    }
