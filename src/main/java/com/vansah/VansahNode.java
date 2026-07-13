@@ -952,6 +952,22 @@ public class VansahNode {
 						if(type == "addTestLog") {
 							TEST_LOG_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("log").get("identifier").toString();
 							System.out.println("Test Log Identifier: " + TEST_LOG_IDENTIFIER);
+							// Keep the step -> log map current for both the update and fallback-create paths.
+							stepLogIdentifiers.put(STEP_ORDER, TEST_LOG_IDENTIFIER);
+						}
+
+						if(type == "removeTestLog") {
+							// The deleted log leaves its step without a log. Recreate an empty UNTESTED
+							// placeholder for that step so a later addTestLog updates the correct log and
+							// the stored step -> log map never holds a stale (deleted) identifier.
+							Integer removedStep = stepForLog(TEST_LOG_IDENTIFIER);
+							if (removedStep != null) {
+								stepLogIdentifiers.remove(removedStep);
+							}
+							TEST_LOG_IDENTIFIER = null;
+							if (removedStep != null) {
+								recreateUntestedStepLog(removedStep);
+							}
 						}
 
 					}else{
@@ -1345,6 +1361,62 @@ public class VansahNode {
 				stepLogIdentifiers.put(log.getJSONObject("step").getInt("number"),
 						log.get("identifier").toString());
 			}
+		}
+	}
+
+	/**
+	 * Reverse lookup: returns the step number currently mapped to the given log identifier, or
+	 * null if no step maps to it.
+	 *
+	 * @param logIdentifier The test log identifier to look up.
+	 * @return The step number whose log is {@code logIdentifier}, or null if not found.
+	 */
+	private Integer stepForLog(String logIdentifier) {
+		if (logIdentifier == null) {
+			return null;
+		}
+		for (Map.Entry<Integer, String> entry : stepLogIdentifiers.entrySet()) {
+			if (logIdentifier.equals(entry.getValue())) {
+				return entry.getKey();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Recreates an empty UNTESTED test log for the given step on the current run and stores its
+	 * identifier in the step -> log map. Called after {@link #removeTestLog()} so the step keeps a
+	 * placeholder log that a later {@link #addTestLog} can update, and the map never holds a stale id.
+	 *
+	 * @param stepNumber The step number whose log placeholder should be recreated.
+	 */
+	private void recreateUntestedStepLog(int stepNumber) {
+		try {
+			JSONObject run = new JSONObject();
+			run.accumulate("identifier", TEST_RUN_IDENTIFIER);
+
+			JSONObject step = new JSONObject();
+			step.accumulate("number", stepNumber);
+
+			JSONObject body = new JSONObject();
+			body.accumulate("run", run);
+			body.accumulate("step", step);
+			body.accumulate("result", resultObj(UNTESTED_RESULT_ID));
+			body.accumulate("project", jiraProjectAsset());
+
+			emitPayload(getAddTestLogUrl(), body);
+			HttpResponse<JsonNode> response = Unirest.post(getAddTestLogUrl()).headers(headers).body(body).asJson();
+			JSONObject responseObject = new JSONObject(response.getBody().toString());
+
+			if (responseObject.getBoolean("success")) {
+				String newLogIdentifier = responseObject.getJSONObject("data").getJSONObject("log").get("identifier").toString();
+				stepLogIdentifiers.put(stepNumber, newLogIdentifier);
+				System.out.println("Recreated UNTESTED log for step " + stepNumber + ": " + newLogIdentifier);
+			} else {
+				System.out.println("Could not recreate a log for step " + stepNumber + ": " + responseObject.getString("message"));
+			}
+		} catch (Exception e) {
+			System.out.println("Error recreating a log for step " + stepNumber + ": " + e.toString());
 		}
 	}
 
