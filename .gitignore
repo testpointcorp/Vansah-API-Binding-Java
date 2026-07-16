@@ -57,7 +57,7 @@ $RECYCLE.BIN/
 # Node modules (if using Node.js in the project, e.g., for frontend work)
 node_modules/
 
-# Environment files
+# Environment files (real secrets stay local; .env.example is committed as a template)
 .env
 .env.local
 

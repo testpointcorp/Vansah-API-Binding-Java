@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="https://vansah.com/wp-content/uploads/2022/06/512x512.png" style="width:300px"/>
+   <a href="https://vansah.com"><img src="https://vansah.com/app/logo/vansahjira-logo.svg" /></a><br>
 </div>
 <h1 align="center" style="background-color:cornflowerblue !important;
     color: white !important;">

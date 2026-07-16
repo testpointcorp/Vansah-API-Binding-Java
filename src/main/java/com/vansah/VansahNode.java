@@ -120,16 +120,6 @@ public class VansahNode {
 	}
 
 	/**
-	 * Returns the endpoint URL for retrieving test scripts associated with a test case.
-	 * This dynamically builds the URL to query test scripts by case key.
-	 *
-	 * @return The complete URL for the "get test script list" API call.
-	 */
-	private static String getTestScriptUrl() {
-	    return VANSAH_URL + "/api/" + API_VERSION + "/testCase/list/testScripts";
-	}
-
-	/**
 	 * Sets a custom base URL for the Vansah API.
 	 * <p>
 	 * If a valid non-empty URL is provided, it updates the base Vansah URL used for all API operations.
@@ -661,72 +651,6 @@ public class VansahNode {
 		this.COMMENT = comment;
 		validateScreenshotFile(image);
 		connectToVansahRest("updateTestLog");
-	}
-
-	/**
-	 * Retrieves the count of test steps for a given test case from Vansah. This method sends a GET request
-	 * to the Vansah API to fetch the test script associated with the specified case key and calculates the
-	 * number of steps in the test script. It also handles proxy settings if specified.
-	 *
-	 * @param case_key The unique identifier for the test case whose test script step count is to be retrieved.
-	 * @return The number of test steps contained within the test script for the specified case key. Returns 0
-	 *         if there's an error in fetching the test script, the response from Vansah is unexpected, or the
-	 *         specified test case does not contain any steps.
-	 * @throws Exception if there's an issue with network connectivity, parsing the response, or if the Vansah
-	 *                   API endpoint is not reachable. In such cases, the exception is caught and printed to the
-	 *                   console, and the method returns 0.
-	 *
-	 * Note: This method assumes that the Vansah API token and possibly proxy settings have been correctly set
-	 *       prior to its invocation. It utilizes the `headers` and `clientBuilder` fields of the enclosing class
-	 *       to configure the HTTP request.
-	 */
-	public int testStepCount(String case_key) {
-
-
-		try {
-			headers.put("Authorization",VANSAH_TOKEN);
-			headers.put("Content-Type","application/json");
-
-			clientBuilder = HttpClientBuilder.create();
-			// Detecting if the system using any proxy setting.
-
-
-			if (hostAddr.equals("") && portNo.equals("")) {
-				Unirest.setHttpClient(clientBuilder.build());
-			} else {
-				System.out.println("Proxy Server");
-				credsProvider = new BasicCredentialsProvider();
-				clientBuilder.useSystemProperties();
-				clientBuilder.setProxy(new HttpHost(hostAddr, Integer.parseInt(portNo)));
-				clientBuilder.setDefaultCredentialsProvider(credsProvider);
-				clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-				Unirest.setHttpClient(clientBuilder.build());
-			}
-			HttpResponse<JsonNode> get;
-			get = Unirest.get(getTestScriptUrl()).headers(headers).queryString("caseKey", case_key).asJson();
-			if (get.getBody().toString().equals("[]")) {
-				System.out.println("Unexpected Response From Server: " + get.getBody().toString());
-			} else {
-				JSONObject jsonobjInit = new JSONObject(get.getBody().toString());
-				boolean success = jsonobjInit.getBoolean("success");
-				String vansah_message = jsonobjInit.getString("message");
-
-				if (success) {
-
-					int testRows = jsonobjInit.getJSONObject("data").getJSONArray("steps").length();
-					System.out.println("NUMBER OF STEPS: " + testRows);
-					return testRows;
-
-				} else {
-					System.out.println("Error - Response From Vansah: " + vansah_message);
-					return 0;
-				}
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return 0;
-
 	}
 
 	/**
