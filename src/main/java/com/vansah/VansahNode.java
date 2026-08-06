@@ -9,6 +9,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.ProxyAuthenticationStrategy;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
@@ -56,6 +57,14 @@ public class VansahNode {
 	 * Example: "MU-P76"
 	 */
 	private static String STANDARD_TEST_PLAN_KEY = null;
+
+	/**
+	 * The iteration number for a Standard or Advanced Test Plan run.
+	 * Defaults to {@code 1} (Vansah's first iteration). Only sent to the API when the
+	 * caller explicitly overrides it via {@link #setTestPlanIteration(int)}; otherwise
+	 * the default iteration of 1 is used. Valid range is 1–5.
+	 */
+	private static Integer TEST_PLAN_ITERATION = null;
 
 	/**
 	 * Returns the endpoint URL for adding a test run.
@@ -111,16 +120,6 @@ public class VansahNode {
 	}
 
 	/**
-	 * Returns the endpoint URL for retrieving test scripts associated with a test case.
-	 * This dynamically builds the URL to query test scripts by case key.
-	 *
-	 * @return The complete URL for the "get test script list" API call.
-	 */
-	private static String getTestScriptUrl() {
-	    return VANSAH_URL + "/api/" + API_VERSION + "/testCase/list/testScripts";
-	}
-
-	/**
 	 * Sets a custom base URL for the Vansah API.
 	 * <p>
 	 * If a valid non-empty URL is provided, it updates the base Vansah URL used for all API operations.
@@ -148,7 +147,7 @@ public class VansahNode {
 	    if (projectKey != null && !projectKey.trim().isEmpty()) {
 	        PROJECT_KEY = projectKey.trim();
 	    } else {
-	        System.out.println("⚠️ Warning: Provided project key is null or empty. Value not updated.");
+	        System.out.println("⚠️ Warning: Provided Space Key is null or empty. Value not updated.");
 	    }
 	}
 	/**
@@ -170,6 +169,20 @@ public class VansahNode {
 	    this.STANDARD_TEST_PLAN_KEY = STANDARD_TEST_PLAN_KEY;
 	}
 	/**
+	 * Sets the iteration number for a Standard or Advanced Test Plan run.
+	 * If this is never called, the run defaults to iteration 1. Only call this when you
+	 * need to target a specific iteration of the test plan.
+	 *
+	 * @param iteration The test plan iteration to target. Valid range is 1–5.
+	 */
+	public void setTestPlanIteration(int iteration) {
+	    if (iteration >= 1 && iteration <= 5) {
+	        this.TEST_PLAN_ITERATION = iteration;
+	    } else {
+	        System.out.println("⚠️ Warning: Test plan iteration must be between 1 and 5. Value not updated (default is 1).");
+	    }
+	}
+	/**
 	 * The authentication token required for making requests to the Vansah API. This token
 	 * authenticates the client to the Vansah system, ensuring secure access to API functions.
 	 * Replace "Your Token Here" with the actual token provided by Vansah. Note that this token
@@ -187,6 +200,38 @@ public class VansahNode {
 	 */
 	public static void setVansahToken(String vansahToken) {
 		VANSAH_TOKEN = vansahToken;
+	}
+
+	/**
+	 * Controls whether outgoing request payloads are logged before being sent to Vansah.
+	 * Useful for diagnosing integration issues (e.g. malformed folder paths, missing
+	 * project keys) without inspecting network traffic. Defaults to enabled when the
+	 * VANSAH_DEBUG environment variable is set to "true" or "1".
+	 */
+	private static boolean DEBUG = "true".equalsIgnoreCase(System.getenv("VANSAH_DEBUG"))
+			|| "1".equals(System.getenv("VANSAH_DEBUG"));
+
+	/**
+	 * Enables or disables debug payload logging for outgoing Vansah API requests.
+	 *
+	 * @param debug true to log request payloads before they are sent, false to disable.
+	 */
+	public static void setDebug(boolean debug) {
+		DEBUG = debug;
+	}
+
+	/**
+	 * Logs the outgoing request payload for a given endpoint when debug mode is enabled.
+	 * Called before any base64 attachment is added to the payload so the log isn't
+	 * flooded with encoded file data.
+	 *
+	 * @param endpoint The Vansah API endpoint being called.
+	 * @param payload The JSON request body about to be sent.
+	 */
+	private static void emitPayload(String endpoint, JSONObject payload) {
+		if (DEBUG) {
+			System.out.println("🐛 [DEBUG] Request to " + endpoint + ": " + payload.toString());
+		}
 	}
 	/**
 	 * The hostname or IP address of the proxy server used when the Vansah API binding operates behind a proxy.
@@ -268,6 +313,20 @@ public class VansahNode {
 
 	/** A mapping from result names to their corresponding numeric codes. */
 	private HashMap<String, Integer> resultAsName = new HashMap<>();
+
+	/**
+	 * The result id sent by default when a test run is created. Creating a run as UNTESTED (id 3)
+	 * makes Vansah pre-create one UNTESTED test log per step of the test case; those per-step logs
+	 * are then updated (rather than newly created) by {@link #addTestLog}.
+	 */
+	private static final int UNTESTED_RESULT_ID = 3;
+
+	/**
+	 * Maps a test step number to the identifier of the (UNTESTED) test log Vansah pre-creates for
+	 * that step when a run is created. Populated from the "logs" array of the add-test-run response
+	 * and used by {@link #addTestLog} to update the correct step log.
+	 */
+	private Map<Integer, String> stepLogIdentifiers = new HashMap<>();
 
 	/** The JSON object representing the body of the API request. */
 	private JSONObject requestBody = null;
@@ -595,72 +654,6 @@ public class VansahNode {
 	}
 
 	/**
-	 * Retrieves the count of test steps for a given test case from Vansah. This method sends a GET request
-	 * to the Vansah API to fetch the test script associated with the specified case key and calculates the
-	 * number of steps in the test script. It also handles proxy settings if specified.
-	 *
-	 * @param case_key The unique identifier for the test case whose test script step count is to be retrieved.
-	 * @return The number of test steps contained within the test script for the specified case key. Returns 0
-	 *         if there's an error in fetching the test script, the response from Vansah is unexpected, or the
-	 *         specified test case does not contain any steps.
-	 * @throws Exception if there's an issue with network connectivity, parsing the response, or if the Vansah
-	 *                   API endpoint is not reachable. In such cases, the exception is caught and printed to the
-	 *                   console, and the method returns 0.
-	 *
-	 * Note: This method assumes that the Vansah API token and possibly proxy settings have been correctly set
-	 *       prior to its invocation. It utilizes the `headers` and `clientBuilder` fields of the enclosing class
-	 *       to configure the HTTP request.
-	 */
-	public int testStepCount(String case_key) {
-
-
-		try {
-			headers.put("Authorization",VANSAH_TOKEN);
-			headers.put("Content-Type","application/json");
-
-			clientBuilder = HttpClientBuilder.create();
-			// Detecting if the system using any proxy setting.
-
-
-			if (hostAddr.equals("") && portNo.equals("")) {
-				Unirest.setHttpClient(clientBuilder.build());
-			} else {
-				System.out.println("Proxy Server");
-				credsProvider = new BasicCredentialsProvider();
-				clientBuilder.useSystemProperties();
-				clientBuilder.setProxy(new HttpHost(hostAddr, Integer.parseInt(portNo)));
-				clientBuilder.setDefaultCredentialsProvider(credsProvider);
-				clientBuilder.setProxyAuthenticationStrategy(new ProxyAuthenticationStrategy());
-				Unirest.setHttpClient(clientBuilder.build());
-			}
-			HttpResponse<JsonNode> get;
-			get = Unirest.get(getTestScriptUrl()).headers(headers).queryString("caseKey", case_key).asJson();
-			if (get.getBody().toString().equals("[]")) {
-				System.out.println("Unexpected Response From Server: " + get.getBody().toString());
-			} else {
-				JSONObject jsonobjInit = new JSONObject(get.getBody().toString());
-				boolean success = jsonobjInit.getBoolean("success");
-				String vansah_message = jsonobjInit.getString("message");
-
-				if (success) {
-
-					int testRows = jsonobjInit.getJSONObject("data").getJSONArray("steps").length();
-					System.out.println("NUMBER OF STEPS: " + testRows);
-					return testRows;
-
-				} else {
-					System.out.println("Error - Response From Vansah: " + vansah_message);
-					return 0;
-				}
-			}
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-		return 0;
-
-	}
-
-	/**
 	 * Central method for interacting with the Vansah REST API. Depending on the specified type, it constructs
 	 * and executes different API requests to add, update, or remove test runs and logs. This method also handles
 	 * proxy settings, authorization headers, and the optional inclusion of screenshots for certain requests.
@@ -716,8 +709,11 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 
+					// Create the run as UNTESTED so Vansah pre-creates a log for each step.
+					requestBody.accumulate("result", resultObj(UNTESTED_RESULT_ID));
 					requestBody.accumulate("project", jiraProjectAsset());
 
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 
 				}
@@ -728,9 +724,12 @@ public class VansahNode {
 					if(properties().length()!=0) {
 						requestBody.accumulate("properties", properties());
 					}
-					
+
+					// Create the run as UNTESTED so Vansah pre-creates a log for each step.
+					requestBody.accumulate("result", resultObj(UNTESTED_RESULT_ID));
 					requestBody.accumulate("project", jiraProjectAsset());
 
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 
 				}
@@ -742,32 +741,62 @@ public class VansahNode {
 					if(properties().length()!=0) {
 						requestBody.accumulate("properties", properties());
 					}
-					
+
+					// Create the run as UNTESTED so Vansah pre-creates a log for each step.
+					requestBody.accumulate("result", resultObj(UNTESTED_RESULT_ID));
 					requestBody.accumulate("project", jiraProjectAsset());
 
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
-				}		
+				}
 				if(type == "addTestRunFromStandardTestPlan") {
 					requestBody = new JSONObject();
 					requestBody.accumulate("case", testCase());
-					requestBody.accumulate("asset", standardTestPlanAsset());					
+					requestBody.accumulate("asset", standardTestPlanAsset());
 					if(properties().length()!=0) {
 						requestBody.accumulate("properties", properties());
 					}
-					
-					requestBody.accumulate("project", jiraProjectAsset());					
-					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
-				}	
-				if(type == "addTestLog") {
-					requestBody =  addTestLogProp();
-					if(SEND_SCREENSHOT) {
 
-						requestBody.append("attachments", addAttachment(FILE));
-
-					}
+					// Create the run as UNTESTED so Vansah pre-creates a log for each step.
+					requestBody.accumulate("result", resultObj(UNTESTED_RESULT_ID));
 					requestBody.accumulate("project", jiraProjectAsset());
+					emitPayload(getAddTestRunUrl(), requestBody);
+					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
+				}
+				if(type == "addTestLog") {
+					String stepLogIdentifier = stepLogIdentifiers.get(STEP_ORDER);
+					if (stepLogIdentifier != null) {
+						// A log for this step was pre-created (UNTESTED) when the run was created.
+						// Update it in place rather than posting a new one (which Vansah rejects
+						// with "A Test Log already exists for provided Step.").
+						requestBody = new JSONObject();
+						requestBody.accumulate("result", resultObj(RESULT_KEY));
+						requestBody.accumulate("actualResult", COMMENT);
+						requestBody.accumulate("project", jiraProjectAsset());
 
-					jsonRequestBody = Unirest.post( getAddTestLogUrl()).headers(headers).body(requestBody).asJson();
+						emitPayload(getUpdateTestLogUrl(stepLogIdentifier), requestBody);
+
+						if(SEND_SCREENSHOT) {
+							requestBody.append("attachments", addAttachment(FILE));
+						}
+
+						jsonRequestBody = Unirest.put(getUpdateTestLogUrl(stepLogIdentifier)).headers(headers).body(requestBody).asJson();
+						TEST_LOG_IDENTIFIER = stepLogIdentifier;
+					} else {
+						// Fallback: no pre-created log for this step (e.g. the case has no steps) -- create one.
+						requestBody =  addTestLogProp();
+						requestBody.accumulate("project", jiraProjectAsset());
+
+						emitPayload(getAddTestLogUrl(), requestBody);
+
+						if(SEND_SCREENSHOT) {
+
+							requestBody.append("attachments", addAttachment(FILE));
+
+						}
+
+						jsonRequestBody = Unirest.post( getAddTestLogUrl()).headers(headers).body(requestBody).asJson();
+					}
 				}
 
 
@@ -780,9 +809,10 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
-					
+
 					requestBody.accumulate("project", jiraProjectAsset());
 
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 				}
 				if(type == "addQuickTestFromTestFolders") {
@@ -793,9 +823,10 @@ public class VansahNode {
 						requestBody.accumulate("properties", properties());
 					}
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
-					
+
 					requestBody.accumulate("project", jiraProjectAsset());
 
+					emitPayload(getAddTestRunUrl(), requestBody);
 					jsonRequestBody = Unirest.post(getAddTestRunUrl()).headers(headers).body(requestBody).asJson();
 				}
 
@@ -806,7 +837,7 @@ public class VansahNode {
 
 
 				if(type == "removeTestLog") {
-					jsonRequestBody = Unirest.delete(getRemoveTestRunUrl(TEST_LOG_IDENTIFIER)).headers(headers).asJson();
+					jsonRequestBody = Unirest.delete(getRemoveTestLogUrl(TEST_LOG_IDENTIFIER)).headers(headers).asJson();
 				}
 
 
@@ -814,10 +845,13 @@ public class VansahNode {
 					requestBody = new JSONObject();
 					requestBody.accumulate("result", resultObj(RESULT_KEY));
 					requestBody.accumulate("actualResult", COMMENT);
+					requestBody.accumulate("project", jiraProjectAsset());
+
+					emitPayload(getUpdateTestLogUrl(TEST_LOG_IDENTIFIER), requestBody);
+
 					if(SEND_SCREENSHOT) {
 						requestBody.append("attachments", addAttachment(FILE));
 					}
-					requestBody.accumulate("project", jiraProjectAsset());
 
 					jsonRequestBody = Unirest.put(getUpdateTestLogUrl(TEST_LOG_IDENTIFIER)).headers(headers).body(requestBody).asJson();
 				}
@@ -837,25 +871,49 @@ public class VansahNode {
 					if (success){
 
 						if(type == "addTestRunFromJIRAIssue") {
-							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
+							JSONObject runObject = fullBody.getJSONObject("data").getJSONObject("run");
+							TEST_RUN_IDENTIFIER = runObject.get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
+							storeStepLogs(runObject);
 						}
 						if(type == "addTestRunFromTestFolder") {
-							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
+							JSONObject runObject = fullBody.getJSONObject("data").getJSONObject("run");
+							TEST_RUN_IDENTIFIER = runObject.get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
+							storeStepLogs(runObject);
 						}
 						if(type == "addTestRunFromAdvancedTestPlan") {
-							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
+							JSONObject runObject = fullBody.getJSONObject("data").getJSONObject("run");
+							TEST_RUN_IDENTIFIER = runObject.get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
+							storeStepLogs(runObject);
 						}
 						if(type == "addTestRunFromStandardTestPlan") {
-							TEST_RUN_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("run").get("identifier").toString();
+							JSONObject runObject = fullBody.getJSONObject("data").getJSONObject("run");
+							TEST_RUN_IDENTIFIER = runObject.get("identifier").toString();
 							System.out.println("Test Run Identifier: " + TEST_RUN_IDENTIFIER);
+							storeStepLogs(runObject);
 						}
 
 						if(type == "addTestLog") {
 							TEST_LOG_IDENTIFIER = fullBody.getJSONObject("data").getJSONObject("log").get("identifier").toString();
 							System.out.println("Test Log Identifier: " + TEST_LOG_IDENTIFIER);
+							// Keep the step -> log map current for both the update and fallback-create paths.
+							stepLogIdentifiers.put(STEP_ORDER, TEST_LOG_IDENTIFIER);
+						}
+
+						if(type == "removeTestLog") {
+							// The deleted log leaves its step without a log. Recreate an empty UNTESTED
+							// placeholder for that step so a later addTestLog updates the correct log and
+							// the stored step -> log map never holds a stale (deleted) identifier.
+							Integer removedStep = stepForLog(TEST_LOG_IDENTIFIER);
+							if (removedStep != null) {
+								stepLogIdentifiers.remove(removedStep);
+							}
+							TEST_LOG_IDENTIFIER = null;
+							if (removedStep != null) {
+								recreateUntestedStepLog(removedStep);
+							}
 						}
 
 					}else{
@@ -1068,7 +1126,7 @@ public class VansahNode {
 
 		} else {
 			// Print warning if key is invalid
-			System.out.println("⚠️ Warning: Please provide a valid JIRA Project Key.");
+			System.out.println("⚠️ Warning: Please provide a valid Space Key.");
 		}
 
 		return asset;
@@ -1118,7 +1176,7 @@ public class VansahNode {
 	    if (ADVANCED_TEST_PLAN_KEY != null && !ADVANCED_TEST_PLAN_KEY.trim().isEmpty()) {
 	        asset.accumulate("type", "plannedRun");
 	        asset.accumulate("key", ADVANCED_TEST_PLAN_KEY);
-	        asset.accumulate("iteration", 1); // Optionally, use a variable like ATP_ITERATION
+	        asset.accumulate("iteration", TEST_PLAN_ITERATION != null ? TEST_PLAN_ITERATION : 1);
 	    } else {
 	        System.out.println("⚠️ Warning: Please provide a valid Advanced Test Plan Key.");
 	    }
@@ -1141,7 +1199,7 @@ public class VansahNode {
 	    if (STANDARD_TEST_PLAN_KEY != null && !STANDARD_TEST_PLAN_KEY.trim().isEmpty()) {
 	        asset.accumulate("type", "plannedRun");
 	        asset.accumulate("key", STANDARD_TEST_PLAN_KEY);
-	        asset.accumulate("iteration", 1);
+	        asset.accumulate("iteration", TEST_PLAN_ITERATION != null ? TEST_PLAN_ITERATION : 1);
 	    } else {
 	        System.out.println("⚠️ Warning: Please provide a valid Standard Test Plan Key.");
 	    }
@@ -1229,6 +1287,85 @@ public class VansahNode {
 	 *         step number, result ID, and actual result comment. This object can be directly used as the body
 	 *         of an API request to add or update test logs.
 	 */
+	/**
+	 * Records the per-step test logs that Vansah pre-creates when a run is created as UNTESTED.
+	 * Reads the "logs" array from the add-test-run response and maps each step number to its log
+	 * identifier so {@link #addTestLog} can update the correct step log instead of creating a new one.
+	 * Any previously stored mapping is cleared first, so each new run starts fresh.
+	 *
+	 * @param runObject The "run" object from the add-test-run response body (data.run).
+	 */
+	private void storeStepLogs(JSONObject runObject) {
+		stepLogIdentifiers.clear();
+		if (runObject == null || !runObject.has("logs")) {
+			return;
+		}
+		JSONArray logs = runObject.getJSONArray("logs");
+		for (int i = 0; i < logs.length(); i++) {
+			JSONObject log = logs.getJSONObject(i);
+			if (log.has("identifier") && log.has("step") && log.getJSONObject("step").has("number")) {
+				stepLogIdentifiers.put(log.getJSONObject("step").getInt("number"),
+						log.get("identifier").toString());
+			}
+		}
+	}
+
+	/**
+	 * Reverse lookup: returns the step number currently mapped to the given log identifier, or
+	 * null if no step maps to it.
+	 *
+	 * @param logIdentifier The test log identifier to look up.
+	 * @return The step number whose log is {@code logIdentifier}, or null if not found.
+	 */
+	private Integer stepForLog(String logIdentifier) {
+		if (logIdentifier == null) {
+			return null;
+		}
+		for (Map.Entry<Integer, String> entry : stepLogIdentifiers.entrySet()) {
+			if (logIdentifier.equals(entry.getValue())) {
+				return entry.getKey();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Recreates an empty UNTESTED test log for the given step on the current run and stores its
+	 * identifier in the step -> log map. Called after {@link #removeTestLog()} so the step keeps a
+	 * placeholder log that a later {@link #addTestLog} can update, and the map never holds a stale id.
+	 *
+	 * @param stepNumber The step number whose log placeholder should be recreated.
+	 */
+	private void recreateUntestedStepLog(int stepNumber) {
+		try {
+			JSONObject run = new JSONObject();
+			run.accumulate("identifier", TEST_RUN_IDENTIFIER);
+
+			JSONObject step = new JSONObject();
+			step.accumulate("number", stepNumber);
+
+			JSONObject body = new JSONObject();
+			body.accumulate("run", run);
+			body.accumulate("step", step);
+			body.accumulate("result", resultObj(UNTESTED_RESULT_ID));
+			body.accumulate("project", jiraProjectAsset());
+
+			emitPayload(getAddTestLogUrl(), body);
+			HttpResponse<JsonNode> response = Unirest.post(getAddTestLogUrl()).headers(headers).body(body).asJson();
+			JSONObject responseObject = new JSONObject(response.getBody().toString());
+
+			if (responseObject.getBoolean("success")) {
+				String newLogIdentifier = responseObject.getJSONObject("data").getJSONObject("log").get("identifier").toString();
+				stepLogIdentifiers.put(stepNumber, newLogIdentifier);
+				System.out.println("Recreated UNTESTED log for step " + stepNumber + ": " + newLogIdentifier);
+			} else {
+				System.out.println("Could not recreate a log for step " + stepNumber + ": " + responseObject.getString("message"));
+			}
+		} catch (Exception e) {
+			System.out.println("Error recreating a log for step " + stepNumber + ": " + e.toString());
+		}
+	}
+
 	private JSONObject addTestLogProp() {
 
 		JSONObject testRun = new JSONObject();

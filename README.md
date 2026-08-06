@@ -11,12 +11,12 @@
 
 <hr>
 
-API Token Update Required
-Existing Vansah Connect tokens. You will need to generate a new API token to continue using integrations
-All Connect-based integrations and bindings must be updated. Update your API configuration: {{apiUrl}}/api/v2/ 
-
-Generate a new Vansah API token
-Test your integrations to ensure continuity post-release
+> ⚠️ **API Token Update Required**
+>
+> Existing Vansah Connect tokens must be regenerated to continue using integrations. All Connect-based integrations and bindings must be updated to the Vansah API v2 endpoint (`<your-vansah-connect-url>/api/v2/`).
+>
+> - Generate a new Vansah API token
+> - Test your integrations to ensure continuity post-release
 
 > In the meantime, for more details check out:
 > - [Vansah for Jira — May 2026 Forge Release](https://help.vansah.com/en/articles/13298303-vansah-for-jira-may-2026)
@@ -102,7 +102,7 @@ Test your integrations to ensure continuity post-release
 
 To Integrate Vansah Binding Java functions, you need to add the below dependencies into your pom.xml file.
 
-```java
+```xml
 
 	<dependencies>
 		<dependency>
@@ -211,7 +211,7 @@ To Integrate Vansah Binding Java functions, you need to add the below dependenci
  * Sample JUnit test class demonstrating how to send test execution results to Vansah.
  * 
  * This class uses VansahNode to:
- * - Connect to Vansah with a project key and token
+ * - Connect to Vansah with a Space Key (Jira project key) and token
  * - Send test results using:
  *   1. Test Folder path
  *   2. Advanced Test Plan (ATP)
@@ -231,7 +231,7 @@ class Tests {
     // Test Case key from Jira
     private final String testCaseKey = "KAN-C17";
 
-    // Jira Project key
+    // Space Key (the Jira project key)
     private final String projectKey = "KAN";
 
     // Advanced Test Plan key used for ATP-based test executions
@@ -245,8 +245,8 @@ class Tests {
 
     /**
      * Setup method that runs before each test.
-     * It initializes VansahNode with URL, API token, project key, folder path,
-     * and test plan keys for both ATP and STP.
+     * It initializes VansahNode with URL, API token, Space Key (Jira project key),
+     * folder path, and test plan keys for both ATP and STP.
      */
     @SuppressWarnings("static-access")
     @BeforeEach
@@ -313,7 +313,7 @@ Initiates a new test run within a specified test folder. Use this method to orga
 Logs the result of a specific test step, optionally including a comment and a screenshot. This method provides detailed tracking of test execution outcomes.
 
 - **Parameters**:
-  - `result`: The outcome of the test step (e.g., PASSED, FAILED)|| (e.g  0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested).
+  - `result`: The outcome of the test step. Accepts either a **String** (`NA`, `FAILED`, `PASSED`, `UNTESTED` — case-insensitive) or an **int** (0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested). Note the string is `NA`, not `N/A`.
   - `comment`: An optional comment describing the test step outcome.
   - `testStepRow`: The index of the test step within the test case.
   - `screenshotFile`: (Optional) The File Object of the screenshot taken to upload : Provide file object or Path of the screenshot.
@@ -324,7 +324,7 @@ Quickly logs the overall result of a test case associated with either a JIRA iss
 
 - **Parameters**:
   - `testcase`: The test case identifier.
-  - `result`: The overall test result (e.g., PASS, FAIL).
+  - `result`: The overall test result as an **int** — 0 = N/A, 1 = FAIL, 2 = PASS, 3 = Not tested.
   
 ### `addTestRunFromAdvancedTestPlan(String testPlanAssetType, String testCaseKey)`
 
@@ -335,13 +335,17 @@ Adds a new test run in Vansah under an Advanced Test Plan (ATP). The method link
   	- `folder` – If the ATP is structured by test folder.
   	- `issue` – If the ATP is linked to a specific Jira issue.
   - `testCaseKey`: The key of the test case to be executed (e.g., "KAN-C17").
-  
+
+The run targets **iteration 1** by default. To target a different iteration, call `setTestPlanIteration(int)` (range 1–5) before this method.
+
 ### `addTestRunFromStandardTestPlan(String testCaseKey)`
 
 Adds a new test run in Vansah under a Standard Test Plan (STP). This method links the specified test case to the configured Standard Test Plan, enabling execution tracking and reporting without the need for a specific folder or issue reference.
 
 - **Parameters**:
   - `testCaseKey`: The key of the test case to be executed under the Standard Test Plan (e.g., "KAN-C17").
+
+The run targets **iteration 1** by default. To target a different iteration, call `setTestPlanIteration(int)` (range 1–5) before this method.
 
 ### `removeTestRun()` and `removeTestLog()`
 
@@ -358,12 +362,21 @@ Updates an existing test log with new information, such as a revised result or a
 
 The `VansahNode` class provides a set of setter methods to configure your test management context before performing operations such as creating test runs, adding test logs, and more. Here's a detailed overview of each setter method:
 
-### `setTESTFOLDER_PATH(String TESTFOLDER_PATH)`
+### `setProjectKey(String projectKey)`
+
+Sets the **Space Key** (the Jira project key) that scopes your test runs and logs. This is **required for the Vansah API v2** — it is sent as the top-level `project` object on every request.
+
+- **Parameters**:
+  - `projectKey`: The Space Key / Jira project key (e.g., `"KAN"`).
+
+> **Note:** A null or empty value prints a warning (`⚠️ Warning: Provided Space Key is null or empty. Value not updated.`) and is ignored.
+
+### `setFOLDERPATH(String FOLDERPATH)`
 
 Configures the **Test Folder Path** for the VansahNode instance. This path is essential for associating your test runs and logs with the correct test folder structure in Vansah.
 
 - **Parameters**:
-  - `TESTFOLDER_PATH`: The folder path for the test folder in Vansah. The path must contain at least one `/` and must not start with `/`.
+  - `FOLDERPATH`: The folder path for the test folder in Vansah. The path must contain at least one `/` and must not start with `/`.
 
 > **Note:** Invalid paths (e.g., those starting with `/` or lacking `/`) will print a warning and be ignored.
 
@@ -408,8 +421,26 @@ Sets the key for the Standard Test Plan (STP). This key is used to associate tes
 
 - **Parameters**:
   - `testPlanKey`: The unique key of the Standard Test Plan (e.g., "KAN-P17"), used to organize and manage test executions in Vansah.
-  
-  
+
+### `setTestPlanIteration(int iteration)`
+
+Sets the **iteration** to target when creating a run from a Standard or Advanced Test Plan. This is **optional** — if you never call it, runs default to **iteration 1**. Only call this when you need to record results against a specific iteration of the test plan.
+
+- **Parameters**:
+  - `iteration`: The test plan iteration to target. Valid range is **1–5**. Values outside this range are ignored (a warning is printed and the default of 1 is kept).
+
+> **Note:** The iteration applies only to `addTestRunFromStandardTestPlan(...)` and `addTestRunFromAdvancedTestPlan(...)`. It has no effect on Jira-issue or test-folder runs.
+
+### `setDebug(boolean debug)`
+
+Enables or disables **request-payload logging**. When enabled, the exact JSON body sent to Vansah is printed before each API call — useful for diagnosing issues such as a malformed folder path or a missing Space Key. Screenshot attachments are logged after the payload so base64 data does not flood the output.
+
+Debug logging is also enabled automatically when the `VANSAH_DEBUG` environment variable is set to `true` or `1`.
+
+- **Parameters**:
+  - `debug`: `true` to log outgoing request payloads, `false` to disable.
+
+
 ### Usage
 
 To use these setter methods in your application, create an instance of `VansahNode` and call the relevant setter methods with the appropriate values before proceeding with any test management operations. For example:
@@ -417,13 +448,14 @@ To use these setter methods in your application, create an instance of `VansahNo
 ```java
 VansahNode vansahNode = new VansahNode();
 vansahNode.setVansahToken("Add your Token here");
-vansahNode.setTESTFOLDER_PATH("feature-tests/login");
+vansahNode.setProjectKey("KAN"); // Space Key (the Jira project key) — required for API v2
+vansahNode.setFOLDERPATH("feature-tests/login");
 vansahNode.setJIRA_ISSUE_KEY("your-jira-issue-key");
 vansahNode.setSPRINT_NAME("your-sprint-name");
 vansahNode.setRELEASE_NAME("your-release-name");
 vansahNode.setENVIRONMENT_NAME("your-environment-name");
-vansahNode.setAdvancedTestPlanKey("KAN-P18");
-vansahNode.setStandardTestPlanKey("KAN-P17");
+vansahNode.setAdvancedTestPlanKey("KAN-P17");
+vansahNode.setStandardTestPlanKey("KAN-P18");
 ```
 ## Developed By
 
